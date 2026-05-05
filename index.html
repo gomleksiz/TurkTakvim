@@ -285,6 +285,82 @@
       font-size: 1rem;
     }
 
+    /* ── Today Banner ── */
+    .today-banner {
+      max-width: 620px;
+      margin: 0 auto 0;
+      padding: 0 1rem 1.5rem;
+    }
+
+    .today-card {
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+      background: linear-gradient(135deg, rgba(200,134,10,0.18), rgba(232,195,106,0.08));
+      border: 1px solid rgba(232,195,106,0.5);
+      border-radius: 14px;
+      padding: 1.1rem 1.5rem;
+    }
+
+    .today-card .today-icon {
+      font-size: 3rem;
+      line-height: 1;
+      filter: drop-shadow(0 0 10px rgba(232,195,106,0.6));
+    }
+
+    .today-card .today-info { flex: 1; }
+
+    .today-card .today-label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: #c9a96e;
+    }
+
+    .today-card .today-date {
+      font-size: 1rem;
+      color: #f5e6c8;
+      margin-top: 0.15rem;
+    }
+
+    .today-card .today-animal {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #e8c36a;
+      margin-top: 0.1rem;
+    }
+
+    .today-card .today-detail {
+      font-size: 0.8rem;
+      color: #a08050;
+      margin-top: 0.15rem;
+    }
+
+    /* ── Date input styling ── */
+    .input-group input[type="date"] {
+      flex: 1;
+      padding: 0.75rem 1rem;
+      font-size: 1rem;
+      border-radius: 10px;
+      border: 1px solid rgba(232,195,106,0.4);
+      background: rgba(0,0,0,0.3);
+      color: #f5e6c8;
+      outline: none;
+      min-width: 160px;
+      color-scheme: dark;
+    }
+
+    .input-group input[type="date"]:focus {
+      border-color: #e8c36a;
+      box-shadow: 0 0 0 3px rgba(232,195,106,0.15);
+    }
+
+    .result-date-line {
+      font-size: 0.88rem;
+      color: #c9a96e;
+      margin-bottom: 0.3rem;
+    }
+
     footer {
       text-align: center;
       padding: 1.5rem;
@@ -310,15 +386,29 @@
   <div class="ornament">✦ ✦ ✦</div>
 </header>
 
+<!-- Today Banner -->
+<div class="today-banner">
+  <div class="today-card">
+    <div class="today-icon" id="todayIcon"></div>
+    <div class="today-info">
+      <div class="today-label">Bugün</div>
+      <div class="today-date" id="todayDate"></div>
+      <div class="today-animal" id="todayAnimal"></div>
+      <div class="today-detail" id="todayDetail"></div>
+    </div>
+  </div>
+</div>
+
 <!-- Converter -->
 <div class="converter">
   <div class="converter-card">
     <div class="input-group">
-      <label for="yearInput">Miladi yıl girin (örn. 2026):</label>
-      <input type="number" id="yearInput" placeholder="Yıl giriniz…" min="-9999" max="9999">
+      <label for="dateInput">Tarih seçin veya girin:</label>
+      <input type="date" id="dateInput">
       <button class="btn-convert" onclick="convert()">Çevir</button>
     </div>
     <div class="result-box" id="resultBox">
+      <div class="result-date-line" id="resDateLine"></div>
       <div class="result-animal">
         <div class="animal-icon" id="resIcon"></div>
         <div class="animal-info">
@@ -485,11 +575,33 @@
     };
   }
 
-  function showResult(year) {
+  const TR_MONTHS = ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran',
+                     'Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
+  const TR_DAYS   = ['Pazar','Pazartesi','Salı','Çarşamba','Perşembe','Cuma','Cumartesi'];
+
+  function formatDateTR(date) {
+    return `${date.getDate()} ${TR_MONTHS[date.getMonth()]} ${date.getFullYear()}, ${TR_DAYS[date.getDay()]}`;
+  }
+
+  // Parse YYYY-MM-DD without timezone shift
+  function parseLocalDate(str) {
+    const [y, m, d] = str.split('-').map(Number);
+    return new Date(y, m - 1, d);
+  }
+
+  function toInputValue(date) {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+  }
+
+  function showResult(date) {
+    const year = date.getFullYear();
     const idx = animalIndex(year);
     const animal = ANIMALS[idx];
-    const recentYears = getRecentYears(idx);
 
+    document.getElementById('resDateLine').textContent = formatDateTR(date);
     document.getElementById('resIcon').textContent = animal.icon;
     document.getElementById('resName').textContent = `${year} — ${animal.name} Yılı`;
     document.getElementById('resAlt').textContent = animal.altName;
@@ -498,44 +610,62 @@
     document.getElementById('resDesc').textContent = animal.traits;
 
     const { past, future } = splitYears(idx);
-    const pastHtml = past.slice(-5).map(y => `<span onclick="setYear(${y})">${y}</span>`).join(' ');
-    const futureHtml = future.slice(0, 6).map(y => `<span class="future-year" onclick="setYear(${y})">${y}</span>`).join(' ');
+    const pastHtml  = past.slice(-5).map(y => `<span onclick="setDateYear(${y})">${y}</span>`).join(' ');
+    const futureHtml = future.slice(0, 6).map(y => `<span class="future-year" onclick="setDateYear(${y})">${y}</span>`).join(' ');
     document.getElementById('resYears').innerHTML =
       `<span class="years-label">Geçmiş:</span> ${pastHtml} &nbsp;<span class="years-label">Gelecek:</span> ${futureHtml}`;
 
-    const box = document.getElementById('resultBox');
-    box.classList.add('visible');
+    document.getElementById('resultBox').classList.add('visible');
 
-    // highlight card
     document.querySelectorAll('.animal-card').forEach((c, i) => {
       c.classList.toggle('active', i === idx);
     });
   }
 
   function convert() {
-    const val = document.getElementById('yearInput').value.trim();
+    const val = document.getElementById('dateInput').value;
     if (!val) return;
-    const year = parseInt(val, 10);
-    if (isNaN(year)) return;
-    showResult(year);
+    showResult(parseLocalDate(val));
   }
 
-  function setYear(year) {
-    document.getElementById('yearInput').value = year;
-    convert();
+  // Set just the year, keep month+day from current input or use Jan 1
+  function setDateYear(year) {
+    const cur = document.getElementById('dateInput').value;
+    let newDate;
+    if (cur) {
+      const d = parseLocalDate(cur);
+      newDate = new Date(year, d.getMonth(), d.getDate());
+    } else {
+      newDate = new Date(year, 0, 1);
+    }
+    document.getElementById('dateInput').value = toInputValue(newDate);
+    showResult(newDate);
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // Build today banner
+  function buildToday() {
+    const today = new Date();
+    const idx = animalIndex(today.getFullYear());
+    const animal = ANIMALS[idx];
+    document.getElementById('todayIcon').textContent = animal.icon;
+    document.getElementById('todayDate').textContent = formatDateTR(today);
+    document.getElementById('todayAnimal').textContent = `${animal.name} Yılı`;
+    document.getElementById('todayDetail').textContent =
+      `${animal.altName} · ${animal.element} · ${animal.direction}`;
   }
 
   // Build grid
   function buildGrid() {
     const grid = document.getElementById('animalsGrid');
-    const currentYear = new Date().getFullYear();
+    const today = new Date();
+    const currentYear = today.getFullYear();
 
     ANIMALS.forEach((animal, i) => {
       const { past, future } = splitYears(i);
-      const lastPast = past.slice(-2).join(', ');
+      const lastPast   = past.slice(-2).join(', ');
       const nextFuture = future.slice(0, 3).join(', ');
-      const recentStr = [lastPast, nextFuture].filter(Boolean).join(', ');
+      const recentStr  = [lastPast, nextFuture].filter(Boolean).join(', ');
 
       const card = document.createElement('div');
       card.className = 'animal-card';
@@ -548,24 +678,19 @@
       `;
       card.addEventListener('click', () => {
         const nearestYear = getRecentYears(i).find(y => y >= currentYear - 6) || getRecentYears(i).at(-1);
-        setYear(nearestYear);
+        setDateYear(nearestYear);
       });
       grid.appendChild(card);
     });
   }
 
-  // Enter key support
-  document.getElementById('yearInput').addEventListener('keydown', e => {
-    if (e.key === 'Enter') convert();
-  });
-
   // Init
+  buildToday();
   buildGrid();
 
-  // Auto-show current year
-  const thisYear = new Date().getFullYear();
-  document.getElementById('yearInput').value = thisYear;
-  showResult(thisYear);
+  const today = new Date();
+  document.getElementById('dateInput').value = toInputValue(today);
+  showResult(today);
 </script>
 </body>
 </html>

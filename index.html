@@ -171,8 +171,25 @@
       transition: background 0.15s;
     }
 
-    .result-years span:hover {
-      background: rgba(232,195,106,0.25);
+    .result-years span:hover { background: rgba(232,195,106,0.25); }
+
+    .result-years .future-year {
+      background: rgba(232,195,106,0.22);
+      border-color: rgba(232,195,106,0.55);
+      color: #e8c36a;
+      font-weight: 600;
+    }
+
+    .result-years .future-year:hover { background: rgba(232,195,106,0.38); }
+
+    .result-years .years-label {
+      background: none;
+      border: none;
+      cursor: default;
+      color: #a08050;
+      font-size: 0.78rem;
+      padding: 0;
+      margin: 0 2px 0 6px;
     }
 
     /* ── All Animals Grid ── */
@@ -443,22 +460,29 @@
     return ((year - 2020) % 12 + 12) % 12;
   }
 
-  // Recent past and near-future years for an animal
-  function getRecentYears(idx, count = 6) {
+  // All years for an animal from 1900 to currentYear+72
+  function getRecentYears(idx) {
     const currentYear = new Date().getFullYear();
     const years = [];
-    // find nearest year >= 1900 for this animal
     let base = 2020 + idx;
     while (base > 1900) base -= 12;
     while (base < 1900) base += 12;
-    // collect years around current year
     let y = base;
-    while (y <= currentYear + 24) {
+    while (y <= currentYear + 72) {
       years.push(y);
       y += 12;
     }
-    // take last count entries ending before currentYear+24
     return years;
+  }
+
+  // Past years (>= 1924) and future years (> currentYear) split
+  function splitYears(idx) {
+    const currentYear = new Date().getFullYear();
+    const all = getRecentYears(idx).filter(y => y >= 1924);
+    return {
+      past: all.filter(y => y <= currentYear),
+      future: all.filter(y => y > currentYear)
+    };
   }
 
   function showResult(year) {
@@ -473,8 +497,11 @@
       `Döngüdeki sırası: ${idx + 1}. hayvan · Element: ${animal.element} · Yön: ${animal.direction}`;
     document.getElementById('resDesc').textContent = animal.traits;
 
-    const yearsHtml = recentYears.map(y => `<span onclick="setYear(${y})">${y}</span>`).join(' ');
-    document.getElementById('resYears').innerHTML = `Bu hayvana ait yıllar: ${yearsHtml}`;
+    const { past, future } = splitYears(idx);
+    const pastHtml = past.slice(-5).map(y => `<span onclick="setYear(${y})">${y}</span>`).join(' ');
+    const futureHtml = future.slice(0, 6).map(y => `<span class="future-year" onclick="setYear(${y})">${y}</span>`).join(' ');
+    document.getElementById('resYears').innerHTML =
+      `<span class="years-label">Geçmiş:</span> ${pastHtml} &nbsp;<span class="years-label">Gelecek:</span> ${futureHtml}`;
 
     const box = document.getElementById('resultBox');
     box.classList.add('visible');
@@ -505,8 +532,10 @@
     const currentYear = new Date().getFullYear();
 
     ANIMALS.forEach((animal, i) => {
-      const years = getRecentYears(i).filter(y => y >= 1924 && y <= currentYear + 12);
-      const recentStr = years.slice(-4).join(', ');
+      const { past, future } = splitYears(i);
+      const lastPast = past.slice(-2).join(', ');
+      const nextFuture = future.slice(0, 3).join(', ');
+      const recentStr = [lastPast, nextFuture].filter(Boolean).join(', ');
 
       const card = document.createElement('div');
       card.className = 'animal-card';

@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>12 Hayvanlı Türk Takvimi</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #1a0a00 0%, #3d1500 50%, #1a0a00 100%);
+      min-height: 100vh;
+      color: #f5e6c8;
+    }
+
+    header {
+      text-align: center;
+      padding: 2.5rem 1rem 1.5rem;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.4), transparent);
+    }
+
+    header h1 {
+      font-size: 2.2rem;
+      color: #e8c36a;
+      text-shadow: 0 0 20px rgba(232,195,106,0.5);
+      letter-spacing: 2px;
+    }
+
+    header p {
+      margin-top: 0.5rem;
+      color: #c9a96e;
+      font-size: 0.95rem;
+    }
+
+    .ornament {
+      font-size: 1.4rem;
+      color: #e8c36a;
+      margin: 0.3rem 0;
+      letter-spacing: 6px;
+    }
+
+    /* ── Converter Section ── */
+    .converter {
+      max-width: 620px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+
+    .converter-card {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(232,195,106,0.3);
+      border-radius: 16px;
+      padding: 2rem;
+      backdrop-filter: blur(4px);
+    }
+
+    .input-group {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .input-group label {
+      display: block;
+      width: 100%;
+      font-size: 0.9rem;
+      color: #c9a96e;
+      margin-bottom: 0.4rem;
+    }
+
+    .input-group input {
+      flex: 1;
+      padding: 0.75rem 1rem;
+      font-size: 1.1rem;
+      border-radius: 10px;
+      border: 1px solid rgba(232,195,106,0.4);
+      background: rgba(0,0,0,0.3);
+      color: #f5e6c8;
+      outline: none;
+      min-width: 140px;
+    }
+
+    .input-group input:focus {
+      border-color: #e8c36a;
+      box-shadow: 0 0 0 3px rgba(232,195,106,0.15);
+    }
+
+    .btn-convert {
+      padding: 0.75rem 1.8rem;
+      background: linear-gradient(135deg, #c8860a, #e8c36a);
+      color: #1a0a00;
+      font-weight: 700;
+      font-size: 1rem;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+
+    .btn-convert:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(232,195,106,0.4);
+    }
+
+    .result-box {
+      margin-top: 1.5rem;
+      display: none;
+    }
+
+    .result-box.visible { display: block; }
+
+    .result-animal {
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(232,195,106,0.4);
+      border-radius: 12px;
+      padding: 1.2rem 1.5rem;
+    }
+
+    .result-animal .animal-icon {
+      font-size: 3.5rem;
+      line-height: 1;
+      filter: drop-shadow(0 0 8px rgba(232,195,106,0.5));
+    }
+
+    .result-animal .animal-info h2 {
+      font-size: 1.5rem;
+      color: #e8c36a;
+    }
+
+    .result-animal .animal-info .animal-alt {
+      font-size: 0.85rem;
+      color: #c9a96e;
+      margin-top: 0.1rem;
+    }
+
+    .result-animal .animal-info .animal-cycle {
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
+      color: #f5e6c8;
+    }
+
+    .result-desc {
+      margin-top: 1rem;
+      padding: 1rem 1.2rem;
+      background: rgba(0,0,0,0.2);
+      border-left: 3px solid #e8c36a;
+      border-radius: 0 8px 8px 0;
+      font-size: 0.92rem;
+      line-height: 1.6;
+      color: #ddd0b3;
+    }
+
+    .result-years {
+      margin-top: 0.8rem;
+      font-size: 0.82rem;
+      color: #c9a96e;
+    }
+
+    .result-years span {
+      display: inline-block;
+      background: rgba(232,195,106,0.12);
+      border: 1px solid rgba(232,195,106,0.25);
+      border-radius: 4px;
+      padding: 2px 7px;
+      margin: 2px 3px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .result-years span:hover {
+      background: rgba(232,195,106,0.25);
+    }
+
+    /* ── All Animals Grid ── */
+    .all-animals-section {
+      max-width: 900px;
+      margin: 2.5rem auto 3rem;
+      padding: 0 1rem;
+    }
+
+    .section-title {
+      text-align: center;
+      font-size: 1.1rem;
+      color: #e8c36a;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+    }
+
+    .animals-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+      gap: 1rem;
+    }
+
+    .animal-card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(232,195,106,0.2);
+      border-radius: 12px;
+      padding: 1rem;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.2s, border-color 0.2s, background 0.2s;
+      position: relative;
+    }
+
+    .animal-card:hover, .animal-card.active {
+      transform: translateY(-4px);
+      border-color: #e8c36a;
+      background: rgba(232,195,106,0.1);
+    }
+
+    .animal-card .card-icon { font-size: 2.2rem; }
+
+    .animal-card .card-order {
+      position: absolute;
+      top: 6px;
+      left: 10px;
+      font-size: 0.7rem;
+      color: #c9a96e;
+      font-weight: 700;
+    }
+
+    .animal-card .card-name {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #e8c36a;
+      margin-top: 0.4rem;
+    }
+
+    .animal-card .card-altname {
+      font-size: 0.75rem;
+      color: #a08050;
+      margin-top: 0.1rem;
+    }
+
+    .animal-card .card-years {
+      font-size: 0.72rem;
+      color: #9a8060;
+      margin-top: 0.4rem;
+      line-height: 1.4;
+    }
+
+    /* ── Info Section ── */
+    .info-section {
+      max-width: 620px;
+      margin: 0 auto 3rem;
+      padding: 0 1rem;
+    }
+
+    .info-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(232,195,106,0.2);
+      border-radius: 12px;
+      padding: 1.5rem;
+      font-size: 0.88rem;
+      line-height: 1.7;
+      color: #c9a96e;
+    }
+
+    .info-card h3 {
+      color: #e8c36a;
+      margin-bottom: 0.6rem;
+      font-size: 1rem;
+    }
+
+    footer {
+      text-align: center;
+      padding: 1.5rem;
+      color: #6b5030;
+      font-size: 0.8rem;
+    }
+
+    @media (max-width: 500px) {
+      header h1 { font-size: 1.5rem; }
+      .animals-grid { grid-template-columns: repeat(3, 1fr); }
+      .animal-card .card-icon { font-size: 1.6rem; }
+      .animal-card .card-name { font-size: 0.82rem; }
+      .animal-card .card-altname, .animal-card .card-years { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="ornament">✦ ✦ ✦</div>
+  <h1>12 Hayvanlı Türk Takvimi</h1>
+  <p>Onikili Türk / Uygur Yıl Döngüsü — Yıl Çeviri Aracı</p>
+  <div class="ornament">✦ ✦ ✦</div>
+</header>
+
+<!-- Converter -->
+<div class="converter">
+  <div class="converter-card">
+    <div class="input-group">
+      <label for="yearInput">Miladi yıl girin (örn. 2026):</label>
+      <input type="number" id="yearInput" placeholder="Yıl giriniz…" min="-9999" max="9999">
+      <button class="btn-convert" onclick="convert()">Çevir</button>
+    </div>
+    <div class="result-box" id="resultBox">
+      <div class="result-animal">
+        <div class="animal-icon" id="resIcon"></div>
+        <div class="animal-info">
+          <h2 id="resName"></h2>
+          <div class="animal-alt" id="resAlt"></div>
+          <div class="animal-cycle" id="resCycle"></div>
+        </div>
+      </div>
+      <div class="result-desc" id="resDesc"></div>
+      <div class="result-years" id="resYears"></div>
+    </div>
+  </div>
+</div>
+
+<!-- All Animals -->
+<div class="all-animals-section">
+  <div class="section-title">— Oniki Hayvan —</div>
+  <div class="animals-grid" id="animalsGrid"></div>
+</div>
+
+<!-- Info -->
+<div class="info-section">
+  <div class="info-card">
+    <h3>12 Hayvanlı Türk Takvimi Hakkında</h3>
+    Orta Asya kökenli bu takvim sistemi, Türk ve Uygur toplulukları tarafından yüzyıllarca kullanılmıştır.
+    Her biri bir hayvanın adını taşıyan 12 yıllık döngülerden oluşur. Kök Türkçe'de
+    "On İki Hayvanlı Takvim" (Onikili Yıl) olarak anılır. Çin takvimindeki 12 hayvanlı
+    döngüyle paraleldir; hayvanların Türkçe adları ise kültüre özgüdür.<br><br>
+    Bu takvim, yılları döngüsel biçimde adlandırmak için kullanılmış; tarihî kayıtlarda
+    "Bars yılında", "At yılında" gibi ifadelere sıkça rastlanmıştır.
+  </div>
+</div>
+
+<footer>12 Hayvanlı Türk Takvimi — Referans yılı: 2020 (Sıçan)</footer>
+
+<script>
+  // Reference: 2020 = Sıçan (index 0)
+  const ANIMALS = [
+    {
+      name: 'Sıçan',
+      altName: 'Fare / Çichqan',
+      icon: '🐀',
+      traits: 'Zeki, becerikli, uyumlu ve çalışkandır. Fırsatları iyi değerlendirir.',
+      element: 'Su',
+      direction: 'Kuzey'
+    },
+    {
+      name: 'Ud',
+      altName: 'Öküz / Sığır / Ud',
+      icon: '🐂',
+      traits: 'Güçlü, sabırlı, güvenilir ve kararlıdır. Çalışkanlığıyla bilinir.',
+      element: 'Toprak',
+      direction: 'Kuzeydoğu'
+    },
+    {
+      name: 'Bars',
+      altName: 'Kaplan / Pars / Bars',
+      icon: '🐯',
+      traits: 'Cesur, güçlü, bağımsız ve tutkuludur. Liderlik vasfı taşır.',
+      element: 'Ahşap',
+      direction: 'Doğu'
+    },
+    {
+      name: 'Tavışkan',
+      altName: 'Tavşan / Tabışkan',
+      icon: '🐇',
+      traits: 'Zarif, nazik, anlayışlı ve barışseverdir. İnce zevki ile tanınır.',
+      element: 'Ahşap',
+      direction: 'Doğu'
+    },
+    {
+      name: 'Lu',
+      altName: 'Ejder / Lu / Balık',
+      icon: '🐉',
+      traits: 'Güçlü, yaratıcı, karizma sahibi ve hırslıdır. Doğaüstü güçlerle ilişkilendirilir.',
+      element: 'Toprak',
+      direction: 'Güneydoğu'
+    },
+    {
+      name: 'Yılan',
+      altName: 'Yılan / Çılan',
+      icon: '🐍',
+      traits: 'Bilge, sezgisel, gizemli ve cazip kişiliktedir. Derin düşüncesiyle öne çıkar.',
+      element: 'Ateş',
+      direction: 'Güney'
+    },
+    {
+      name: 'At',
+      altName: 'At / Yund',
+      icon: '🐎',
+      traits: 'Özgür ruhlu, enerjik, sadık ve maceraperesttir. Türk kültüründe özel bir yere sahiptir.',
+      element: 'Ateş',
+      direction: 'Güney'
+    },
+    {
+      name: 'Koyun',
+      altName: 'Koyun / Koç / Kon',
+      icon: '🐑',
+      traits: 'Uysal, sanatsever, merhametli ve sezgiseldir. Barışçıl yapısıyla dikkat çeker.',
+      element: 'Toprak',
+      direction: 'Güneybatı'
+    },
+    {
+      name: 'Biçin',
+      altName: 'Maymun / Biçin / Meçin',
+      icon: '🐒',
+      traits: 'Zeki, esprili, meraklı ve uyumcudur. Yaratıcı çözümler üretir.',
+      element: 'Metal',
+      direction: 'Batı'
+    },
+    {
+      name: 'Takagu',
+      altName: 'Tavuk / Horoz / Takagu',
+      icon: '🐓',
+      traits: 'Dürüst, titiz, güvenilir ve çalışkandır. Düzenli yaşamı sever.',
+      element: 'Metal',
+      direction: 'Batı'
+    },
+    {
+      name: 'İt',
+      altName: 'Köpek / İt',
+      icon: '🐕',
+      traits: 'Sadık, dürüst, koruyucu ve güvenilirdir. Arkadaşlarına bağlılığıyla öne çıkar.',
+      element: 'Toprak',
+      direction: 'Kuzeybatı'
+    },
+    {
+      name: 'Tonguz',
+      altName: 'Domuz / Tonguz / Laçın',
+      icon: '🐗',
+      traits: 'Cömert, şefkatli, dürüst ve azimlidir. Bereket ve bollukla ilişkilendirilir.',
+      element: 'Su',
+      direction: 'Kuzey'
+    }
+  ];
+
+  // Index for a given Gregorian year
+  function animalIndex(year) {
+    return ((year - 2020) % 12 + 12) % 12;
+  }
+
+  // Recent past and near-future years for an animal
+  function getRecentYears(idx, count = 6) {
+    const currentYear = new Date().getFullYear();
+    const years = [];
+    // find nearest year >= 1900 for this animal
+    let base = 2020 + idx;
+    while (base > 1900) base -= 12;
+    while (base < 1900) base += 12;
+    // collect years around current year
+    let y = base;
+    while (y <= currentYear + 24) {
+      years.push(y);
+      y += 12;
+    }
+    // take last count entries ending before currentYear+24
+    return years;
+  }
+
+  function showResult(year) {
+    const idx = animalIndex(year);
+    const animal = ANIMALS[idx];
+    const recentYears = getRecentYears(idx);
+
+    document.getElementById('resIcon').textContent = animal.icon;
+    document.getElementById('resName').textContent = `${year} — ${animal.name} Yılı`;
+    document.getElementById('resAlt').textContent = animal.altName;
+    document.getElementById('resCycle').textContent =
+      `Döngüdeki sırası: ${idx + 1}. hayvan · Element: ${animal.element} · Yön: ${animal.direction}`;
+    document.getElementById('resDesc').textContent = animal.traits;
+
+    const yearsHtml = recentYears.map(y => `<span onclick="setYear(${y})">${y}</span>`).join(' ');
+    document.getElementById('resYears').innerHTML = `Bu hayvana ait yıllar: ${yearsHtml}`;
+
+    const box = document.getElementById('resultBox');
+    box.classList.add('visible');
+
+    // highlight card
+    document.querySelectorAll('.animal-card').forEach((c, i) => {
+      c.classList.toggle('active', i === idx);
+    });
+  }
+
+  function convert() {
+    const val = document.getElementById('yearInput').value.trim();
+    if (!val) return;
+    const year = parseInt(val, 10);
+    if (isNaN(year)) return;
+    showResult(year);
+  }
+
+  function setYear(year) {
+    document.getElementById('yearInput').value = year;
+    convert();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // Build grid
+  function buildGrid() {
+    const grid = document.getElementById('animalsGrid');
+    const currentYear = new Date().getFullYear();
+
+    ANIMALS.forEach((animal, i) => {
+      const years = getRecentYears(i).filter(y => y >= 1924 && y <= currentYear + 12);
+      const recentStr = years.slice(-4).join(', ');
+
+      const card = document.createElement('div');
+      card.className = 'animal-card';
+      card.innerHTML = `
+        <span class="card-order">${i + 1}</span>
+        <div class="card-icon">${animal.icon}</div>
+        <div class="card-name">${animal.name}</div>
+        <div class="card-altname">${animal.altName}</div>
+        <div class="card-years">${recentStr}…</div>
+      `;
+      card.addEventListener('click', () => {
+        const nearestYear = getRecentYears(i).find(y => y >= currentYear - 6) || getRecentYears(i).at(-1);
+        setYear(nearestYear);
+      });
+      grid.appendChild(card);
+    });
+  }
+
+  // Enter key support
+  document.getElementById('yearInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') convert();
+  });
+
+  // Init
+  buildGrid();
+
+  // Auto-show current year
+  const thisYear = new Date().getFullYear();
+  document.getElementById('yearInput').value = thisYear;
+  showResult(thisYear);
+</script>
+</body>
+</html>

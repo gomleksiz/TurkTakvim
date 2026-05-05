@@ -358,7 +358,15 @@
     .result-date-line {
       font-size: 0.88rem;
       color: #c9a96e;
-      margin-bottom: 0.3rem;
+      margin-bottom: 0.15rem;
+    }
+
+    .result-turkic-date {
+      font-size: 0.95rem;
+      color: #e8c36a;
+      font-weight: 600;
+      margin-bottom: 0.6rem;
+      letter-spacing: 0.3px;
     }
 
     footer {
@@ -395,6 +403,7 @@
       <div class="today-date" id="todayDate"></div>
       <div class="today-animal" id="todayAnimal"></div>
       <div class="today-detail" id="todayDetail"></div>
+      <div class="today-detail" id="todayTurkic" style="color:#e8c36a;margin-top:0.2rem;font-weight:600;"></div>
     </div>
   </div>
 </div>
@@ -409,6 +418,7 @@
     </div>
     <div class="result-box" id="resultBox">
       <div class="result-date-line" id="resDateLine"></div>
+      <div class="result-turkic-date" id="resTurkicDate"></div>
       <div class="result-animal">
         <div class="animal-icon" id="resIcon"></div>
         <div class="animal-info">
@@ -552,6 +562,59 @@
                      'Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
   const TR_DAYS   = ['Pazar','Pazartesi','Salı','Çarşamba','Perşembe','Cuma','Cumartesi'];
 
+  // Turkic lunar month names (from Divanü Lüğat-it-Türk tradition)
+  const TURKIC_MONTHS = [
+    'Aram Ay',       // 1. ay
+    'İkinç Ay',      // 2. ay
+    'Üçünç Ay',      // 3. ay
+    'Törtinç Ay',    // 4. ay
+    'Beşinç Ay',     // 5. ay
+    'Altınç Ay',     // 6. ay
+    'Yitinç Ay',     // 7. ay
+    'Sekizinç Ay',   // 8. ay
+    'Dokuzunç Ay',   // 9. ay
+    'Onunç Ay',      // 10. ay
+    'Bir Yirminç Ay',// 11. ay
+    'Çakşaput Ay'    // 12. ay (oruç ayı)
+  ];
+
+  // Julian Day Number for a local (year, month, day) — no timezone shift
+  function dateToJD(date) {
+    const y = date.getFullYear();
+    const m = date.getMonth() + 1;
+    const d = date.getDate();
+    const A = Math.floor((14 - m) / 12);
+    const Y = y + 4800 - A;
+    const M = m + 12 * A - 3;
+    return d + Math.floor((153 * M + 2) / 5) + 365 * Y +
+           Math.floor(Y / 4) - Math.floor(Y / 100) +
+           Math.floor(Y / 400) - 32045;
+  }
+
+  // Reference new moon: 6 January 2000 (JD 2451550.26)
+  const JD_REF_NEW_MOON = 2451550.26;
+  const SYNODIC_MONTH   = 29.53058867;
+
+  function turkicLunarDate(date) {
+    const jd = dateToJD(date);
+
+    // New moon that started on or before January 1 of this year
+    const jan1JD = dateToJD(new Date(date.getFullYear(), 0, 1));
+    const completedAtJan1 = Math.floor((jan1JD - JD_REF_NEW_MOON) / SYNODIC_MONTH);
+    const yearStartJD = JD_REF_NEW_MOON + completedAtJan1 * SYNODIC_MONTH;
+
+    const daysSinceYearStart = jd - yearStartJD;
+    const monthIdx  = Math.floor(daysSinceYearStart / SYNODIC_MONTH);   // 0-based
+    const dayInMonth = Math.floor(daysSinceYearStart % SYNODIC_MONTH) + 1;
+
+    const clampedIdx = Math.max(0, Math.min(11, monthIdx));
+    return {
+      monthName: TURKIC_MONTHS[clampedIdx],
+      monthNum:  clampedIdx + 1,
+      day:       dayInMonth
+    };
+  }
+
   function formatDateTR(date) {
     return `${date.getDate()} ${TR_MONTHS[date.getMonth()]} ${date.getFullYear()}, ${TR_DAYS[date.getDay()]}`;
   }
@@ -574,7 +637,10 @@
     const idx = animalIndex(year);
     const animal = ANIMALS[idx];
 
+    const lunar = turkicLunarDate(date);
     document.getElementById('resDateLine').textContent = formatDateTR(date);
+    document.getElementById('resTurkicDate').textContent =
+      `Türk Takvimi: ${lunar.monthName} · ${lunar.day}. gün`;
     document.getElementById('resIcon').textContent = animal.icon;
     document.getElementById('resName').textContent = `${year} — ${animal.name} Yılı`;
     document.getElementById('resAlt').textContent = animal.altName;
@@ -623,9 +689,12 @@
     const animal = ANIMALS[idx];
     document.getElementById('todayIcon').textContent = animal.icon;
     document.getElementById('todayDate').textContent = formatDateTR(today);
+    const lunar = turkicLunarDate(today);
     document.getElementById('todayAnimal').textContent = `${animal.name} Yılı`;
     document.getElementById('todayDetail').textContent =
       `Müçel döngüsünde ${idx + 1}. hayvan`;
+    document.getElementById('todayTurkic').textContent =
+      `${lunar.monthName} · ${lunar.day}. gün`;
   }
 
   // Build grid

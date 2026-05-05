@@ -369,11 +369,56 @@
       letter-spacing: 0.3px;
     }
 
-    footer {
-      text-align: center;
+    /* ── Sources Section ── */
+    .sources-section {
+      max-width: 620px;
+      margin: 0 auto 3rem;
+      padding: 0 1rem;
+    }
+
+    .sources-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(232,195,106,0.2);
+      border-radius: 12px;
       padding: 1.5rem;
-      color: #6b5030;
-      font-size: 0.8rem;
+    }
+
+    .sources-card h3 {
+      color: #e8c36a;
+      margin-bottom: 1rem;
+      font-size: 1rem;
+    }
+
+    .sources-card ol {
+      padding-left: 1.2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .sources-card li {
+      font-size: 0.85rem;
+      color: #c9a96e;
+      line-height: 1.5;
+    }
+
+    .sources-card a {
+      color: #e8c36a;
+      text-decoration: none;
+      border-bottom: 1px solid rgba(232,195,106,0.3);
+      transition: border-color 0.15s, color 0.15s;
+    }
+
+    .sources-card a:hover {
+      color: #fff3c4;
+      border-bottom-color: #e8c36a;
+    }
+
+    .sources-card .cite-detail {
+      display: block;
+      font-size: 0.78rem;
+      color: #7a6040;
+      margin-top: 0.1rem;
     }
 
     @media (max-width: 500px) {
@@ -444,12 +489,53 @@
   <div class="info-card">
     <h3>12 Hayvanlı Türk Takvimi Hakkında</h3>
     Türk halklarının doğa, hayvan ve zaman anlayışına dayanan bu geleneksel takvim sisteminde her yıl bir hayvanla simgelenir ve <strong>müçel</strong> adı verilen 12 yıllık döngülerden oluşur. Bu sistem yalnızca bir takvim değil; aynı zamanda bir dünya görüşü, mitoloji, kehanet aracı ve kişilik göstergesi olarak da tanımlanmaktadır.<br><br>
-    <strong>Köken:</strong> Orhun Yazıtları'nda "Kül Tigin Koyun Yılının on yedinci gününde öldü" gibi ifadeler bu takvimin Göktürk döneminde yaygın biçimde kullanıldığını kanıtlar. En eski yazılı kaynaklardan biri Kaşgarlı Mahmud'un <em>Divanü Lüğat-it-Türk</em>'üdür. Kaşgarlı, bir Türk hakanının savaşın hangi yılda olduğunu sorunca danışmanlarının hatırlayamaması üzerine her yıla bir hayvan adı verilmesini emrettiğini anlatır.<br><br>
+    <strong>Köken:</strong> <a href="https://tr.wikipedia.org/wiki/Orhun_yaz%C4%B1tlar%C4%B1" target="_blank" rel="noopener">Orhun Yazıtları</a>'nda "Kül Tigin Koyun Yılının on yedinci gününde öldü" gibi ifadeler bu takvimin Göktürk döneminde yaygın biçimde kullanıldığını kanıtlar. En eski yazılı kaynaklardan biri Kaşgarlı Mahmud'un <a href="https://tr.wikipedia.org/wiki/Divan%C3%BC_L%C3%BC%C4%9Fat-it-T%C3%BCrk" target="_blank" rel="noopener"><em>Divanü Lüğat-it-Türk</em></a>'üdür. Kaşgarlı, bir Türk hakanının savaşın hangi yılda olduğunu sorunca danışmanlarının hatırlayamaması üzerine her yıla bir hayvan adı verilmesini emrettiğini anlatır.<br><br>
     <strong>Müçel:</strong> 12 yıllık her döngüye Türkçede <em>müçel</em>, Kazakçada <em>müşel</em>, Kırgızcada <em>müçöl</em>, Hakascada <em>müçe</em> denir. Gün de 12'ye bölünür; her birime <em>çağ</em> adı verilir. Aylar yalnızca sayısal sırayla adlandırılır (Aram ay, İkinç ay… Çakşaput ay).
   </div>
 </div>
 
-<footer>12 Hayvanlı Türk Takvimi · Kaynak: Küre Ansiklopedisi · Referans: 1900 = Sıçan Yılı</footer>
+<!-- Sources -->
+<div class="sources-section">
+  <div class="sources-card">
+    <h3>Kaynaklar</h3>
+    <ol>
+      <li>
+        <a href="https://hwc.kureansiklopedi.com/en/detay/12-animal-turkish-calendar-9a578" target="_blank" rel="noopener">12 Animal Turkish Calendar — Küre Ansiklopedisi</a>
+        <span class="cite-detail">Şahinler, Duygu. Küre Dijital Ansiklopedisi, 2025.</span>
+      </li>
+      <li>
+        <a href="https://tr.wikipedia.org/wiki/Orhun_yaz%C4%B1tlar%C4%B1" target="_blank" rel="noopener">Orhun Yazıtları — Vikipedi</a>
+        <span class="cite-detail">Ergin, Muharrem. <em>Orhun Abideleri.</em> Hisar Yayınları, 2003.</span>
+      </li>
+      <li>
+        <a href="https://tr.wikipedia.org/wiki/Divan%C3%BC_L%C3%BC%C4%9Fat-it-T%C3%BCrk" target="_blank" rel="noopener">Divanü Lüğat-it-Türk — Vikipedi</a>
+        <span class="cite-detail">Kaşgarlı Mahmud, XI. yüzyıl.</span>
+      </li>
+      <li>
+        Biray, Nergis. "12 Hayvanlı Türk Takvimi: Zamana ve İnsana Hükmetmek."
+        <span class="cite-detail"><em>Atatürk Üniversitesi Türkiyat Araştırmaları Enstitüsü Dergisi</em> 39 (2009): 671–682.</span>
+      </li>
+      <li>
+        Külcü, Recep. "Türklerin Kültür Mirası Olarak '12 Hayvanlı Türk Takvimi.'"
+        <span class="cite-detail"><em>Akademia Disiplinlerarası Bilimsel Araştırmalar Dergisi</em> 1/1 (2015): 1–5.</span>
+      </li>
+      <li>
+        Tavkul, Ufuk. "Kültürel Etkileşim Açısından On İki Hayvanlı Türk Takviminin Yayılışı."
+        <span class="cite-detail"><em>Modern Türklük Araştırmaları Dergisi</em> 4/1 (Mart 2007): 25–45.</span>
+      </li>
+      <li>
+        Turan, Osman. <em>On İki Hayvanlı Türk Takvimi.</em>
+        <span class="cite-detail">İstanbul: Ötüken, 2019. s. 101–106.</span>
+      </li>
+      <li>
+        Karimova, Gülmira ve Fikret Türkmen. "Kazakistan'da Hayvan Kültü ve 12 Hayvanlı Halk Takvimi."
+        <span class="cite-detail"><em>Folklor/Edebiyat Dergisi</em> 1 (2022): 41–47.</span>
+      </li>
+    </ol>
+  </div>
+</div>
+
+<footer>12 Hayvanlı Türk Takvimi · Referans: 1900 = Sıçan Yılı</footer>
 
 <script>
   // Reference: 1900 = Sıçan (index 0), confirmed by article year lists

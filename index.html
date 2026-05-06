@@ -632,6 +632,54 @@
       gap: 1.1rem;
     }
 
+    /* ── Interaction Matrix ── */
+    .interactions-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      margin-top: 0.55rem;
+      padding-top: 0.45rem;
+      border-top: 1px solid rgba(232,195,106,0.1);
+    }
+
+    .int-item {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .int-pair {
+      font-size: 0.65rem;
+      color: #6a5030;
+    }
+
+    .int-badge {
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 10px;
+    }
+
+    .int-badge.trine   { background: rgba(109,191,109,0.18); color: #6dbf6d; border: 1px solid rgba(109,191,109,0.4); }
+    .int-badge.secret  { background: rgba(91,184,232,0.15);  color: #5bb8e8; border: 1px solid rgba(91,184,232,0.3); }
+    .int-badge.clash   { background: rgba(232,112,80,0.18);  color: #e87050; border: 1px solid rgba(232,112,80,0.4); }
+    .int-badge.neutral { background: rgba(122,96,64,0.12);   color: #7a6040; border: 1px solid rgba(122,96,64,0.2); }
+    .int-badge.same    { background: rgba(232,195,106,0.12); color: #e8c36a; border: 1px solid rgba(232,195,106,0.3); }
+
+    .cy-interactions {
+      margin-top: 0.45rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.3rem;
+      align-items: center;
+    }
+
+    .cy-int-label {
+      font-size: 0.67rem;
+      color: #6a5030;
+      font-style: italic;
+    }
+
     .sources-section {
       max-width: 620px;
       margin: 0 auto 3rem;
@@ -1036,6 +1084,7 @@
           ${pillarHTML('Yıl Sütunu', 'Dış Hayvan · Sosyal Vitrin', 'Dışa yansıyan yüz; aile mirası ve genel yaşam çerçevesi.', birthElem.name, birthAnimal.name, birthAnimal.icon)}
           ${pillarHTML('Ay Sütunu', 'İçsel Hayvan · Duygusal Temel', 'İç dünya, gençlik (0–24 yaş) ve aşk hayatı üzerinde güçlü etki.', birthMonthP.element, birthMonthP.animal, birthMonthAnim.icon)}
           ${pillarHTML('Gün Sütunu', 'Gerçek Hayvan · Öz Kimlik', '32 yaş sonrası baskın burç; öz kimlik ve evlilik.', birthDayP.element, birthDayP.animal, birthDayAnim.icon)}
+          ${interactionsHTML(birthAnimal.name, birthMonthP.animal, birthDayP.animal)}
         </div>
       </div>`;
 
@@ -1063,6 +1112,7 @@
           <div class="cy-title">${m.title}</div>
           <div class="cy-reading">${reading}</div>
           <div class="cy-pillar-note"><strong style="color:${dp.color}">${dp.label}</strong><span style="color:#8a7050"> — ${dp.note}</span></div>
+          ${critInteractionsHTML(animal.name, birthAnimal.name, birthMonthP.animal, birthDayP.animal)}
         </div>`;
     });
     html += '</div>';
@@ -1265,6 +1315,67 @@
     };
   }
 
+  // ── Etkileşim Matrisi (Interaction Matrix) ──────────────────────
+  const TRINES = [
+    { names: ['Koyun','Tavşan','Domuz'],    label: 'Diplomasi ve Sanat',  color: '#6dbf6d' },
+    { names: ['Kaplan','At','Köpek'],       label: 'Aksiyon ve Liderlik', color: '#e87050' },
+    { names: ['Sıçan','Ejderha','Maymun'],  label: 'Zeka ve Strateji',    color: '#5bb8e8' },
+    { names: ['Öküz','Yılan','Horoz'],      label: 'Disiplin ve Emek',    color: '#c4956a' },
+  ];
+
+  const SECRET_FRIENDS = {
+    'Sıçan':'Öküz',    'Öküz':'Sıçan',
+    'Kaplan':'Domuz',  'Domuz':'Kaplan',
+    'Tavşan':'Köpek',  'Köpek':'Tavşan',
+    'Ejderha':'Horoz', 'Horoz':'Ejderha',
+    'Yılan':'Maymun',  'Maymun':'Yılan',
+    'At':'Koyun',      'Koyun':'At',
+  };
+
+  const CLASHES = {
+    'Sıçan':'At',      'At':'Sıçan',
+    'Öküz':'Koyun',    'Koyun':'Öküz',
+    'Kaplan':'Maymun', 'Maymun':'Kaplan',
+    'Tavşan':'Horoz',  'Horoz':'Tavşan',
+    'Ejderha':'Köpek', 'Köpek':'Ejderha',
+    'Yılan':'Domuz',   'Domuz':'Yılan',
+  };
+
+  function getInteraction(a, b) {
+    if (a === b) return { type: 'same', label: 'Aynı Hayvan', icon: '⭕' };
+    for (const t of TRINES) {
+      if (t.names.includes(a) && t.names.includes(b))
+        return { type: 'trine', label: `Üçlü Uyum · ${t.label}`, icon: '✨' };
+    }
+    if (SECRET_FRIENDS[a] === b) return { type: 'secret', label: 'Gizli Dostluk', icon: '🤝' };
+    if (CLASHES[a] === b)        return { type: 'clash',  label: 'Zıtlık / Gerilim', icon: '⚡' };
+    return { type: 'neutral', label: 'Nötr', icon: '·' };
+  }
+
+  function ixBadge(a, b, labelA, labelB) {
+    const ix = getInteraction(a, b);
+    return `<span class="int-item"><span class="int-pair">${labelA} × ${labelB}</span>`
+      + `<span class="int-badge ${ix.type}">${ix.icon} ${ix.label}</span></span>`;
+  }
+
+  function interactionsHTML(yAnim, mAnim, dAnim) {
+    return `<div class="interactions-row">`
+      + ixBadge(yAnim, mAnim, 'Yıl', 'Ay')
+      + ixBadge(yAnim, dAnim, 'Yıl', 'Gün')
+      + ixBadge(mAnim, dAnim, 'Ay',  'Gün')
+      + `</div>`;
+  }
+
+  function critInteractionsHTML(critAnim, bY, bM, bD) {
+    const ixY = getInteraction(critAnim, bY);
+    const ixM = getInteraction(critAnim, bM);
+    const ixD = getInteraction(critAnim, bD);
+    return `<div class="cy-interactions"><span class="cy-int-label">Doğum haritanızla:</span>`
+      + `<span class="int-badge ${ixY.type}">${ixY.icon} Yıl ${bY}</span>`
+      + `<span class="int-badge ${ixM.type}">${ixM.icon} Ay ${bM}</span>`
+      + `<span class="int-badge ${ixD.type}">${ixD.icon} Gün ${bD}</span></div>`;
+  }
+
   function showResult(date) {
     const solarYear  = getSolarYear(date);
     const yearIdx    = animalIndex(solarYear);
@@ -1284,7 +1395,8 @@
     document.getElementById('resPillars').innerHTML =
       pillarHTML('Yıl Sütunu',  'Dış Hayvan · Sosyal Vitrin',     'Dışa yansıyan yüz; aile mirası ve genel yaşam çerçevesi.', yearElem.name, yearAnimal.name, yearAnimal.icon) +
       pillarHTML('Ay Sütunu',   'İçsel Hayvan · Duygusal Temel',  'İç dünya, gençlik (0–24 yaş) ve aşk hayatı üzerinde güçlü etki.', monthP.element, monthP.animal, monthAnimalObj.icon) +
-      pillarHTML('Gün Sütunu',  'Gerçek Hayvan · Öz Kimlik',      '32 yaş sonrası baskın burç; öz kimlik ve evlilik.', dayP.element, dayP.animal, dayAnimalObj.icon);
+      pillarHTML('Gün Sütunu',  'Gerçek Hayvan · Öz Kimlik',      '32 yaş sonrası baskın burç; öz kimlik ve evlilik.', dayP.element, dayP.animal, dayAnimalObj.icon) +
+      interactionsHTML(yearAnimal.name, monthP.animal, dayP.animal);
 
     document.getElementById('resDesc').textContent = yearAnimal.prophecy;
 

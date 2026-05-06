@@ -788,7 +788,7 @@
     <div class="birth-form">
       <div class="form-group">
         <label for="birthDate">Doğum Tarihi</label>
-        <input type="date" id="birthDate" max="2015-12-31">
+        <input type="date" id="birthDate">
       </div>
       <div class="form-group">
         <label>Cinsiyet</label>
@@ -1040,9 +1040,9 @@
     const gercekYil    = getSolarYear(birthDateObj);  // Modül 1 uygula
     const birthYear    = birthDateObj.getFullYear();
 
-    if (birthYear < 1900 || birthYear > 2015) {
+    if (birthYear < 1900 || birthDateObj > new Date()) {
       document.getElementById('criticalResult').innerHTML =
-        '<div class="critical-empty">Lütfen 1900–2015 arasında geçerli bir doğum tarihi girin.</div>';
+        '<div class="critical-empty">Lütfen geçerli bir doğum tarihi girin (1900 – bugün).</div>';
       return;
     }
 

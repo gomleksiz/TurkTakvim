@@ -369,7 +369,162 @@
       letter-spacing: 0.3px;
     }
 
-    /* ── Sources Section ── */
+    /* ── Element Badge ── */
+    .elem-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 9px;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      border: 1px solid;
+      vertical-align: middle;
+      margin-left: 0.4rem;
+    }
+
+    /* ── Critical Years Section ── */
+    .critical-section {
+      max-width: 720px;
+      margin: 2.5rem auto;
+      padding: 0 1rem;
+    }
+
+    .critical-card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(232,195,106,0.25);
+      border-radius: 16px;
+      padding: 1.8rem;
+    }
+
+    .birth-form {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      align-items: flex-end;
+    }
+
+    .birth-form .form-group { display: flex; flex-direction: column; gap: 0.35rem; }
+
+    .birth-form label { font-size: 0.85rem; color: #c9a96e; }
+
+    .birth-form input[type="number"] {
+      padding: 0.7rem 1rem;
+      font-size: 1rem;
+      border-radius: 10px;
+      border: 1px solid rgba(232,195,106,0.4);
+      background: rgba(0,0,0,0.3);
+      color: #f5e6c8;
+      outline: none;
+      width: 140px;
+    }
+
+    .birth-form input[type="number"]:focus {
+      border-color: #e8c36a;
+      box-shadow: 0 0 0 3px rgba(232,195,106,0.15);
+    }
+
+    .gender-buttons { display: flex; gap: 0.5rem; }
+
+    .gender-btn {
+      padding: 0.68rem 1.2rem;
+      border-radius: 10px;
+      border: 1px solid rgba(232,195,106,0.25);
+      background: rgba(0,0,0,0.2);
+      color: #a08050;
+      cursor: pointer;
+      font-size: 0.92rem;
+      transition: all 0.15s;
+    }
+
+    .gender-btn.active {
+      background: rgba(232,195,106,0.14);
+      border-color: #e8c36a;
+      color: #e8c36a;
+      font-weight: 600;
+    }
+
+    /* Timeline */
+    .timeline {
+      margin-top: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+
+    .cy-card {
+      border-radius: 10px;
+      padding: 0.9rem 1.1rem;
+      border: 1px solid rgba(232,195,106,0.12);
+      background: rgba(0,0,0,0.18);
+      border-left: 3px solid rgba(232,195,106,0.15);
+      transition: transform 0.15s;
+    }
+
+    .cy-card:hover { transform: translateX(3px); }
+    .cy-card.past  { opacity: 0.5; }
+
+    .cy-card.present {
+      border-color: rgba(232,195,106,0.5);
+      border-left-color: #e8c36a;
+      background: rgba(232,195,106,0.07);
+      box-shadow: 0 0 14px rgba(232,195,106,0.12);
+    }
+
+    .cy-card.norolojik  { border-left-color: #5bb8e8; }
+    .cy-card.kozmolojik { border-left-color: #e87050; }
+    .cy-card.kesisim    { border-left-color: #e8c36a; }
+    .cy-card.present.norolojik  { border-color: rgba(91,184,232,0.5); }
+    .cy-card.present.kozmolojik { border-color: rgba(232,112,80,0.5); }
+
+    .cy-header {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+    }
+
+    .cy-age { font-size: 1rem; font-weight: 700; color: #e8c36a; min-width: 56px; }
+    .cy-year-badge {
+      font-size: 0.82rem;
+      background: rgba(232,195,106,0.1);
+      border: 1px solid rgba(232,195,106,0.25);
+      border-radius: 5px;
+      padding: 1px 7px;
+      color: #f5e6c8;
+    }
+
+    .cy-animal-elem { font-size: 0.88rem; color: #ddd0b3; }
+
+    .cy-type-badge {
+      font-size: 0.68rem;
+      padding: 2px 7px;
+      border-radius: 10px;
+      font-weight: 700;
+      letter-spacing: 0.4px;
+      margin-left: auto;
+    }
+
+    .cy-title {
+      font-size: 0.88rem;
+      color: #f5e6c8;
+      margin-top: 0.35rem;
+      font-weight: 600;
+    }
+
+    .cy-reading {
+      margin-top: 0.3rem;
+      font-size: 0.83rem;
+      color: #c0a878;
+      line-height: 1.6;
+    }
+
+    .critical-empty {
+      text-align: center;
+      color: #7a6040;
+      padding: 1.5rem;
+      font-size: 0.9rem;
+    }
     .sources-section {
       max-width: 620px;
       margin: 0 auto 3rem;
@@ -475,6 +630,28 @@
       <div class="result-desc" id="resDesc"></div>
       <div class="result-years" id="resYears"></div>
     </div>
+  </div>
+</div>
+
+<!-- Critical Years Calculator -->
+<div class="critical-section">
+  <div class="section-title">— Kritik Yaş Haritası —</div>
+  <div class="critical-card">
+    <div class="birth-form">
+      <div class="form-group">
+        <label for="birthYear">Doğum Yılı</label>
+        <input type="number" id="birthYear" placeholder="örn. 1990" min="1900" max="2015">
+      </div>
+      <div class="form-group">
+        <label>Cinsiyet</label>
+        <div class="gender-buttons">
+          <button class="gender-btn active" id="genderF" onclick="selectGender('female')">♀ Kadın</button>
+          <button class="gender-btn" id="genderM" onclick="selectGender('male')">♂ Erkek</button>
+        </div>
+      </div>
+      <button class="btn-convert" onclick="calcCritical()" style="align-self:flex-end">Hesapla</button>
+    </div>
+    <div id="criticalResult"><div class="critical-empty">Doğum yılınızı ve cinsiyetinizi seçerek kritik yaş haritanızı görün.</div></div>
   </div>
 </div>
 
@@ -614,7 +791,148 @@
     }
   ];
 
-  // Index for a given Gregorian year
+  // ── Element calculation ──────────────────────────────────────────
+  const ELEMENT_DATA = {
+    'Metal':  { icon: '⚔️',  color: '#a8b8c8', border: 'rgba(168,184,200,0.5)', bg: 'rgba(168,184,200,0.12)', energy: 'keskin ve yapısal',      gift: 'disiplin ve kararlılık'     },
+    'Su':     { icon: '💧',  color: '#5bb8e8', border: 'rgba(91,184,232,0.5)',  bg: 'rgba(91,184,232,0.12)',  energy: 'derin ve akışkan',         gift: 'sezgi ve uyum gücü'         },
+    'Ağaç':   { icon: '🌿',  color: '#6dbf6d', border: 'rgba(109,191,109,0.5)',bg: 'rgba(109,191,109,0.12)', energy: 'büyüyen ve yaratıcı',      gift: 'vizyon ve yenilenme'        },
+    'Ateş':   { icon: '🔥',  color: '#e87050', border: 'rgba(232,112,80,0.5)', bg: 'rgba(232,112,80,0.12)',  energy: 'dönüştürücü ve dinamik',   gift: 'tutku ve eylem gücü'        },
+    'Toprak': { icon: '🏔️', color: '#c4956a', border: 'rgba(196,149,106,0.5)',bg: 'rgba(196,149,106,0.12)', energy: 'dengeleyici ve köklü',     gift: 'istikrar ve sabır'          },
+  };
+
+  const ELEM_BY_DIGIT = ['Metal','Metal','Su','Su','Ağaç','Ağaç','Ateş','Ateş','Toprak','Toprak'];
+
+  function getElement(year) {
+    const name = ELEM_BY_DIGIT[((year % 10) + 10) % 10];
+    return { name, ...ELEMENT_DATA[name] };
+  }
+
+  // Per-animal energy descriptors for readings
+  const ANIMAL_ENERGIES = [
+    { energy: 'stratejik ve çevik',        gift: 'zeka ve fırsatçılık'          }, // Sıçan
+    { energy: 'sabırlı ve güçlü',          gift: 'kararlılık ve dayanıklılık'   }, // Ud
+    { energy: 'cesur ve bağımsız',         gift: 'liderlik ve güç'              }, // Bars
+    { energy: 'zarif ve sezgisel',         gift: 'barış ve ince anlayış'        }, // Tavışkan
+    { energy: 'mistik ve dönüştürücü',     gift: 'güç ve büyülü cazibe'         }, // Lu
+    { energy: 'derin ve stratejik',        gift: 'bilgelik ve sezgi'            }, // Yılan
+    { energy: 'özgür ve dinamik',          gift: 'enerji ve macera ruhu'        }, // At
+    { energy: 'uyumlu ve yaratıcı',        gift: 'empati ve bereket'            }, // Koyun
+    { energy: 'çevik ve uyumlu',           gift: 'zeka ve yaratıcı çözümler'   }, // Biçin
+    { energy: 'disiplinli ve güvenilir',   gift: 'düzen ve dürüstlük'          }, // Takagu
+    { energy: 'sadık ve koruyucu',         gift: 'güvenilirlik ve bağlılık'    }, // İt
+    { energy: 'cömert ve bereketli',       gift: 'bolluk ve kararlılık'         }, // Tonguz
+  ];
+
+  // ── Critical milestone data ──────────────────────────────────────
+  const FEMALE_MILESTONES = [
+    { age: 7,  type: 'biyolojik',  title: 'Fiziksel ve Ruhsal Gelişim',      desc: 'Fiziksel ve ruhsal gelişimin ilk evresi; benliğin ilk filizlenmesi.' },
+    { age: 9,  type: 'norolojik',  title: '1. Beyin Güncellemesi',           desc: 'Ergenliğe nörolojik hazırlık. Beyin yeni bağlantılar kurarak yeniden yapılanıyor.' },
+    { age: 14, type: 'biyolojik',  title: 'Ergenlik',                        desc: 'Fiziksel değişimin hızlandığı dönüşüm eşiği.' },
+    { age: 21, type: 'biyolojik',  title: 'Biyolojik Zirvenin Başlangıcı',  desc: 'Biyolojik ve fiziksel zirvenin başlangıcı; tam yetişkinliğe adım.' },
+    { age: 28, type: 'biyolojik',  title: 'Fiziksel Zirve',                  desc: 'Fiziksel kapasitenin ve doğurganlığın en üst noktası.' },
+    { age: 32, type: 'norolojik',  title: '2. Beyin Güncellemesi',           desc: 'Stabil yetişkin modu. Mantık ve duygu dengesi yeniden kuruluyor.' },
+    { age: 35, type: 'biyolojik',  title: 'Form Değişimi',                   desc: 'Biyolojik enerjinin form değiştirmeye ve hafifçe yavaşlamaya başlaması.' },
+    { age: 42, type: 'biyolojik',  title: 'Ruhsal Derinleşme',              desc: 'Ruhsal derinleşme ve orta yaş farkındalığı; öncelikler yeniden şekilleniyor.' },
+    { age: 49, type: 'biyolojik',  title: 'Bilgelik Çağı',                  desc: 'Bilgelik çağına geçiş; geleneksel olarak menopoz başlangıcı.' },
+    { age: 56, type: 'biyolojik',  title: 'İkinci Bahar',                    desc: 'İkinci bahar; ruhsal yenilenme ve dinginlik dönemi.' },
+    { age: 60, type: 'kozmolojik', title: 'Büyük Devrin Tamamlanması',      desc: 'Doğduğunuz hayvan-element kombinasyonuna yeniden girilen "ikinci doğum" yılı.' },
+    { age: 63, type: 'biyolojik',  title: 'Derin Zihinsel Olgunluk',        desc: 'Derin zihinsel olgunluk ve içsel huzur dönemi.' },
+    { age: 66, type: 'norolojik',  title: '3. Beyin Güncellemesi',          desc: 'Erken yaşlanma; yapısal reorganizasyon.' },
+    { age: 70, type: 'biyolojik',  title: 'Aktarım Dönemi',                 desc: 'Hayatın getirdiklerini kabullenme ve bilgelik aktarımı dönemi.' },
+    { age: 83, type: 'norolojik',  title: '4. Beyin Güncellemesi',          desc: 'Geç yaşlanma; beynin son ve kalıcı yapılanması.' },
+  ];
+
+  const MALE_MILESTONES = [
+    { age: 8,  type: 'biyolojik',  title: 'Fiziksel Gelişimin İlk Evresi', desc: 'Fiziksel gelişimin ilk belirgin evresi; güç ve form oluşmaya başlıyor.' },
+    { age: 9,  type: 'norolojik',  title: '1. Beyin Güncellemesi',         desc: 'Beyin yeniden yapılanıyor; ergenliğe nörolojik hazırlık.' },
+    { age: 16, type: 'biyolojik',  title: 'Ergenlik',                      desc: 'Fiziksel gücün tam anlamıyla uyanışı.' },
+    { age: 24, type: 'biyolojik',  title: 'Biyolojik Zirve',               desc: 'Maksimum fiziksel güç ve dayanıklılık.' },
+    { age: 32, type: 'kesisim',    title: '⚡ Büyük Kesişim',              desc: 'Hem 4. biyolojik döngü hem 2. beyin güncellemesi aynı anda. Gençlikten stabil erkekliğe, mantıksal zirveye geçiş.' },
+    { age: 40, type: 'biyolojik',  title: 'Zihinsel / Ruhsal Kayma',      desc: 'Enerjinin fizikselden zihinsel ve ruhsal alana kaymaya başladığı dönüm noktası.' },
+    { age: 48, type: 'biyolojik',  title: 'Orta Yaş Olgunluğu',           desc: 'Stratejik düşünme ve deneyim olgunluğu.' },
+    { age: 56, type: 'biyolojik',  title: 'Bilgelik Çağı',                desc: 'Ruhsal derinleşme ve tecrübe olgunluğu.' },
+    { age: 60, type: 'kozmolojik', title: 'Büyük Devrin Tamamlanması',    desc: '60 yıllık zodyak çarkının sıfırlanması; doğum yılı enerji kombinasyonuna geri dönüş.' },
+    { age: 64, type: 'biyolojik',  title: 'İkinci Bahar',                  desc: 'Enerjinin farklı bir formda yeniden canlanması.' },
+    { age: 66, type: 'norolojik',  title: '3. Beyin Güncellemesi',         desc: 'Erken yaşlanma; yapısal yavaşlama ve yeniden örgütlenme.' },
+    { age: 72, type: 'biyolojik',  title: 'Derin Bilgelik',                desc: 'Derin bilgelik ve tecrübe aktarımı.' },
+    { age: 80, type: 'biyolojik',  title: 'Kabulleniş',                    desc: 'Fiziksel sınırların kabullenişi; ruhu önde tutan varoluş.' },
+    { age: 83, type: 'norolojik',  title: '4. Beyin Güncellemesi',         desc: 'Geç yaşlanma; beynin son ve kalıcı yapılanma formu.' },
+  ];
+
+  function generateReading(milestone, animalIdx, year) {
+    const animal = ANIMALS[animalIdx];
+    const ae     = ANIMAL_ENERGIES[animalIdx];
+    const elem   = getElement(year);
+    const ed     = ELEMENT_DATA[elem.name];
+    const combo  = `${elem.name} ${animal.name}`;
+
+    const t = {
+      norolojik:  `Beyninizin yeni bir yapıya kavuştuğu bu kritik dönemde, ${elem.name}'in ${ed.energy} enerjisi zihinsel dönüşümünüze ${ed.gift} katıyor. ${animal.name}'ın ${ae.energy} doğası bu ${combo} yılını fark yaratacak içgörüler için bereketli kılıyor.`,
+      biyolojik:  `${elem.name}'in ${ed.energy} gücü bu dönemin enerjisini besliyor; ${ed.gift} ön plana çıkıyor. ${animal.name}'ın ${ae.energy} karakteri bu ${combo} yılını ${ae.gift} açısından özellikle anlamlı ve güçlü kılıyor.`,
+      kozmolojik: `60 yıllık büyük kozmik döngü kapanıyor. Doğduğunuz ${combo} yılının enerjisine yeniden adım atıyorsunuz. Bu "ikinci doğum" eşiğinde ${ed.gift} ve ${ae.gift} bir araya gelerek hayatınızın yeni ve derin bir bölümünü açıyor.`,
+      kesisim:    `Bu, yaşamınızdaki en güçlü dönüm noktalarından biridir. Biyolojik döngü ve beyin güncellemesi aynı anda zirvede. ${elem.name}'in ${ed.energy} gücü ve ${animal.name}'ın ${ae.energy} enerjisi bu büyük kesişimde birleşiyor — ${ed.gift} ile ${ae.gift} size eşsiz bir kapı aralıyor.`,
+    };
+    return t[milestone.type] || t.biyolojik;
+  }
+
+  let selectedGender = 'female';
+
+  function selectGender(g) {
+    selectedGender = g;
+    document.getElementById('genderF').classList.toggle('active', g === 'female');
+    document.getElementById('genderM').classList.toggle('active', g === 'male');
+  }
+
+  function calcCritical() {
+    const val = document.getElementById('birthYear').value.trim();
+    if (!val) return;
+    const birthYear = parseInt(val, 10);
+    if (isNaN(birthYear) || birthYear < 1900 || birthYear > 2015) {
+      document.getElementById('criticalResult').innerHTML =
+        '<div class="critical-empty">Lütfen 1900–2015 arasında geçerli bir doğum yılı girin.</div>';
+      return;
+    }
+
+    const milestones = selectedGender === 'female' ? FEMALE_MILESTONES : MALE_MILESTONES;
+    const currentYear = new Date().getFullYear();
+
+    const typeMeta = {
+      biyolojik:  { label: 'Biyolojik', style: 'background:rgba(109,191,109,0.18);color:#6dbf6d;border:1px solid rgba(109,191,109,0.4)' },
+      norolojik:  { label: 'Nörolojik',  style: 'background:rgba(91,184,232,0.18);color:#5bb8e8;border:1px solid rgba(91,184,232,0.4)' },
+      kozmolojik: { label: 'Kozmolojik', style: 'background:rgba(232,112,80,0.18);color:#e87050;border:1px solid rgba(232,112,80,0.4)' },
+      kesisim:    { label: 'Büyük Kesişim', style: 'background:rgba(232,195,106,0.2);color:#e8c36a;border:1px solid rgba(232,195,106,0.5)' },
+    };
+
+    let html = '<div class="timeline">';
+    milestones.forEach(m => {
+      const critYear  = birthYear + m.age;
+      const animalIdx = animalIndex(critYear);
+      const elem      = getElement(critYear);
+      const animal    = ANIMALS[animalIdx];
+      const tm        = typeMeta[m.type] || typeMeta.biyolojik;
+      const reading   = generateReading(m, animalIdx, critYear);
+
+      const diff   = critYear - currentYear;
+      const status = diff < -1 ? 'past' : (Math.abs(diff) <= 1 ? 'present' : 'future');
+
+      html += `
+        <div class="cy-card ${status} ${m.type}">
+          <div class="cy-header">
+            <span class="cy-age">${m.age} Yaş</span>
+            <span class="cy-year-badge">${critYear}</span>
+            <span class="cy-animal-elem">${elem.icon} ${elem.name} &nbsp;${animal.icon} ${animal.name}</span>
+            <span class="cy-type-badge" style="${tm.style}">${tm.label}</span>
+          </div>
+          <div class="cy-title">${m.title}</div>
+          <div class="cy-reading">${reading}</div>
+        </div>`;
+    });
+    html += '</div>';
+    document.getElementById('criticalResult').innerHTML = html;
+    document.getElementById('criticalResult').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  // ── Index for a given Gregorian year ────────────────────────────
   function animalIndex(year) {
     return ((year - 2020) % 12 + 12) % 12;
   }
@@ -723,15 +1041,17 @@
     const idx = animalIndex(year);
     const animal = ANIMALS[idx];
 
+    const elem  = getElement(year);
     const lunar = turkicLunarDate(date);
     document.getElementById('resDateLine').textContent = formatDateTR(date);
     document.getElementById('resTurkicDate').textContent =
       `Türk Takvimi: ${lunar.monthName} · ${lunar.day}. gün`;
     document.getElementById('resIcon').textContent = animal.icon;
-    document.getElementById('resName').textContent = `${year} — ${animal.name} Yılı`;
+    document.getElementById('resName').innerHTML =
+      `${year} — <span class="elem-badge" style="color:${elem.color};border-color:${elem.border};background:${elem.bg}">${elem.icon} ${elem.name}</span> ${animal.name} Yılı`;
     document.getElementById('resAlt').textContent = animal.altName;
     document.getElementById('resCycle').textContent =
-      `Müçel döngüsünde ${idx + 1}. hayvan · ${year} yılı`;
+      `Müçel döngüsünde ${idx + 1}. hayvan · ${elem.name} elementi`;
     document.getElementById('resDesc').textContent = animal.prophecy;
 
     const { past, future } = splitYears(idx);
@@ -775,8 +1095,10 @@
     const animal = ANIMALS[idx];
     document.getElementById('todayIcon').textContent = animal.icon;
     document.getElementById('todayDate').textContent = formatDateTR(today);
+    const elem  = getElement(today.getFullYear());
     const lunar = turkicLunarDate(today);
-    document.getElementById('todayAnimal').textContent = `${animal.name} Yılı`;
+    document.getElementById('todayAnimal').innerHTML =
+      `<span class="elem-badge" style="color:${elem.color};border-color:${elem.border};background:${elem.bg}">${elem.icon} ${elem.name}</span> ${animal.name} Yılı`;
     document.getElementById('todayDetail').textContent =
       `Müçel döngüsünde ${idx + 1}. hayvan`;
     document.getElementById('todayTurkic').textContent =

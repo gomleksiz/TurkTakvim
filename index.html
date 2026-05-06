@@ -529,8 +529,8 @@
     /* Birth year summary card */
     .cy-birth-card {
       display: flex;
-      align-items: center;
-      gap: 1.1rem;
+      flex-direction: column;
+      gap: 0.8rem;
       background: linear-gradient(135deg, rgba(232,195,106,0.1), rgba(0,0,0,0.2));
       border: 1px solid rgba(232,195,106,0.4);
       border-radius: 12px;
@@ -609,6 +609,27 @@
       font-weight: 700;
       color: #f5e6c8;
       margin-top: 0.05rem;
+    }
+
+    .pillar-desc {
+      font-size: 0.57rem;
+      color: #5a4020;
+      margin-top: 0.25rem;
+      line-height: 1.4;
+      font-style: italic;
+    }
+
+    .cy-pillar-note {
+      margin-top: 0.45rem;
+      font-size: 0.75rem;
+      border-top: 1px solid rgba(232,195,106,0.08);
+      padding-top: 0.35rem;
+    }
+
+    .cy-birth-header {
+      display: flex;
+      align-items: center;
+      gap: 1.1rem;
     }
 
     .sources-section {
@@ -999,15 +1020,22 @@
 
     let html = `
       <div class="cy-birth-card">
-        <div class="cy-birth-icon">${birthAnimal.icon}</div>
-        <div class="cy-birth-info">
-          <div class="cy-birth-label">Doğum Tarihi · Gerçek Yıl: ${gercekYil}</div>
-          <div class="cy-birth-year">${formatDateTR(birthDateObj)}</div>
-          <div class="cy-birth-combo">
-            <span class="elem-badge" style="color:${birthElem.color};border-color:${birthElem.border};background:${birthElem.bg}">${birthElem.icon} ${birthElem.name}</span>
-            &nbsp;${birthAnimal.name} · <small style="color:#a08050">Ay: ${birthMonthP.element} ${birthMonthAnim.icon}${birthMonthP.animal} &nbsp;Gün: ${birthDayP.element} ${birthDayAnim.icon}${birthDayP.animal}</small>
+        <div class="cy-birth-header">
+          <div class="cy-birth-icon">${birthAnimal.icon}</div>
+          <div class="cy-birth-info">
+            <div class="cy-birth-label">Doğum Tarihi · Gerçek Yıl: ${gercekYil}</div>
+            <div class="cy-birth-year">${formatDateTR(birthDateObj)}</div>
+            <div class="cy-birth-combo">
+              <span class="elem-badge" style="color:${birthElem.color};border-color:${birthElem.border};background:${birthElem.bg}">${birthElem.icon} ${birthElem.name}</span>
+              &nbsp;${birthAnimal.name}
+            </div>
+            <div class="cy-birth-desc">${birthElem.energy} enerji · ${birthAE.energy} karakter · ${birthAE.gift}</div>
           </div>
-          <div class="cy-birth-desc">${birthElem.energy} enerji · ${birthAE.energy} karakter · ${birthAE.gift}</div>
+        </div>
+        <div class="pillars-grid">
+          ${pillarHTML('Yıl Sütunu', 'Dış Hayvan · Sosyal Vitrin', 'Dışa yansıyan yüz; aile mirası ve genel yaşam çerçevesi.', birthElem.name, birthAnimal.name, birthAnimal.icon)}
+          ${pillarHTML('Ay Sütunu', 'İçsel Hayvan · Duygusal Temel', 'İç dünya, gençlik (0–24 yaş) ve aşk hayatı üzerinde güçlü etki.', birthMonthP.element, birthMonthP.animal, birthMonthAnim.icon)}
+          ${pillarHTML('Gün Sütunu', 'Gerçek Hayvan · Öz Kimlik', '32 yaş sonrası baskın burç; öz kimlik ve evlilik.', birthDayP.element, birthDayP.animal, birthDayAnim.icon)}
         </div>
       </div>`;
 
@@ -1022,6 +1050,7 @@
 
       const diff   = critYear - currentYear;
       const status = diff < -1 ? 'past' : (Math.abs(diff) <= 1 ? 'present' : 'future');
+      const dp     = getDominantPillar(m.age);
 
       html += `
         <div class="cy-card ${status} ${m.type}">
@@ -1033,6 +1062,7 @@
           </div>
           <div class="cy-title">${m.title}</div>
           <div class="cy-reading">${reading}</div>
+          <div class="cy-pillar-note"><strong style="color:${dp.color}">${dp.label}</strong><span style="color:#8a7050"> — ${dp.note}</span></div>
         </div>`;
     });
     html += '</div>';
@@ -1200,7 +1230,7 @@
     return `${y}-${m}-${d}`;
   }
 
-  function pillarHTML(label, subtitle, elem, animalName, animalIcon) {
+  function pillarHTML(label, subtitle, desc, elem, animalName, animalIcon) {
     const ed = ELEMENT_DATA[elem] || {};
     return `<div class="pillar-card">
       <div class="pillar-label">${label}</div>
@@ -1208,7 +1238,31 @@
       <div class="pillar-icon">${animalIcon}</div>
       <div class="pillar-elem" style="color:${ed.color||'#e8c36a'}">${ed.icon||''} ${elem}</div>
       <div class="pillar-animal">${animalName}</div>
+      <div class="pillar-desc">${desc}</div>
     </div>`;
+  }
+
+  function getDominantPillar(age) {
+    if (age < 25) return {
+      label: 'Ay Hayvanı (İçsel) baskın',
+      note: 'Gençlik dönemi (0–24 yaş): iç dünya, ebeveyn ilişkisi ve aşk hayatını Ay Hayvanı yönetir.',
+      color: '#5bb8e8'
+    };
+    if (age < 32) return {
+      label: 'Geçiş dönemi',
+      note: 'Yıl ve Ay Hayvanı etkisi azalır; Gün Hayvanı (Gerçek Burç) yükselmeye başlar.',
+      color: '#c9a96e'
+    };
+    if (age === 32) return {
+      label: 'Gün Hayvanı devreye giriyor',
+      note: '32. yaşın büyük beyin güncellemesiyle Gün Hayvanı (Gerçek Burç) tam anlamıyla devralır: öz kimlik ve yetişkinlik.',
+      color: '#6dbf6d'
+    };
+    return {
+      label: 'Gün Hayvanı (Gerçek) baskın',
+      note: 'Yetişkinlik dönemi (32+ yaş): öz kimlik ve evliliği Gün Hayvanı yönetir. Yıl Hayvanı sosyal vitrin olarak varlığını sürdürür.',
+      color: '#6dbf6d'
+    };
   }
 
   function showResult(date) {
@@ -1228,9 +1282,9 @@
     const dayAnimalObj   = animalByName(dayP.animal);
 
     document.getElementById('resPillars').innerHTML =
-      pillarHTML('Yıl Sütunu',  'Sosyal Vitrin',         yearElem.name, yearAnimal.name, yearAnimal.icon) +
-      pillarHTML('Ay Sütunu',   'İçsel Kimlik',           monthP.element, monthP.animal, monthAnimalObj.icon) +
-      pillarHTML('Gün Sütunu',  'Öz Kimlik / Gerçek Burç', dayP.element,   dayP.animal,   dayAnimalObj.icon);
+      pillarHTML('Yıl Sütunu',  'Dış Hayvan · Sosyal Vitrin',     'Dışa yansıyan yüz; aile mirası ve genel yaşam çerçevesi.', yearElem.name, yearAnimal.name, yearAnimal.icon) +
+      pillarHTML('Ay Sütunu',   'İçsel Hayvan · Duygusal Temel',  'İç dünya, gençlik (0–24 yaş) ve aşk hayatı üzerinde güçlü etki.', monthP.element, monthP.animal, monthAnimalObj.icon) +
+      pillarHTML('Gün Sütunu',  'Gerçek Hayvan · Öz Kimlik',      '32 yaş sonrası baskın burç; öz kimlik ve evlilik.', dayP.element, dayP.animal, dayAnimalObj.icon);
 
     document.getElementById('resDesc').textContent = yearAnimal.prophecy;
 

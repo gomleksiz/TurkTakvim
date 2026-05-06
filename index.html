@@ -525,6 +525,46 @@
       padding: 1.5rem;
       font-size: 0.9rem;
     }
+
+    /* Birth year summary card */
+    .cy-birth-card {
+      display: flex;
+      align-items: center;
+      gap: 1.1rem;
+      background: linear-gradient(135deg, rgba(232,195,106,0.1), rgba(0,0,0,0.2));
+      border: 1px solid rgba(232,195,106,0.4);
+      border-radius: 12px;
+      padding: 1rem 1.3rem;
+      margin-bottom: 1rem;
+    }
+
+    .cy-birth-icon { font-size: 2.6rem; line-height: 1; }
+
+    .cy-birth-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: #a08050;
+    }
+
+    .cy-birth-year {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #e8c36a;
+      line-height: 1.1;
+    }
+
+    .cy-birth-combo {
+      font-size: 0.95rem;
+      color: #f5e6c8;
+      margin-top: 0.2rem;
+    }
+
+    .cy-birth-desc {
+      font-size: 0.78rem;
+      color: #9a7850;
+      margin-top: 0.2rem;
+    }
     .sources-section {
       max-width: 620px;
       margin: 0 auto 3rem;
@@ -903,7 +943,26 @@
       kesisim:    { label: 'Büyük Kesişim', style: 'background:rgba(232,195,106,0.2);color:#e8c36a;border:1px solid rgba(232,195,106,0.5)' },
     };
 
-    let html = '<div class="timeline">';
+    const birthAnimalIdx = animalIndex(birthYear);
+    const birthAnimal    = ANIMALS[birthAnimalIdx];
+    const birthElem      = getElement(birthYear);
+    const birthAE        = ANIMAL_ENERGIES[birthAnimalIdx];
+
+    let html = `
+      <div class="cy-birth-card">
+        <div class="cy-birth-icon">${birthAnimal.icon}</div>
+        <div class="cy-birth-info">
+          <div class="cy-birth-label">Doğum Yılı</div>
+          <div class="cy-birth-year">${birthYear}</div>
+          <div class="cy-birth-combo">
+            <span class="elem-badge" style="color:${birthElem.color};border-color:${birthElem.border};background:${birthElem.bg}">${birthElem.icon} ${birthElem.name}</span>
+            &nbsp;${birthAnimal.name} Yılı
+          </div>
+          <div class="cy-birth-desc">${birthElem.energy} enerji · ${birthAE.energy} karakter · ${birthAE.gift}</div>
+        </div>
+      </div>`;
+
+    html += '<div class="timeline">';
     milestones.forEach(m => {
       const critYear  = birthYear + m.age;
       const animalIdx = animalIndex(critYear);

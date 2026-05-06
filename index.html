@@ -565,6 +565,52 @@
       color: #9a7850;
       margin-top: 0.2rem;
     }
+    /* ── Three Pillars ── */
+    .pillars-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.6rem;
+      margin: 0.7rem 0;
+    }
+
+    .pillar-card {
+      background: rgba(0,0,0,0.28);
+      border: 1px solid rgba(232,195,106,0.18);
+      border-radius: 10px;
+      padding: 0.7rem 0.5rem;
+      text-align: center;
+    }
+
+    .pillar-label {
+      font-size: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: #7a6040;
+      margin-bottom: 0.1rem;
+    }
+
+    .pillar-subtitle {
+      font-size: 0.6rem;
+      color: #5a4020;
+      margin-bottom: 0.3rem;
+      font-style: italic;
+    }
+
+    .pillar-icon { font-size: 1.7rem; line-height: 1.2; }
+
+    .pillar-elem {
+      font-size: 0.75rem;
+      font-weight: 700;
+      margin-top: 0.2rem;
+    }
+
+    .pillar-animal {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #f5e6c8;
+      margin-top: 0.05rem;
+    }
+
     .sources-section {
       max-width: 620px;
       margin: 0 auto 3rem;
@@ -659,14 +705,7 @@
     <div class="result-box" id="resultBox">
       <div class="result-date-line" id="resDateLine"></div>
       <div class="result-turkic-date" id="resTurkicDate"></div>
-      <div class="result-animal">
-        <div class="animal-icon" id="resIcon"></div>
-        <div class="animal-info">
-          <h2 id="resName"></h2>
-          <div class="animal-alt" id="resAlt"></div>
-          <div class="animal-cycle" id="resCycle"></div>
-        </div>
-      </div>
+      <div class="pillars-grid" id="resPillars"></div>
       <div class="result-desc" id="resDesc"></div>
       <div class="result-years" id="resYears"></div>
     </div>
@@ -679,8 +718,8 @@
   <div class="critical-card">
     <div class="birth-form">
       <div class="form-group">
-        <label for="birthYear">Doğum Yılı</label>
-        <input type="number" id="birthYear" placeholder="örn. 1990" min="1900" max="2015">
+        <label for="birthDate">Doğum Tarihi</label>
+        <input type="date" id="birthDate" max="2015-12-31">
       </div>
       <div class="form-group">
         <label>Cinsiyet</label>
@@ -755,80 +794,82 @@
 <footer>12 Hayvanlı Türk Takvimi · Referans: 1900 = Sıçan Yılı</footer>
 
 <script>
-  // Reference: 1900 = Sıçan (index 0), confirmed by article year lists
+  // ── Modül 0: Sabit Veriler ───────────────────────────────────────
+  // HAYVANLAR: index 0 = Maymun → year % 12 formülüne tam oturur
+  // Doğrulama: 1908%12=0(Maymun) 1900%12=4(Sıçan) 2026%12=10(At) ✓
   const ANIMALS = [
-    {
+    {                                                          // 0 → Maymun (1908, 1920, 2016…)
+      name: 'Maymun',
+      altName: 'Biçin · Meçin (Kırgız) · Kizi (Hakas)',
+      icon: '🐒',
+      prophecy: 'Kışlar kısa ama çok soğuk geçer. Halk arasında kargaşa, hile ve hırsızlık yaygınlaşır. Meyveler doğal afetlerle mahvolur. Özellikle at ve deve nüfusunda hastalıklar yayılır.'
+    },
+    {                                                          // 1 → Horoz (1909, 1921, 2017…)
+      name: 'Horoz',
+      altName: 'Takagu · Tavuk · Took (Kırgız) · Tanah (Hakas)',
+      icon: '🐓',
+      prophecy: 'Kışlar uzun geçer. Yiyecek bolluğu vardır. Horozun yiyecek ararken çevreyi dağıtmasına benzer şekilde halk arasında kargaşa çıkar. Savaşlar, depremler ve hastalıklar bu yıl sık görülür.'
+    },
+    {                                                          // 2 → Köpek (1910, 1922, 2018…)
+      name: 'Köpek',
+      altName: 'İt · İt (Nogay, Kırgız) · Aday (Hakas)',
+      icon: '🐕',
+      prophecy: 'Kışlar soğuk geçer. Halk arasında endişe ve kargaşa egemen olur. İnsan ve hayvanlarda hastalık ve ölümler artar.'
+    },
+    {                                                          // 3 → Domuz (1911, 1923, 2019…)
+      name: 'Domuz',
+      altName: 'Tonguz · Donguz (Kırgız) · Soşa (Hakas)',
+      icon: '🐗',
+      prophecy: 'Kışlarda kar yağışı ağır olur. Halk arasında düşmanlık ve nefret artar. İnsan ve hayvanlarda hastalıklar yayılır ve çoğalır. Hırsızlık da bu yıl yaygınlaşır.'
+    },
+    {                                                          // 4 → Sıçan (1900, 1912, 2020…)
       name: 'Sıçan',
       altName: 'Fare · Çichqan · Şışkan (Nogay) · Çıçkan (Kırgız) · Küske (Hakas)',
       icon: '🐀',
       prophecy: 'Kışlar uzun ve soğuk geçer. Bol yağmur nedeniyle tahıl ve meyve bolluğu yaşanır. Ancak fareler tahılı tahrip ettiğinden halk arasında kargaşa ve çatışmaların çıkacağına inanılır.'
     },
-    {
-      name: 'Ud',
-      altName: 'Öküz · Sığır · Sıyır (Nogay) · Uy (Kırgız) · İnək (Hakas)',
+    {                                                          // 5 → Öküz (1901, 1913, 2021…)
+      name: 'Öküz',
+      altName: 'Ud · Sığır · Sıyır (Nogay) · Uy (Kırgız) · İnək (Hakas)',
       icon: '🐂',
       prophecy: 'Kışlar sert ve soğuk geçer. Öküzün kavgacı doğasından dolayı savaşların yaşandığı bir yıldır. Halk arasında anlaşmazlık ve kargaşa yaygındır. İnsan ve hayvanlarda hastalık ve ölümler artar.'
     },
-    {
-      name: 'Bars',
-      altName: 'Kaplan · Pars · Bars (Nogay, Kırgız) · Tülgü (Hakas)',
+    {                                                          // 6 → Kaplan (1902, 1914, 2022…)
+      name: 'Kaplan',
+      altName: 'Bars · Pars · Bars (Nogay, Kırgız) · Tülgü (Hakas)',
       icon: '🐯',
       prophecy: 'Kışlar kısa ve soğuk, yazlar ise uzun ve sıcak geçer. Milletler arasında çatışmalar ve halk arasında anlaşmazlıklar çıkar. Kıtlık yaşanır, depremler sık görülür.'
     },
-    {
-      name: 'Tavışkan',
-      altName: 'Tavşan · Tabışkan · Koyan (Nogay) · Koyon (Kırgız) · Hozan (Hakas)',
+    {                                                          // 7 → Tavşan (1903, 1915, 2023…)
+      name: 'Tavşan',
+      altName: 'Tavışkan · Tabışkan · Koyan (Nogay) · Koyon (Kırgız) · Hozan (Hakas)',
       icon: '🐇',
       prophecy: 'Mevsimler düzenli seyreder. Yağmurlar bol olduğundan bereket hüküm sürer. Meyve ve sebze bolluğu yaşanır. Halk arasında adalet ve barış egemen olur.'
     },
-    {
-      name: 'Lu',
-      altName: 'Ejder · Balık · Ulu~Balık (Nogay) · Uluu (Kırgız) · Kileski/Timsah (Hakas)',
+    {                                                          // 8 → Ejderha (1904, 1916, 2024…)
+      name: 'Ejderha',
+      altName: 'Lu · Balık · Ulu~Balık (Nogay) · Uluu (Kırgız)',
       icon: '🐉',
       prophecy: 'Yağmurlar bol olup bereket ve bolluk getirir. Kışlar kar yağışlı geçer. Halk arasında anlaşmazlık ve kargaşa baş gösterir.'
     },
-    {
+    {                                                          // 9 → Yılan (1905, 1917, 2025…)
       name: 'Yılan',
-      altName: 'Yılan · Çılan · Cılan (Nogay, Kırgız) · Çılan (Hakas)',
+      altName: 'Çılan · Cılan (Nogay, Kırgız) · Çılan (Hakas)',
       icon: '🐍',
       prophecy: 'Kışlar uzun ve soğuk geçer. Az yağış nedeniyle kuraklık baş gösterir. Tahıl ve meyve verimi düşer, kıtlık artar. Hastalık ve ölüm çoğalır. Halk arasında kargaşa, yalan ve aldatmaca yükselir.'
     },
-    {
+    {                                                          // 10 → At (1906, 1918, 2026…)
       name: 'At',
-      altName: 'At · Yund · Yılkı (Nogay, Kırgız)',
+      altName: 'Yund · Yılkı (Nogay, Kırgız)',
       icon: '🐎',
       prophecy: 'Kışlar çetin geçer. Halk arasında anlaşmazlık ve huzursuzluk yaşanır. Dört ayaklı hayvanlarda hastalık ve ölümler yaygınlaşır.'
     },
-    {
+    {                                                          // 11 → Koyun (1907, 1919, 2027…)
       name: 'Koyun',
-      altName: 'Koyun · Koç · Kon · Koy (Kırgız)',
+      altName: 'Koç · Kon · Koy (Kırgız)',
       icon: '🐑',
       prophecy: 'Kışlar ılıman geçer. Bol yağış sayesinde su sıkıntısı yaşanmaz. Meyve ve tahılda bereket görülür. Halk arasındaki çatışmalar adalet ve barışla sonuçlanır.'
     },
-    {
-      name: 'Biçin',
-      altName: 'Maymun · Biçin · Meçin (Kırgız) · Kizi/İnsan (Hakas)',
-      icon: '🐒',
-      prophecy: 'Kışlar kısa ama çok soğuk geçer. Halk arasında kargaşa, hile ve hırsızlık yaygınlaşır. Meyveler doğal afetlerle mahvolur. Özellikle at ve deve nüfusunda hastalıklar yayılır.'
-    },
-    {
-      name: 'Takagu',
-      altName: 'Tavuk · Horoz · Takagu · Took (Kırgız) · Tanah (Hakas)',
-      icon: '🐓',
-      prophecy: 'Kışlar uzun geçer. Yiyecek bolluğu vardır. Horozun yiyecek ararken çevreyi dağıtmasına benzer şekilde halk arasında kargaşa çıkar. Savaşlar, depremler ve hastalıklar bu yıl sık görülür.'
-    },
-    {
-      name: 'İt',
-      altName: 'Köpek · İt · İt (Nogay, Kırgız) · Aday (Hakas)',
-      icon: '🐕',
-      prophecy: 'Kışlar soğuk geçer. Halk arasında endişe ve kargaşa egemen olur. İnsan ve hayvanlarda hastalık ve ölümler artar.'
-    },
-    {
-      name: 'Tonguz',
-      altName: 'Domuz · Tonguz · Donguz (Kırgız) · Soşa (Hakas)',
-      icon: '🐗',
-      prophecy: 'Kışlarda kar yağışı ağır olur. Halk arasında düşmanlık ve nefret artar. İnsan ve hayvanlarda hastalıklar yayılır ve çoğalır. Hırsızlık da bu yıl yaygınlaşır.'
-    }
   ];
 
   // ── Element calculation ──────────────────────────────────────────
@@ -847,20 +888,20 @@
     return { name, ...ELEMENT_DATA[name] };
   }
 
-  // Per-animal energy descriptors for readings
+  // Per-animal energy descriptors — order matches new ANIMALS (0=Maymun)
   const ANIMAL_ENERGIES = [
-    { energy: 'stratejik ve çevik',        gift: 'zeka ve fırsatçılık'          }, // Sıçan
-    { energy: 'sabırlı ve güçlü',          gift: 'kararlılık ve dayanıklılık'   }, // Ud
-    { energy: 'cesur ve bağımsız',         gift: 'liderlik ve güç'              }, // Bars
-    { energy: 'zarif ve sezgisel',         gift: 'barış ve ince anlayış'        }, // Tavışkan
-    { energy: 'mistik ve dönüştürücü',     gift: 'güç ve büyülü cazibe'         }, // Lu
-    { energy: 'derin ve stratejik',        gift: 'bilgelik ve sezgi'            }, // Yılan
-    { energy: 'özgür ve dinamik',          gift: 'enerji ve macera ruhu'        }, // At
-    { energy: 'uyumlu ve yaratıcı',        gift: 'empati ve bereket'            }, // Koyun
-    { energy: 'çevik ve uyumlu',           gift: 'zeka ve yaratıcı çözümler'   }, // Biçin
-    { energy: 'disiplinli ve güvenilir',   gift: 'düzen ve dürüstlük'          }, // Takagu
-    { energy: 'sadık ve koruyucu',         gift: 'güvenilirlik ve bağlılık'    }, // İt
-    { energy: 'cömert ve bereketli',       gift: 'bolluk ve kararlılık'         }, // Tonguz
+    { energy: 'çevik ve uyumlu',          gift: 'zeka ve yaratıcı çözümler'  }, // 0 Maymun
+    { energy: 'disiplinli ve güvenilir',  gift: 'düzen ve dürüstlük'         }, // 1 Horoz
+    { energy: 'sadık ve koruyucu',        gift: 'güvenilirlik ve bağlılık'   }, // 2 Köpek
+    { energy: 'cömert ve bereketli',      gift: 'bolluk ve kararlılık'       }, // 3 Domuz
+    { energy: 'stratejik ve çevik',       gift: 'zeka ve fırsatçılık'        }, // 4 Sıçan
+    { energy: 'sabırlı ve güçlü',         gift: 'kararlılık ve dayanıklılık' }, // 5 Öküz
+    { energy: 'cesur ve bağımsız',        gift: 'liderlik ve güç'            }, // 6 Kaplan
+    { energy: 'zarif ve sezgisel',        gift: 'barış ve ince anlayış'      }, // 7 Tavşan
+    { energy: 'mistik ve dönüştürücü',    gift: 'güç ve büyülü cazibe'       }, // 8 Ejderha
+    { energy: 'derin ve stratejik',       gift: 'bilgelik ve sezgi'          }, // 9 Yılan
+    { energy: 'özgür ve dinamik',         gift: 'enerji ve macera ruhu'      }, // 10 At
+    { energy: 'uyumlu ve yaratıcı',       gift: 'empati ve bereket'          }, // 11 Koyun
   ];
 
   // ── Critical milestone data ──────────────────────────────────────
@@ -924,39 +965,47 @@
   }
 
   function calcCritical() {
-    const val = document.getElementById('birthYear').value.trim();
+    const val = document.getElementById('birthDate').value;
     if (!val) return;
-    const birthYear = parseInt(val, 10);
-    if (isNaN(birthYear) || birthYear < 1900 || birthYear > 2015) {
+    const birthDateObj = parseLocalDate(val);
+    const gercekYil    = getSolarYear(birthDateObj);  // Modül 1 uygula
+    const birthYear    = birthDateObj.getFullYear();
+
+    if (birthYear < 1900 || birthYear > 2015) {
       document.getElementById('criticalResult').innerHTML =
-        '<div class="critical-empty">Lütfen 1900–2015 arasında geçerli bir doğum yılı girin.</div>';
+        '<div class="critical-empty">Lütfen 1900–2015 arasında geçerli bir doğum tarihi girin.</div>';
       return;
     }
 
-    const milestones = selectedGender === 'female' ? FEMALE_MILESTONES : MALE_MILESTONES;
+    const milestones  = selectedGender === 'female' ? FEMALE_MILESTONES : MALE_MILESTONES;
     const currentYear = new Date().getFullYear();
 
     const typeMeta = {
-      biyolojik:  { label: 'Biyolojik', style: 'background:rgba(109,191,109,0.18);color:#6dbf6d;border:1px solid rgba(109,191,109,0.4)' },
-      norolojik:  { label: 'Nörolojik',  style: 'background:rgba(91,184,232,0.18);color:#5bb8e8;border:1px solid rgba(91,184,232,0.4)' },
-      kozmolojik: { label: 'Kozmolojik', style: 'background:rgba(232,112,80,0.18);color:#e87050;border:1px solid rgba(232,112,80,0.4)' },
+      biyolojik:  { label: 'Biyolojik',    style: 'background:rgba(109,191,109,0.18);color:#6dbf6d;border:1px solid rgba(109,191,109,0.4)' },
+      norolojik:  { label: 'Nörolojik',    style: 'background:rgba(91,184,232,0.18);color:#5bb8e8;border:1px solid rgba(91,184,232,0.4)' },
+      kozmolojik: { label: 'Kozmolojik',   style: 'background:rgba(232,112,80,0.18);color:#e87050;border:1px solid rgba(232,112,80,0.4)' },
       kesisim:    { label: 'Büyük Kesişim', style: 'background:rgba(232,195,106,0.2);color:#e8c36a;border:1px solid rgba(232,195,106,0.5)' },
     };
 
-    const birthAnimalIdx = animalIndex(birthYear);
+    // Doğum kartı — Modül 2 ile Gerçek Yıl kullanılır
+    const birthAnimalIdx = animalIndex(gercekYil);
     const birthAnimal    = ANIMALS[birthAnimalIdx];
-    const birthElem      = getElement(birthYear);
+    const birthElem      = getElement(gercekYil);
     const birthAE        = ANIMAL_ENERGIES[birthAnimalIdx];
+    const birthMonthP    = getMonthPillar(birthDateObj, gercekYil);
+    const birthDayP      = getDayPillar(birthDateObj);
+    const birthMonthAnim = animalByName(birthMonthP.animal);
+    const birthDayAnim   = animalByName(birthDayP.animal);
 
     let html = `
       <div class="cy-birth-card">
         <div class="cy-birth-icon">${birthAnimal.icon}</div>
         <div class="cy-birth-info">
-          <div class="cy-birth-label">Doğum Yılı</div>
-          <div class="cy-birth-year">${birthYear}</div>
+          <div class="cy-birth-label">Doğum Tarihi · Gerçek Yıl: ${gercekYil}</div>
+          <div class="cy-birth-year">${formatDateTR(birthDateObj)}</div>
           <div class="cy-birth-combo">
             <span class="elem-badge" style="color:${birthElem.color};border-color:${birthElem.border};background:${birthElem.bg}">${birthElem.icon} ${birthElem.name}</span>
-            &nbsp;${birthAnimal.name} Yılı
+            &nbsp;${birthAnimal.name} · <small style="color:#a08050">Ay: ${birthMonthP.element} ${birthMonthAnim.icon}${birthMonthP.animal} &nbsp;Gün: ${birthDayP.element} ${birthDayAnim.icon}${birthDayP.animal}</small>
           </div>
           <div class="cy-birth-desc">${birthElem.energy} enerji · ${birthAE.energy} karakter · ${birthAE.gift}</div>
         </div>
@@ -964,7 +1013,7 @@
 
     html += '<div class="timeline">';
     milestones.forEach(m => {
-      const critYear  = birthYear + m.age;
+      const critYear  = gercekYil + m.age;  // Modül 5: Gerçek Yıl + yaş
       const animalIdx = animalIndex(critYear);
       const elem      = getElement(critYear);
       const animal    = ANIMALS[animalIdx];
@@ -991,24 +1040,80 @@
     document.getElementById('criticalResult').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
-  // ── Index for a given Gregorian year ────────────────────────────
-  function animalIndex(year) {
-    return ((year - 2020) % 12 + 12) % 12;
+  // ── Modül 1: Güneş Takvimi Senkronizasyonu ──────────────────────
+  // Ocak veya Şubat 4'ten önce → astronomik yıl bir önceki yıl
+  function getSolarYear(date) {
+    const m = date.getMonth() + 1;
+    const d = date.getDate();
+    if (m === 1 || (m === 2 && d < 4)) return date.getFullYear() - 1;
+    return date.getFullYear();
   }
 
-  // All years for an animal from 1900 to currentYear+72
+  // ── Modül 2: Yıl Hayvanı (year % 12) ────────────────────────────
+  function animalIndex(year) {
+    return ((year % 12) + 12) % 12;
+  }
+
+  // Years for a given animal index (base year: 1900 % 12 = 4 → Sıçan)
   function getRecentYears(idx) {
     const currentYear = new Date().getFullYear();
     const years = [];
-    let base = 2020 + idx;
-    while (base > 1900) base -= 12;
-    while (base < 1900) base += 12;
-    let y = base;
-    while (y <= currentYear + 72) {
-      years.push(y);
-      y += 12;
-    }
+    const base = 1900 + ((idx - 4 + 12) % 12); // first year ≥ 1900 with year%12==idx
+    for (let y = base; y <= currentYear + 72; y += 12) years.push(y);
     return years;
+  }
+
+  // ── Modül 3: Ay Hayvanı (Güneş takvimi dilimlerine göre) ─────────
+  // Her yıl ~4 Şubat'ta başlayan Kaplan ayından itibaren 12 dilim.
+  // Eşik: ayın 4'ü baz alınır (algoritma basitleştirmesi).
+  const MONTH_ANIMALS = ['Kaplan','Tavşan','Ejderha','Yılan','At','Koyun',
+                          'Maymun','Horoz','Köpek','Domuz','Sıçan','Öküz'];
+
+  function getMonthPosition(date) {
+    const md = (date.getMonth() + 1) * 100 + date.getDate();
+    if (md >= 1207 || md <  105) return 10; // Sıçan ayı  (7 Ara – 4 Oca)
+    if (md >= 105  && md <  204) return 11; // Öküz ayı   (5 Oca – 3 Şub)
+    if (md >= 204  && md <  306) return  0; // Kaplan ayı (4 Şub – 5 Mar)
+    if (md >= 306  && md <  405) return  1; // Tavşan ayı (6 Mar – 4 Nis)
+    if (md >= 405  && md <  506) return  2; // Ejderha    (5 Nis – 5 May)
+    if (md >= 506  && md <  606) return  3; // Yılan      (6 May – 5 Haz)
+    if (md >= 606  && md <  707) return  4; // At         (6 Haz – 6 Tem)
+    if (md >= 707  && md <  807) return  5; // Koyun      (7 Tem – 6 Ağu)
+    if (md >= 807  && md <  908) return  6; // Maymun     (7 Ağu – 7 Eyl)
+    if (md >= 908  && md < 1008) return  7; // Horoz      (8 Eyl – 7 Eki)
+    if (md >= 1008 && md < 1107) return  8; // Köpek      (8 Eki – 6 Kas)
+    return 9;                               // Domuz      (7 Kas – 6 Ara)
+  }
+
+  function getMonthPillar(date, solarYear) {
+    const pos       = getMonthPosition(date);          // 0 = Kaplan ayı
+    const yearStem  = ((solarYear % 10) + 10) % 10;
+    // Kaplan ayı kök yıla göre başlangıç gövdesi:
+    // Yıl gövdesi 0-1(Ağaç): pos0 kökü=8(Su); 2-3(Ateş): 0(Ağaç); 4-5(Toprak): 2(Ateş)
+    // 6-7(Metal): 4(Toprak); 8-9(Su): 6(Metal)
+    const tigerStem = ((Math.floor(yearStem / 2) + 4) % 5) * 2;
+    const monthStem = (tigerStem + pos) % 10;
+    const elemNames = ['Ağaç','Ağaç','Ateş','Ateş','Toprak','Toprak','Metal','Metal','Su','Su'];
+    return { animal: MONTH_ANIMALS[pos], element: elemNames[monthStem] };
+  }
+
+  // ── Modül 4: Gün Sütunu (60 günlük Jiazi döngüsü) ───────────────
+  // Referans: 1 Ocak 1900 = Ağaç Sıçan (döngünün 0. günü)
+  const DAY_ANIMALS  = ['Sıçan','Öküz','Kaplan','Tavşan','Ejderha','Yılan',
+                         'At','Koyun','Maymun','Horoz','Köpek','Domuz'];
+  const DAY_ELEMENTS = ['Ağaç','Ağaç','Ateş','Ateş','Toprak','Toprak',
+                         'Metal','Metal','Su','Su'];
+
+  function getDayPillar(date) {
+    const jd      = dateToJD(date);
+    const epochJD = dateToJD(new Date(1900, 0, 1)); // 1 Oca 1900 = Ağaç Sıçan
+    const pos     = ((jd - epochJD) % 60 + 60) % 60;
+    return { animal: DAY_ANIMALS[pos % 12], element: DAY_ELEMENTS[pos % 10] };
+  }
+
+  // Helper: find ANIMALS entry by name
+  function animalByName(name) {
+    return ANIMALS.find(a => a.name === name) || { icon: '?', name };
   }
 
   // Past years (>= 1924) and future years (> currentYear) split
@@ -1095,26 +1200,42 @@
     return `${y}-${m}-${d}`;
   }
 
-  function showResult(date) {
-    const year = date.getFullYear();
-    const idx = animalIndex(year);
-    const animal = ANIMALS[idx];
+  function pillarHTML(label, subtitle, elem, animalName, animalIcon) {
+    const ed = ELEMENT_DATA[elem] || {};
+    return `<div class="pillar-card">
+      <div class="pillar-label">${label}</div>
+      <div class="pillar-subtitle">${subtitle}</div>
+      <div class="pillar-icon">${animalIcon}</div>
+      <div class="pillar-elem" style="color:${ed.color||'#e8c36a'}">${ed.icon||''} ${elem}</div>
+      <div class="pillar-animal">${animalName}</div>
+    </div>`;
+  }
 
-    const elem  = getElement(year);
-    const lunar = turkicLunarDate(date);
+  function showResult(date) {
+    const solarYear  = getSolarYear(date);
+    const yearIdx    = animalIndex(solarYear);
+    const yearAnimal = ANIMALS[yearIdx];
+    const yearElem   = getElement(solarYear);
+    const monthP     = getMonthPillar(date, solarYear);
+    const dayP       = getDayPillar(date);
+    const lunar      = turkicLunarDate(date);
+
     document.getElementById('resDateLine').textContent = formatDateTR(date);
     document.getElementById('resTurkicDate').textContent =
       `Türk Takvimi: ${lunar.monthName} · ${lunar.day}. gün`;
-    document.getElementById('resIcon').textContent = animal.icon;
-    document.getElementById('resName').innerHTML =
-      `${year} — <span class="elem-badge" style="color:${elem.color};border-color:${elem.border};background:${elem.bg}">${elem.icon} ${elem.name}</span> ${animal.name} Yılı`;
-    document.getElementById('resAlt').textContent = animal.altName;
-    document.getElementById('resCycle').textContent =
-      `Müçel döngüsünde ${idx + 1}. hayvan · ${elem.name} elementi`;
-    document.getElementById('resDesc').textContent = animal.prophecy;
 
-    const { past, future } = splitYears(idx);
-    const pastHtml  = past.slice(-5).map(y => `<span onclick="setDateYear(${y})">${y}</span>`).join(' ');
+    const monthAnimalObj = animalByName(monthP.animal);
+    const dayAnimalObj   = animalByName(dayP.animal);
+
+    document.getElementById('resPillars').innerHTML =
+      pillarHTML('Yıl Sütunu',  'Sosyal Vitrin',         yearElem.name, yearAnimal.name, yearAnimal.icon) +
+      pillarHTML('Ay Sütunu',   'İçsel Kimlik',           monthP.element, monthP.animal, monthAnimalObj.icon) +
+      pillarHTML('Gün Sütunu',  'Öz Kimlik / Gerçek Burç', dayP.element,   dayP.animal,   dayAnimalObj.icon);
+
+    document.getElementById('resDesc').textContent = yearAnimal.prophecy;
+
+    const { past, future } = splitYears(yearIdx);
+    const pastHtml   = past.slice(-5).map(y => `<span onclick="setDateYear(${y})">${y}</span>`).join(' ');
     const futureHtml = future.slice(0, 6).map(y => `<span class="future-year" onclick="setDateYear(${y})">${y}</span>`).join(' ');
     document.getElementById('resYears').innerHTML =
       `<span class="years-label">Geçmiş:</span> ${pastHtml} &nbsp;<span class="years-label">Gelecek:</span> ${futureHtml}`;
@@ -1122,7 +1243,7 @@
     document.getElementById('resultBox').classList.add('visible');
 
     document.querySelectorAll('.animal-card').forEach((c, i) => {
-      c.classList.toggle('active', i === idx);
+      c.classList.toggle('active', i === yearIdx);
     });
   }
 
@@ -1149,17 +1270,21 @@
 
   // Build today banner
   function buildToday() {
-    const today = new Date();
-    const idx = animalIndex(today.getFullYear());
-    const animal = ANIMALS[idx];
+    const today     = new Date();
+    const solarYear = getSolarYear(today);
+    const idx       = animalIndex(solarYear);
+    const animal    = ANIMALS[idx];
+    const elem      = getElement(solarYear);
+    const monthP    = getMonthPillar(today, solarYear);
+    const dayP      = getDayPillar(today);
+    const lunar     = turkicLunarDate(today);
+
     document.getElementById('todayIcon').textContent = animal.icon;
     document.getElementById('todayDate').textContent = formatDateTR(today);
-    const elem  = getElement(today.getFullYear());
-    const lunar = turkicLunarDate(today);
     document.getElementById('todayAnimal').innerHTML =
       `<span class="elem-badge" style="color:${elem.color};border-color:${elem.border};background:${elem.bg}">${elem.icon} ${elem.name}</span> ${animal.name} Yılı`;
     document.getElementById('todayDetail').textContent =
-      `Müçel döngüsünde ${idx + 1}. hayvan`;
+      `Ay: ${monthP.element} ${monthP.animal} · Gün: ${dayP.element} ${dayP.animal}`;
     document.getElementById('todayTurkic').textContent =
       `${lunar.monthName} · ${lunar.day}. gün`;
   }

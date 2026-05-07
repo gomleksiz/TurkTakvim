@@ -1,108 +1,123 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
 
+const cors = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+};
+
+interface Pillar { animal: string; element: string; }
+interface Milestone {
+  age: number; title: string; type: string;
+  critYear: number; animal: string; element: string; interaction: string;
+}
 interface RequestBody {
-  name: string;
-  birthdate: string;
-  otherInfo?: string;
-}
-
-function calculateAge(birthdate: string): number {
-  const today = new Date();
-  const birthDate = new Date(birthdate);
-  let age = today.getFullYear() - birthDate.getFullYear();
-  const m = today.getMonth() - birthDate.getMonth();
-  if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-    age--;
-  }
-  return age;
-}
-
-function getZodiacSign(date: Date): string {
-  const day = date.getDate();
-  const month = date.getMonth() + 1;
-  if ((month === 3 && day >= 21) || (month === 4 && day <= 19)) return "Aries";
-  if ((month === 4 && day >= 20) || (month === 5 && day <= 20)) return "Taurus";
-  if ((month === 5 && day >= 21) || (month === 6 && day <= 20)) return "Gemini";
-  if ((month === 6 && day >= 21) || (month === 7 && day <= 22)) return "Cancer";
-  if ((month === 7 && day >= 23) || (month === 8 && day <= 22)) return "Leo";
-  if ((month === 8 && day >= 23) || (month === 9 && day <= 22)) return "Virgo";
-  if ((month === 9 && day >= 23) || (month === 10 && day <= 22)) return "Libra";
-  if ((month === 10 && day >= 23) || (month === 11 && day <= 22)) return "Scorpio";
-  if ((month === 11 && day >= 23) || (month === 12 && day <= 21)) return "Sagittarius";
-  if ((month === 12 && day >= 22) || (month === 1 && day <= 19)) return "Capricorn";
-  if ((
-    (month === 1 && day >= 20) || (month === 2 && day <= 18)
-  )) return "Aquarius";
-  return "Pisces";
+  name?: string;
+  gender: "female" | "male";
+  birthDate: string;
+  yearPillar: Pillar;
+  monthPillar: Pillar;
+  dayPillar: Pillar;
+  interactions: { yearMonth: string; yearDay: string; monthDay: string };
+  currentAge: number;
+  over60: boolean;
+  currentMilestone?: Milestone;
+  nextMilestone?: Milestone;
 }
 
 serve(async (req) => {
+  if (req.method === "OPTIONS") {
+    return new Response(null, { headers: cors });
+  }
+
   try {
-    if (!GEMINI_API_KEY) {
-      throw new Error("GEMINI_API_KEY is not set in environment variables");
-    }
+    if (!GEMINI_API_KEY) throw new Error("GEMINI_API_KEY yapılandırılmamış");
 
-    const { name, birthdate, otherInfo } = await req.json() as RequestBody;
+    const body: RequestBody = await req.json();
+    const {
+      name, gender, birthDate,
+      yearPillar, monthPillar, dayPillar,
+      interactions, currentAge, over60,
+      currentMilestone, nextMilestone,
+    } = body;
 
-    if (!name || !birthdate) {
-      return new Response(
-        JSON.stringify({ error: "name and birthdate are required" }),
-        { status: 400, headers: { "Content-Type": "application/json" } }
-      );
-    }
+    const genderTR = gender === "female" ? "Kadın" : "Erkek";
+    const cycleYears = gender === "female" ? "7" : "8";
 
-    const birthDateObj = new Date(birthdate);
-    const age = calculateAge(birthdate);
-    const zodiac = getZodiacSign(birthDateObj);
+    const ixLabel: Record<string, string> = {
+      trine:   "Üçlü Uyum — güçlü akış ve destek",
+      secret:  "Gizli Dostluk — sessiz koruma",
+      clash:   "Zıtlık / Gerilim — dönüşüm baskısı",
+      neutral: "Nötr",
+      same:    "Aynı enerji — yoğunlaşma",
+    };
 
-    const prompt = `
-      You are a professional astrologer and life coach. 
-      Based on the following information, write a personalized and insightful 'final note' for the person.
-      
-      Name: ${name}
-      Age: ${age}
-      Zodiac Sign: ${zodiac}
-      Additional Information: ${otherInfo || "None provided"}
-      
-      The note should be warm, encouraging, and slightly mystical, but also grounded in practical advice.
-    `;
+    const prompt = `Sen 12 Hayvanlı Türk Takvimi (BaZi) astrolojisinde uzman bir yorumcusun. \
+Kısa, sıcak, içgörülü ve Türkçe yorumlar yazıyorsun. \
+Her bölüm 2-3 cümle olsun. Mistik ama gerçekçi bir ton kullan.
 
-    const geminiResponse = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`,
+Kişi bilgileri:
+- ${name ? `İsim: ${name}` : "İsimsiz"}
+- Cinsiyet: ${genderTR} (${cycleYears} yıllık biyolojik döngü)
+- Yaş: ${currentAge}
+- Yıl Sütunu (Dış Hayvan / Sosyal Vitrin): ${yearPillar.element} ${yearPillar.animal}
+- Ay Sütunu (İçsel Hayvan / Duygusal Temel): ${monthPillar.element} ${monthPillar.animal}
+- Gün Sütunu (Gerçek Hayvan / Öz Kimlik): ${dayPillar.element} ${dayPillar.animal}
+- Yıl×Ay etkileşimi: ${ixLabel[interactions.yearMonth] ?? interactions.yearMonth}
+- Yıl×Gün etkileşimi: ${ixLabel[interactions.yearDay] ?? interactions.yearDay}
+- Ay×Gün etkileşimi: ${ixLabel[interactions.monthDay] ?? interactions.monthDay}
+${currentMilestone
+  ? `- Mevcut kritik dönem: ${currentMilestone.age} yaş · ${currentMilestone.title} \
+(${currentMilestone.element} ${currentMilestone.animal} yılı · \
+${ixLabel[currentMilestone.interaction] ?? currentMilestone.interaction})`
+  : ""}
+${nextMilestone
+  ? `- Bir sonraki kritik dönem: ${nextMilestone.age} yaş · ${nextMilestone.title} \
+(${nextMilestone.element} ${nextMilestone.animal} yılı · \
+${ixLabel[nextMilestone.interaction] ?? nextMilestone.interaction})`
+  : ""}
+${over60 ? "- Bu kişi 60 yıllık büyük kozmik döngüyü tamamlamıştır." : ""}
+
+Aşağıdaki JSON nesnesini döndür (başka metin ekleme, sadece JSON):
+{
+  "dogumHaritasi": "Üç sütunun birlikte yarattığı kişilik enerjisi.",
+  "mevcutDonem": "Şu anki dönemin teması ve kişisel mesaj.",
+  "gelecekDonem": "Bir sonraki döneme hazırlık önerisi."${over60 ? `,
+  "buyukKutlama": "60 yıllık döngüyü tamamlamanın anlam ve kutlaması."` : ""}
+}`;
+
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-latest:generateContent?key=${GEMINI_API_KEY}`,
       {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: {
+            maxOutputTokens: 900,
+            thinkingConfig: { thinkingBudget: -1 },
+          },
         }),
       }
     );
 
-    const geminiData = await geminiResponse.json();
-    
-    if (!geminiResponse.ok) {
-      throw new Error(`Gemini API error: ${JSON.stringify(geminiData)}`);
-    }
+    if (!res.ok) throw new Error(`Gemini API hatası: ${await res.text()}`);
 
-    const finalNote = geminiData.candidates[0].content.parts[0].text;
+    const gemini = await res.json();
+    const text: string = gemini.candidates[0].content.parts[0].text;
+    const match = text.match(/\{[\s\S]*\}/);
+    if (!match) throw new Error("AI yanıtı JSON formatında değil");
+    const parsed = JSON.parse(match[0]);
 
+    return new Response(JSON.stringify({ success: true, ...parsed }), {
+      headers: { ...cors, "Content-Type": "application/json" },
+    });
+  } catch (err) {
     return new Response(
-      JSON.stringify({
-        name,
-        age,
-        zodiac,
-        finalNote,
-      }),
-      { status: 200, headers: { "Content-Type": "application/json" } }
-    );
-  } catch (error) {
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
+      JSON.stringify({ success: false, error: (err as Error).message }),
+      { status: 500, headers: { ...cors, "Content-Type": "application/json" } }
     );
   }
 });

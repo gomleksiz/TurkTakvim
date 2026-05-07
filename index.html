@@ -731,6 +731,168 @@
       margin-top: 0.1rem;
     }
 
+    /* ── Visual Life Timeline ── */
+    .life-timeline {
+      position: relative;
+      padding: 0.5rem 0 0.5rem 2.8rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .lt-line {
+      position: absolute;
+      left: 1.1rem;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      background: linear-gradient(to bottom, #6dbf6d 0%, #5bb8e8 40%, #e87050 75%, #e8c36a 100%);
+      border-radius: 2px;
+    }
+
+    .lt-node {
+      position: relative;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.7rem;
+      padding: 0.6rem 0.5rem 0.6rem 0;
+    }
+
+    .lt-node.major { padding: 0.9rem 0.5rem 0.9rem 0; }
+
+    .lt-left {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.15rem;
+      flex-shrink: 0;
+      width: 2.1rem;
+    }
+
+    .lt-deco { font-size: 0.7rem; min-height: 0.9rem; }
+
+    .lt-circle {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem;
+      background: rgba(0,0,0,0.35);
+      border: 2px solid rgba(232,195,106,0.2);
+      position: relative; left: -0.25rem;
+    }
+
+    .lt-node.major .lt-circle { width: 42px; height: 42px; font-size: 1.5rem; left: -0.5rem; }
+
+    .lt-circle.biyolojik  { border-color: rgba(109,191,109,0.6); box-shadow: 0 0 8px rgba(109,191,109,0.2); }
+    .lt-circle.norolojik  { border-color: rgba(91,184,232,0.6);  box-shadow: 0 0 8px rgba(91,184,232,0.2); }
+    .lt-circle.kozmolojik { border-color: rgba(232,112,80,0.6);  box-shadow: 0 0 8px rgba(232,112,80,0.2); }
+    .lt-circle.kesisim    { border-color: rgba(232,195,106,0.7); box-shadow: 0 0 10px rgba(232,195,106,0.25); }
+
+    .lt-age-label { font-size: 0.58rem; color: #7a6040; text-align: center; }
+
+    .lt-content { flex: 1; min-width: 0; }
+
+    .lt-row {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.3rem;
+    }
+
+    .lt-year  { font-size: 0.95rem; font-weight: 700; color: #e8c36a; min-width: 2.8rem; }
+    .lt-anim  { font-size: 0.78rem; color: #c0a878; }
+    .lt-title { font-size: 0.85rem; font-weight: 600; color: #f5e6c8; margin-top: 0.2rem; }
+    .lt-detail {
+      font-size: 0.8rem; color: #9a7850; margin-top: 0.25rem;
+      line-height: 1.55; border-top: 1px solid rgba(232,195,106,0.08);
+      padding-top: 0.3rem;
+    }
+    .lt-pillar-note { font-size: 0.73rem; margin-top: 0.3rem; }
+
+    .lt-node.past { opacity: 0.38; }
+
+    .lt-node.present .lt-circle {
+      border-color: #e8c36a !important;
+      box-shadow: 0 0 14px rgba(232,195,106,0.4) !important;
+    }
+    .lt-node.present .lt-year { color: #fff3c4; }
+
+    .lt-today {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin: 0.2rem 0;
+      padding-left: 0;
+    }
+
+    .lt-today-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: #e8c36a;
+      box-shadow: 0 0 8px rgba(232,195,106,0.6);
+      position: relative; left: -0.42rem;
+      flex-shrink: 0;
+    }
+
+    .lt-today-label {
+      font-size: 0.65rem;
+      letter-spacing: 2px;
+      color: #e8c36a;
+      text-transform: uppercase;
+      border-top: 1px dashed rgba(232,195,106,0.4);
+      flex: 1;
+      padding-top: 0.1rem;
+    }
+
+    .lt-celebration {
+      background: linear-gradient(135deg, rgba(232,195,106,0.12), rgba(232,112,80,0.08));
+      border: 2px solid rgba(232,195,106,0.4);
+      border-radius: 12px;
+      padding: 0.9rem 1.1rem;
+      margin: 0.5rem 0;
+      text-align: center;
+    }
+
+    .lt-celebration-icon  { font-size: 1.6rem; }
+    .lt-celebration-title { font-size: 1rem; font-weight: 700; color: #e8c36a; margin: 0.3rem 0 0.15rem; }
+    .lt-celebration-desc  { font-size: 0.78rem; color: #c0a878; line-height: 1.55; }
+
+    /* ── AI Summary ── */
+    .ai-summary-section { margin-top: 1.2rem; }
+
+    .btn-ai {
+      width: 100%;
+      padding: 0.75rem;
+      background: linear-gradient(135deg, rgba(109,191,109,0.15), rgba(91,184,232,0.1));
+      border: 1px solid rgba(109,191,109,0.35);
+      border-radius: 10px;
+      color: #e8c36a;
+      font-size: 0.92rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .btn-ai:hover  { opacity: 0.85; }
+    .btn-ai:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .ai-result { display: none; flex-direction: column; gap: 0.7rem; margin-top: 0.8rem; }
+    .ai-result.visible { display: flex; }
+
+    .ai-block {
+      background: rgba(0,0,0,0.22);
+      border: 1px solid rgba(232,195,106,0.15);
+      border-radius: 10px;
+      padding: 0.8rem 1rem;
+    }
+    .ai-block.kutlama {
+      background: linear-gradient(135deg, rgba(232,195,106,0.1), rgba(232,112,80,0.07));
+      border-color: rgba(232,195,106,0.35);
+    }
+
+    .ai-block-title { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 2px; color: #7a6040; margin-bottom: 0.4rem; }
+    .ai-block-text  { font-size: 0.85rem; color: #c9a96e; line-height: 1.65; }
+
     @media (max-width: 500px) {
       header h1 { font-size: 1.5rem; }
       .animals-grid { grid-template-columns: repeat(3, 1fr); }
@@ -781,10 +943,6 @@
       <div class="pillars-grid" id="resPillars"></div>
       <div class="result-desc" id="resDesc"></div>
       <div class="result-years" id="resYears"></div>
-      <div id="geminiNoteBox" class="gemini-note-box" style="display:none;">
-        <div class="gemini-note-header">✨ Kişiselleştirilmiş Not</div>
-        <div id="geminiNoteContent" class="gemini-note-content"></div>
-      </div>
     </div>
   </div>
 </div>
@@ -1096,36 +1254,165 @@
         </div>
       </div>`;
 
-    html += '<div class="timeline">';
-    milestones.forEach(m => {
-      const critYear  = gercekYil + m.age;  // Modül 5: Gerçek Yıl + yaş
+    // ── Görsel Hayat Çizgisi ──────────────────────────────────────
+    const currentAge = Math.floor((new Date() - birthDateObj) / (365.25 * 24 * 3600 * 1000));
+    const over60     = currentAge >= 60;
+    const isMajor    = (age) => selectedGender === 'female' ? age % 7 === 0 : age % 8 === 0;
+
+    let todayInserted  = false;
+    let firstFutureIdx = -1;
+
+    html += '<div class="life-timeline"><div class="lt-line"></div>';
+
+    milestones.forEach((m, idx) => {
+      const critYear  = gercekYil + m.age;
       const animalIdx = animalIndex(critYear);
       const elem      = getElement(critYear);
       const animal    = ANIMALS[animalIdx];
+      const diff      = critYear - currentYear;
+      const isPast    = diff < -1;
+      const isPresent = Math.abs(diff) <= 1;
+      const isFuture  = diff > 1;
+      const status    = isPast ? 'past' : (isPresent ? 'present' : 'future');
+      const major     = isMajor(m.age);
       const tm        = typeMeta[m.type] || typeMeta.biyolojik;
-      const reading   = generateReading(m, animalIdx, critYear);
 
-      const diff   = critYear - currentYear;
-      const status = diff < -1 ? 'past' : (Math.abs(diff) <= 1 ? 'present' : 'future');
-      const dp     = getDominantPillar(m.age);
+      if (!todayInserted && !isPast) {
+        html += `<div class="lt-today"><div class="lt-today-dot"></div><div class="lt-today-label">✦ BUGÜN · ${currentYear}</div></div>`;
+        todayInserted = true;
+      }
+
+      if (isFuture && firstFutureIdx === -1) firstFutureIdx = idx;
+
+      const ixMain     = getInteraction(animal.name, birthAnimal.name);
+      const deco       = getMilestoneDeco(ixMain.type, elem.name);
+      const dp         = getDominantPillar(m.age);
+      const reading    = generateReading(m, animalIdx, critYear);
+      const showDetail = isPresent || idx === firstFutureIdx;
+
+      if (m.age === 60) {
+        html += `<div class="lt-celebration">
+          <div class="lt-celebration-icon">🌟 🎊 🌟</div>
+          <div class="lt-celebration-title">60 Yıllık Büyük Kozmik Döngü${isPast ? ' Tamamlandı' : ''}</div>
+          <div class="lt-celebration-desc">Takvimin yapıldığı çağda ömür beklentisini aşan bu eşik, kozmik çarkın tam bir turunu simgeler. Doğduğunuz ${birthElem.name} ${birthAnimal.name} enerjisine yeniden adım ${isPast ? 'attınız' : 'atıyorsunuz'} — nadir bir bilgelik evresi.</div>
+        </div>`;
+      }
 
       html += `
-        <div class="cy-card ${status} ${m.type}">
-          <div class="cy-header">
-            <span class="cy-age">${m.age} Yaş</span>
-            <span class="cy-year-badge">${critYear}</span>
-            <span class="cy-animal-elem">${elem.icon} ${elem.name} &nbsp;${animal.icon} ${animal.name}</span>
-            <span class="cy-type-badge" style="${tm.style}">${tm.label}</span>
+        <div class="lt-node ${status} ${m.type}${major ? ' major' : ''}">
+          <div class="lt-left">
+            <div class="lt-deco">${deco}</div>
+            <div class="lt-circle ${m.type}">${animal.icon}</div>
+            <div class="lt-age-label">${m.age} yaş</div>
           </div>
-          <div class="cy-title">${m.title}</div>
-          <div class="cy-reading">${reading}</div>
-          <div class="cy-pillar-note"><strong style="color:${dp.color}">${dp.label}</strong><span style="color:#8a7050"> — ${dp.note}</span></div>
-          ${critInteractionsHTML(animal.name, birthAnimal.name, birthMonthP.animal, birthDayP.animal)}
+          <div class="lt-content">
+            <div class="lt-row">
+              <span class="lt-year">${critYear}</span>
+              <span class="lt-anim">${elem.icon} ${elem.name} · ${animal.name}</span>
+              <span class="cy-type-badge" style="${tm.style};font-size:0.58rem;padding:1px 5px">${tm.label}</span>
+              <span class="int-badge ${ixMain.type}" style="font-size:0.58rem;padding:1px 5px">${ixMain.icon}</span>
+            </div>
+            <div class="lt-title">${m.title}</div>
+            ${showDetail ? `
+              <div class="lt-detail">${reading}</div>
+              <div class="lt-pillar-note"><strong style="color:${dp.color}">${dp.label}</strong></div>
+              ${critInteractionsHTML(animal.name, birthAnimal.name, birthMonthP.animal, birthDayP.animal)}
+            ` : ''}
+          </div>
         </div>`;
     });
-    html += '</div>';
+
+    if (!todayInserted) {
+      html += `<div class="lt-today"><div class="lt-today-dot"></div><div class="lt-today-label">✦ BUGÜN · ${currentYear}</div></div>`;
+    }
+
+    html += '</div>'; // life-timeline
+
+    // ── Yapay Zeka Özeti ──────────────────────────────────────────
+    window._aiData = {
+      name: (document.getElementById('nameInput')?.value || '').trim(),
+      gender: selectedGender,
+      birthDate: val,
+      yearPillar:  { animal: birthAnimal.name,   element: birthElem.name      },
+      monthPillar: { animal: birthMonthP.animal, element: birthMonthP.element },
+      dayPillar:   { animal: birthDayP.animal,   element: birthDayP.element   },
+      interactions: {
+        yearMonth: getInteraction(birthAnimal.name, birthMonthP.animal).type,
+        yearDay:   getInteraction(birthAnimal.name, birthDayP.animal).type,
+        monthDay:  getInteraction(birthMonthP.animal, birthDayP.animal).type,
+      },
+      currentAge,
+      over60,
+      currentMilestone: milestones
+        .filter(m => Math.abs((gercekYil + m.age) - currentYear) <= 1)
+        .map(m => {
+          const yr = gercekYil + m.age, ai2 = animalIndex(yr), el = getElement(yr);
+          return { age: m.age, title: m.title, type: m.type, critYear: yr,
+                   animal: ANIMALS[ai2].name, element: el.name,
+                   interaction: getInteraction(ANIMALS[ai2].name, birthAnimal.name).type };
+        })[0] || null,
+      nextMilestone: milestones
+        .filter(m => (gercekYil + m.age) > currentYear)
+        .map(m => {
+          const yr = gercekYil + m.age, ai2 = animalIndex(yr), el = getElement(yr);
+          return { age: m.age, title: m.title, type: m.type, critYear: yr,
+                   animal: ANIMALS[ai2].name, element: el.name,
+                   interaction: getInteraction(ANIMALS[ai2].name, birthAnimal.name).type };
+        })[0] || null,
+    };
+
+    html += `<div class="ai-summary-section">
+      <button class="btn-ai" id="btnAI" onclick="requestAISummary()">🔮 Yapay Zeka Yorumu Al</button>
+      <div class="ai-result" id="aiResult"></div>
+    </div>`;
+
     document.getElementById('criticalResult').innerHTML = html;
     document.getElementById('criticalResult').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  async function requestAISummary() {
+    const btn    = document.getElementById('btnAI');
+    const result = document.getElementById('aiResult');
+    if (!btn || !result || !window._aiData) return;
+
+    btn.disabled = true;
+    btn.textContent = '⏳ Yorum hazırlanıyor...';
+    result.classList.remove('visible');
+
+    try {
+      const res  = await fetch(EDGE_FUNCTION_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(window._aiData),
+      });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.error || 'API hatası');
+
+      let h = '';
+      if (data.dogumHaritasi) h += `<div class="ai-block"><div class="ai-block-title">Doğum Haritası</div><div class="ai-block-text">${data.dogumHaritasi}</div></div>`;
+      if (data.mevcutDonem)   h += `<div class="ai-block"><div class="ai-block-title">Mevcut Dönem</div><div class="ai-block-text">${data.mevcutDonem}</div></div>`;
+      if (data.gelecekDonem)  h += `<div class="ai-block"><div class="ai-block-title">Sonraki Dönem</div><div class="ai-block-text">${data.gelecekDonem}</div></div>`;
+      if (data.buyukKutlama)  h += `<div class="ai-block kutlama"><div class="ai-block-title">🎊 60 Yıl Kutlaması</div><div class="ai-block-text">${data.buyukKutlama}</div></div>`;
+      result.innerHTML = h;
+      result.classList.add('visible');
+    } catch (err) {
+      result.innerHTML = `<div class="ai-block"><div class="ai-block-text" style="color:#e87050">Yorum alınamadı: ${err.message}</div></div>`;
+      result.classList.add('visible');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '🔮 Yapay Zeka Yorumu Al';
+    }
+  }
+
+  const EDGE_FUNCTION_URL = 'https://mkmohmyrarqbkpwjpicx.supabase.co/functions/v1/turk-takvim-yorum';
+
+  function getMilestoneDeco(ixType, elemName) {
+    if (ixType === 'clash') return '⚡';
+    const trine  = { 'Ağaç':'🌸🌿', 'Ateş':'🔥✨', 'Metal':'⚔️💫', 'Toprak':'🌾🏔️', 'Su':'💧🌊' };
+    const secret = { 'Ağaç':'🌿',   'Ateş':'🔥',   'Metal':'⚔️',   'Toprak':'🌾',    'Su':'💧'   };
+    if (ixType === 'trine')  return trine[elemName]  || '✨';
+    if (ixType === 'secret') return secret[elemName] || '✦';
+    return '';
   }
 
   // ── Modül 1: Güneş Takvimi Senkronizasyonu ──────────────────────
@@ -1384,7 +1671,7 @@
       + `<span class="int-badge ${ixD.type}">${ixD.icon} Gün ${bD}</span></div>`;
   }
 
-  async function showResult(date) {
+  function showResult(date) {
     const solarYear  = getSolarYear(date);
     const yearIdx    = animalIndex(solarYear);
     const yearAnimal = ANIMALS[yearIdx];
@@ -1420,31 +1707,6 @@
       c.classList.toggle('active', i === yearIdx);
     });
 
-    // Gemini Personal Note Fetch
-    const name = document.getElementById('nameInput').value.trim();
-    const noteBox = document.getElementById('geminiNoteBox');
-    const noteContent = document.getElementById('geminiNoteContent');
-
-    if (name) {
-      noteBox.style.display = 'block';
-      noteContent.textContent = 'Not hazırlanıyor...';
-      const birthdate = date.toISOString().split('T')[0];
-      const edgeFunctionUrl = 'YOUR_SUPABASE_EDGE_FUNCTION_URL'; // User must replace this
-
-      try {
-        const response = await fetch(edgeFunctionUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, birthdate })
-        });
-        if (!response.ok) throw new Error('Not alınamadı.');
-        const data = await response.json();
-        noteContent.textContent = data.finalNote || 'Not bulunamadı.';
-      } catch (error) {
-        console.error('Error fetching Gemini note:', error);
-        noteContent.textContent = 'Kişiselleştirilmiş not alınamadı.';
-      }
-    }
   }
 
   function convert() {

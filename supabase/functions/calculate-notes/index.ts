@@ -35,12 +35,26 @@ interface RequestBody {
 
 const responseSchema = {
   type: "OBJECT",
-  required: ["dogumHaritasi", "mevcutDonem", "gelecekDonem", "buyukKutlama"],
+  required: ["dogumHaritasi", "mevcutDonem", "gelecekDonem", "buyukKutlama", "onemliAnlar"],
   properties: {
     dogumHaritasi: { type: "STRING" },
     mevcutDonem:   { type: "STRING" },
     gelecekDonem:  { type: "STRING" },
     buyukKutlama:  { type: "STRING" },
+    onemliAnlar: {
+      type: "ARRAY",
+      items: {
+        type: "OBJECT",
+        required: ["yil", "yas", "tip", "baslik", "aciklama"],
+        properties: {
+          yil:      { type: "INTEGER" },
+          yas:      { type: "INTEGER" },
+          tip:      { type: "STRING" },   // "olumlu" | "uyari"
+          baslik:   { type: "STRING" },
+          aciklama: { type: "STRING" },
+        },
+      },
+    },
   },
 };
 
@@ -104,7 +118,22 @@ ${over60 ? '\n- Bu kişi 60 yıllık büyük kozmik döngüyü tamamlamıştır.
 1. dogumHaritasi: Üç sütunun yarattığı kişilik enerjisini açıkla. Yıl hayvanının element uyumunu ve genel yaşam temalarını belirt.
 2. mevcutDonem: Mevcut dönemi ve yakın geçmişteki 1-2 kritik yılı ele al. O yıllarda dünyada veya Türkiye'de yaşanan önemli olayları (krizler, dönüşümler, fırsatlar) o yılın hayvanı ile doğum hayvanının uyumu çerçevesinde yorumla. Kötü etkileşim (clash) varsa "dikkat" uyarısı ver.
 3. gelecekDonem: Önümüzdeki 2-3 kritik yılı spesifik yıllarıyla belirt (örn: "2031 yılında Metal Köpek enerjisiyle..."). Clash yıllarında açıkça uyar: "Bu yıl dikkat gerektiren bir dönemdir". Üçlü uyum veya gizli dostluk varsa güçlü destek dönemlerini vurgula.
-4. buyukKutlama: ${over60 ? '60 yıllık kozmik döngüyü tamamlamanın derin anlamını ve nadir bilgelik evresini kutla.' : 'Bu kişi henüz 60 yıllık döngüyü tamamlamadı, bu alanı boş bırak.'}`;
+4. buyukKutlama: ${over60 ? '60 yıllık kozmik döngüyü tamamlamanın derin anlamını ve nadir bilgelik evresini kutla.' : 'Bu kişi henüz 60 yıllık döngüyü tamamlamadı, bu alanı boş bırak.'}
+5. onemliAnlar: Tüm dönemlerden (geçmiş + gelecek) sadece TRINE (üçlü uyum), SECRET (gizli dostluk) ve CLASH (zıtlık) etkileşimli olanları seç. Maksimum 8 madde. Her madde için:
+   - tip: "olumlu" (trine/secret) veya "uyari" (clash)
+   - baslik: 2-4 kelimelik, yaşa uygun olay başlığı (örn: "Kariyer Atılımı", "İlişki Gerginliği", "Sağlığa Dikkat")
+   - aciklama: 2 cümle — (1) o yılın hayvanıyla doğum hayvanının uyumunu açıkla, (2) kişinin o yaşında olası yaşam olaylarını belirt
+
+   Yaş rehberi (kesinlikle uygulanacak):
+   - 0–17: Eğitim, aile dinamikleri, kişilik gelişimi
+   - 18–24: Üniversite, ilk iş, bağımsızlık, ilk ciddi ilişki
+   - 25–35: Kariyer yerleşimi, evlilik, ilk çocuk, ev/araba alma
+   - 36–49: Kariyer zirvesi, aile kararları, ikinci çocuk, girişim
+   - 50–64: Kariyer geçişi, sağlık bilinci, çocukların bağımsızlığı, torunlar
+   - 65–74: Emeklilik, yeni hobiler, torunlar, seyahat
+   - 75+: Sağlık ve denge, aile bağları, miras, bilgelik
+
+   YASAK: Yaşa uymayan öneriler yapma. 45+ için "ilk çocuk" deme. 70+ için "yeni iş kur" deme. 75+ için "evlenme" deme.`;
 
     const res = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${GEMINI_API_KEY}`,

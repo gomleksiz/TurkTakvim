@@ -767,6 +767,10 @@
 <div class="converter">
   <div class="converter-card">
     <div class="input-group">
+      <label for="nameInput">İsminiz:</label>
+      <input type="text" id="nameInput" placeholder="Adınız">
+    </div>
+    <div class="input-group">
       <label for="dateInput">Tarih seçin veya girin:</label>
       <input type="date" id="dateInput">
       <button class="btn-convert" onclick="convert()">Çevir</button>
@@ -777,6 +781,10 @@
       <div class="pillars-grid" id="resPillars"></div>
       <div class="result-desc" id="resDesc"></div>
       <div class="result-years" id="resYears"></div>
+      <div id="geminiNoteBox" class="gemini-note-box" style="display:none;">
+        <div class="gemini-note-header">✨ Kişiselleştirilmiş Not</div>
+        <div id="geminiNoteContent" class="gemini-note-content"></div>
+      </div>
     </div>
   </div>
 </div>
@@ -1376,7 +1384,7 @@
       + `<span class="int-badge ${ixD.type}">${ixD.icon} Gün ${bD}</span></div>`;
   }
 
-  function showResult(date) {
+  async function showResult(date) {
     const solarYear  = getSolarYear(date);
     const yearIdx    = animalIndex(solarYear);
     const yearAnimal = ANIMALS[yearIdx];
@@ -1411,6 +1419,32 @@
     document.querySelectorAll('.animal-card').forEach((c, i) => {
       c.classList.toggle('active', i === yearIdx);
     });
+
+    // Gemini Personal Note Fetch
+    const name = document.getElementById('nameInput').value.trim();
+    const noteBox = document.getElementById('geminiNoteBox');
+    const noteContent = document.getElementById('geminiNoteContent');
+
+    if (name) {
+      noteBox.style.display = 'block';
+      noteContent.textContent = 'Not hazırlanıyor...';
+      const birthdate = date.toISOString().split('T')[0];
+      const edgeFunctionUrl = 'YOUR_SUPABASE_EDGE_FUNCTION_URL'; // User must replace this
+
+      try {
+        const response = await fetch(edgeFunctionUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, birthdate })
+        });
+        if (!response.ok) throw new Error('Not alınamadı.');
+        const data = await response.json();
+        noteContent.textContent = data.finalNote || 'Not bulunamadı.';
+      } catch (error) {
+        console.error('Error fetching Gemini note:', error);
+        noteContent.textContent = 'Kişiselleştirilmiş not alınamadı.';
+      }
+    }
   }
 
   function convert() {

@@ -1333,6 +1333,7 @@
       name: (document.getElementById('nameInput')?.value || '').trim(),
       gender: selectedGender,
       birthDate: val,
+      birthYear: gercekYil,
       yearPillar:  { animal: birthAnimal.name,   element: birthElem.name      },
       monthPillar: { animal: birthMonthP.animal, element: birthMonthP.element },
       dayPillar:   { animal: birthDayP.animal,   element: birthDayP.element   },
@@ -1343,6 +1344,13 @@
       },
       currentAge,
       over60,
+      allMilestones: milestones.map(m => {
+        const yr = gercekYil + m.age, ai2 = animalIndex(yr), el = getElement(yr);
+        const ix = getInteraction(ANIMALS[ai2].name, birthAnimal.name).type;
+        return { age: m.age, title: m.title, type: m.type, critYear: yr,
+                 animal: ANIMALS[ai2].name, element: el.name, interaction: ix,
+                 isPast: yr < currentYear - 1, isPresent: Math.abs(yr - currentYear) <= 1 };
+      }),
       currentMilestone: milestones
         .filter(m => Math.abs((gercekYil + m.age) - currentYear) <= 1)
         .map(m => {

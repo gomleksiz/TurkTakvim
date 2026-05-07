@@ -9,22 +9,25 @@ const cors = {
 };
 
 interface Pillar { animal: string; element: string; }
-interface Milestone {
+interface MilestoneEntry {
   age: number; title: string; type: string;
   critYear: number; animal: string; element: string; interaction: string;
+  isPast: boolean; isPresent: boolean;
 }
 interface RequestBody {
   name?: string;
   gender: "female" | "male";
   birthDate: string;
+  birthYear: number;
   yearPillar: Pillar;
   monthPillar: Pillar;
   dayPillar: Pillar;
   interactions: { yearMonth: string; yearDay: string; monthDay: string };
   currentAge: number;
   over60: boolean;
-  currentMilestone?: Milestone;
-  nextMilestone?: Milestone;
+  allMilestones: MilestoneEntry[];
+  currentMilestone?: MilestoneEntry;
+  nextMilestone?: MilestoneEntry;
 }
 
 const responseSchema = {
@@ -38,6 +41,14 @@ const responseSchema = {
   },
 };
 
+const ixLabel: Record<string, string> = {
+  trine:   "Üçlü Uyum (güç ve akış)",
+  secret:  "Gizli Dostluk (sessiz destek)",
+  clash:   "Zıtlık/Gerilim (dikkat, dönüşüm baskısı)",
+  neutral: "Nötr",
+  same:    "Aynı enerji (yoğunlaşma)",
+};
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: cors });
@@ -48,58 +59,52 @@ serve(async (req) => {
 
     const body: RequestBody = await req.json();
     const {
-      name, gender, birthDate,
+      name, gender, birthDate, birthYear,
       yearPillar, monthPillar, dayPillar,
       interactions, currentAge, over60,
-      currentMilestone, nextMilestone,
+      allMilestones = [],
     } = body;
 
-    const genderTR = gender === "female" ? "Kadın" : "Erkek";
+    const genderTR   = gender === "female" ? "Kadın" : "Erkek";
     const cycleYears = gender === "female" ? "7" : "8";
 
-    const ixLabel: Record<string, string> = {
-      trine:   "Üçlü Uyum — güçlü akış ve destek",
-      secret:  "Gizli Dostluk — sessiz koruma",
-      clash:   "Zıtlık / Gerilim — dönüşüm baskısı",
-      neutral: "Nötr",
-      same:    "Aynı enerji — yoğunlaşma",
-    };
+    const pastMilestones    = allMilestones.filter(m => m.isPast);
+    const presentMilestone  = allMilestones.find(m => m.isPresent);
+    const futureMilestones  = allMilestones.filter(m => !m.isPast && !m.isPresent);
 
-    const prompt = `Sen 12 Hayvanlı Türk Takvimi (BaZi) astrolojisinde uzman bir yorumcusun. \
-Kısa, sıcak, içgörülü ve Türkçe yorumlar yazıyorsun. \
-Her alan 2-3 cümle olsun. Mistik ama gerçekçi bir ton kullan.
+    const formatMilestone = (m: MilestoneEntry) =>
+      `  • ${m.critYear} yılı (${m.age} yaş) — ${m.element} ${m.animal} · ${m.title} · Doğum hayvanıyla: ${ixLabel[m.interaction] ?? m.interaction}${m.interaction === 'clash' ? ' ⚠️' : ''}`;
 
-Kişi bilgileri:
+    const prompt = `Sen 12 Hayvanlı Türk Takvimi (BaZi) astrolojisinde uzman, derin tarihsel bilgiye sahip bir yorumcusun.
+Yorumların Türkçe, sıcak, içgörülü ve mistik ama gerçekçi olsun. Her alan 4-5 cümle olsun.
+
+━━ KİŞİ BİLGİLERİ ━━
 - ${name ? `İsim: ${name}` : "İsimsiz"}
 - Cinsiyet: ${genderTR} (${cycleYears} yıllık biyolojik döngü)
-- Yaş: ${currentAge}
-- Yıl Sütunu (Dış Hayvan / Sosyal Vitrin): ${yearPillar.element} ${yearPillar.animal}
-- Ay Sütunu (İçsel Hayvan / Duygusal Temel): ${monthPillar.element} ${monthPillar.animal}
-- Gün Sütunu (Gerçek Hayvan / Öz Kimlik): ${dayPillar.element} ${dayPillar.animal}
-- Yıl×Ay etkileşimi: ${ixLabel[interactions.yearMonth] ?? interactions.yearMonth}
-- Yıl×Gün etkileşimi: ${ixLabel[interactions.yearDay] ?? interactions.yearDay}
-- Ay×Gün etkileşimi: ${ixLabel[interactions.monthDay] ?? interactions.monthDay}
-${currentMilestone
-  ? `- Mevcut kritik dönem: ${currentMilestone.age} yaş · ${currentMilestone.title} \
-(${currentMilestone.element} ${currentMilestone.animal} yılı · \
-${ixLabel[currentMilestone.interaction] ?? currentMilestone.interaction})`
-  : ""}
-${nextMilestone
-  ? `- Bir sonraki kritik dönem: ${nextMilestone.age} yaş · ${nextMilestone.title} \
-(${nextMilestone.element} ${nextMilestone.animal} yılı · \
-${ixLabel[nextMilestone.interaction] ?? nextMilestone.interaction})`
-  : ""}
+- Yaş: ${currentAge} · Doğum Yılı: ${birthYear}
+- Yıl Sütunu (Sosyal Vitrin): ${yearPillar.element} ${yearPillar.animal}
+- Ay Sütunu (Duygusal Temel): ${monthPillar.element} ${monthPillar.animal}
+- Gün Sütunu (Öz Kimlik): ${dayPillar.element} ${dayPillar.animal}
+- Sütun etkileşimleri: Yıl×Ay ${ixLabel[interactions.yearMonth]}, Yıl×Gün ${ixLabel[interactions.yearDay]}, Ay×Gün ${ixLabel[interactions.monthDay]}
 
-Alanları şöyle doldur:
-- dogumHaritasi: Üç sütunun birlikte yarattığı kişilik enerjisi.
-- mevcutDonem: Şu anki dönemin teması ve kişisel mesaj.
-- gelecekDonem: Bir sonraki döneme hazırlık önerisi.
-- buyukKutlama: ${over60
-  ? "60 yıllık kozmik döngüyü tamamlamanın anlam ve kutlaması."
-  : "Bu kişi henüz 60 yıllık döngüyü tamamlamadı, bu alanı boş bırak."}`;
+━━ GEÇMİŞ KRİTİK DÖNEMLER ━━
+${pastMilestones.length ? pastMilestones.map(formatMilestone).join('\n') : '  (yok)'}
+
+━━ MEVCUT DÖNEM ━━
+${presentMilestone ? formatMilestone(presentMilestone) : '  (kritik eşikte değil)'}
+
+━━ GELECEK KRİTİK DÖNEMLER ━━
+${futureMilestones.length ? futureMilestones.map(formatMilestone).join('\n') : '  (yok)'}
+${over60 ? '\n- Bu kişi 60 yıllık büyük kozmik döngüyü tamamlamıştır.' : ''}
+
+━━ YORUM KURALLARI ━━
+1. dogumHaritasi: Üç sütunun yarattığı kişilik enerjisini açıkla. Yıl hayvanının element uyumunu ve genel yaşam temalarını belirt.
+2. mevcutDonem: Mevcut dönemi ve yakın geçmişteki 1-2 kritik yılı ele al. O yıllarda dünyada veya Türkiye'de yaşanan önemli olayları (krizler, dönüşümler, fırsatlar) o yılın hayvanı ile doğum hayvanının uyumu çerçevesinde yorumla. Kötü etkileşim (clash) varsa "dikkat" uyarısı ver.
+3. gelecekDonem: Önümüzdeki 2-3 kritik yılı spesifik yıllarıyla belirt (örn: "2031 yılında Metal Köpek enerjisiyle..."). Clash yıllarında açıkça uyar: "Bu yıl dikkat gerektiren bir dönemdir". Üçlü uyum veya gizli dostluk varsa güçlü destek dönemlerini vurgula.
+4. buyukKutlama: ${over60 ? '60 yıllık kozmik döngüyü tamamlamanın derin anlamını ve nadir bilgelik evresini kutla.' : 'Bu kişi henüz 60 yıllık döngüyü tamamlamadı, bu alanı boş bırak.'}`;
 
     const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-latest:generateContent?key=${GEMINI_API_KEY}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${GEMINI_API_KEY}`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -120,7 +125,6 @@ Alanları şöyle doldur:
     const parts = gemini.candidates?.[0]?.content?.parts;
     if (!parts?.length) throw new Error(`Gemini yanıtı beklenmeyen formatta: ${JSON.stringify(gemini)}`);
 
-    // Thinking models return a thought part first; find the actual output part
     const outputPart = parts.find((p: { thought?: boolean; text?: string }) => !p.thought && p.text) ?? parts[parts.length - 1];
     const parsed = JSON.parse(outputPart.text);
 

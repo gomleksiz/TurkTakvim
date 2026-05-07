@@ -1409,13 +1409,38 @@
       },
       currentAge,
       over60,
-      allMilestones: milestones.map(m => {
-        const yr = gercekYil + m.age, ai2 = animalIndex(yr), el = getElement(yr);
-        const ix = getInteraction(ANIMALS[ai2].name, birthAnimal.name).type;
-        return { age: m.age, title: m.title, type: m.type, critYear: yr,
-                 animal: ANIMALS[ai2].name, element: el.name, interaction: ix,
-                 isPast: yr < currentYear - 1, isPresent: Math.abs(yr - currentYear) <= 1 };
-      }),
+      allMilestones: (() => {
+        const list = milestones.map(m => {
+          const yr  = gercekYil + m.age;
+          const ai2 = animalIndex(yr);
+          const el  = getElement(yr);
+          const ix  = getInteraction(ANIMALS[ai2].name, birthAnimal.name).type;
+          const entry = {
+            age: m.age, title: m.title, type: m.type, critYear: yr,
+            animal: ANIMALS[ai2].name, element: el.name, interaction: ix,
+            isPast: yr < currentYear - 1, isPresent: Math.abs(yr - currentYear) <= 1,
+          };
+          if (m.type === 'norolojik' || m.type === 'kesisim') {
+            entry.brainScore = calcBrainScore(
+              ANIMALS[ai2].name, birthAnimal.name, birthMonthP.animal, birthDayP.animal
+            );
+          }
+          return entry;
+        });
+        // Beyin güncellemesi sonraki döneme etki eder: bir sonraki biyolojik/kozmolojik milestona skoru aktar
+        let lastBrain = null;
+        list.forEach(e => {
+          if (e.brainScore !== undefined) {
+            lastBrain = { score: e.brainScore, title: e.title, year: e.critYear };
+          } else if (lastBrain !== null) {
+            e.precedingBrainScore = lastBrain.score;
+            e.precedingBrainTitle = lastBrain.title;
+            e.precedingBrainYear  = lastBrain.year;
+            lastBrain = null;
+          }
+        });
+        return list;
+      })(),
       currentMilestone: milestones
         .filter(m => Math.abs((gercekYil + m.age) - currentYear) <= 1)
         .map(m => {
@@ -1743,6 +1768,21 @@
     if (SECRET_FRIENDS[a] === b) return { type: 'secret', label: 'Gizli Dostluk', icon: '🤝' };
     if (CLASHES[a] === b)        return { type: 'clash',  label: 'Zıtlık / Gerilim', icon: '⚡' };
     return { type: 'neutral', label: 'Nötr', icon: '·' };
+  }
+
+  function scoreIx(ixType) {
+    if (ixType === 'trine')  return 1;
+    if (ixType === 'secret') return 0.5;
+    if (ixType === 'clash')  return -1;
+    return 0;
+  }
+
+  // Beyin güncellemesi skoru: kritik yıl hayvanı × 3 doğum sütunu uyumu
+  // trine=+1, gizli dostluk=+0.5, clash=-1, nötr/aynı=0 → toplam: -3 .. +3
+  function calcBrainScore(critAnim, bY, bM, bD) {
+    return scoreIx(getInteraction(critAnim, bY).type)
+         + scoreIx(getInteraction(critAnim, bM).type)
+         + scoreIx(getInteraction(critAnim, bD).type);
   }
 
   function ixBadge(a, b, labelA, labelB) {

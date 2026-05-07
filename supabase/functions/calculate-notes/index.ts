@@ -16,6 +16,10 @@ interface MilestoneEntry {
   age: number; title: string; type: string;
   critYear: number; animal: string; element: string; interaction: string;
   isPast: boolean; isPresent: boolean;
+  brainScore?: number;
+  precedingBrainScore?: number;
+  precedingBrainTitle?: string;
+  precedingBrainYear?: number;
 }
 interface RequestBody {
   name?: string;
@@ -91,8 +95,18 @@ serve(async (req) => {
     const presentMilestone  = allMilestones.find(m => m.isPresent);
     const futureMilestones  = allMilestones.filter(m => !m.isPast && !m.isPresent);
 
-    const formatMilestone = (m: MilestoneEntry) =>
-      `  • ${m.critYear} yılı (${m.age} yaş) — ${m.element} ${m.animal} · ${m.title} · Doğum hayvanıyla: ${ixLabel[m.interaction] ?? m.interaction}${m.interaction === 'clash' ? ' ⚠️' : ''}`;
+    const formatMilestone = (m: MilestoneEntry) => {
+      let line = `  • ${m.critYear} yılı (${m.age} yaş) — ${m.element} ${m.animal} · ${m.title} · Doğum hayvanıyla: ${ixLabel[m.interaction] ?? m.interaction}${m.interaction === 'clash' ? ' ⚠️' : ''}`;
+      if (m.brainScore !== undefined) {
+        const s = m.brainScore > 0 ? `+${m.brainScore}` : `${m.brainScore}`;
+        line += ` [Beyin Skoru: ${s}/3]`;
+      }
+      if (m.precedingBrainScore !== undefined) {
+        const s = m.precedingBrainScore > 0 ? `+${m.precedingBrainScore}` : `${m.precedingBrainScore}`;
+        line += ` [Önceki: ${m.precedingBrainTitle} (${m.precedingBrainYear}) → Skor ${s}]`;
+      }
+      return line;
+    };
 
     const prompt = `Sen 12 Hayvanlı Türk Takvimi (BaZi) astrolojisinde uzman, derin tarihsel bilgiye sahip bir yorumcusun.
 Yorumların Türkçe, sıcak, içgörülü ve mistik ama gerçekçi olsun. Her alan 4-5 cümle olsun.
@@ -121,7 +135,9 @@ ${over60 ? '\n- Bu kişi 60 yıllık büyük kozmik döngüyü tamamlamıştır.
 2. mevcutDonem: Mevcut dönemi ve yakın geçmişteki 1-2 kritik yılı ele al. O yıllarda dünyada veya Türkiye'de yaşanan önemli olayları (krizler, dönüşümler, fırsatlar) o yılın hayvanı ile doğum hayvanının uyumu çerçevesinde yorumla. Kötü etkileşim (clash) varsa "dikkat" uyarısı ver.
 3. gelecekDonem: Önümüzdeki 2-3 kritik yılı spesifik yıllarıyla belirt (örn: "2031 yılında Metal Köpek enerjisiyle..."). Clash yıllarında açıkça uyar: "Bu yıl dikkat gerektiren bir dönemdir". Üçlü uyum veya gizli dostluk varsa güçlü destek dönemlerini vurgula.
 4. buyukKutlama: ${over60 ? '60 yıllık kozmik döngüyü tamamlamanın derin anlamını ve nadir bilgelik evresini kutla.' : 'Bu kişi henüz 60 yıllık döngüyü tamamlamadı, bu alanı boş bırak.'}
-5. onemliAnlar: Tüm dönemlerden (geçmiş + gelecek) sadece TRINE, SECRET ve CLASH etkileşimli olanları seç. Maksimum 10 madde, KRONOLOJİK SIRA ile (eski yıldan yeni yıla). Her madde için:
+5. onemliAnlar: Tüm dönemlerden (geçmiş + gelecek) sadece TRINE, SECRET ve CLASH etkileşimli olanları seç.
+   KESİNLİKLE NOROLOJİK TİPİNDEKİLERİ DAHIL ETME (type === "norolojik" veya "kesisim" olanlar listeye girmesin).
+   Maksimum 10 madde, KRONOLOJİK SIRA ile (eski yıldan yeni yıla). Her madde için:
    - yil, yas: tablodakinin aynısı
    - hayvan, element: o kritik yılın hayvanı ve elementi
    - tip: "olumlu" (TRINE/SECRET) veya "uyari" (CLASH)
@@ -131,6 +147,12 @@ ${over60 ? '\n- Bu kişi 60 yıllık büyük kozmik döngüyü tamamlamıştır.
      • Yıl gelecekse: "Bu yıl … için elverişli olabilir" / "Bu dönemde dikkatli olmak faydalıdır" tonu (kesin tahmin değil, hazırlık)
      • Mutlaka o yılın hayvanı ile doğum hayvanının ilişkisine değin (örn: "At, doğum hayvanınız Köpek ile aksiyon-liderlik üçlüsünde yer alır")
      • Yaş grubuna uygun YAŞAM OLAYI öner (aşağıdaki rehbere göre)
+     • Eğer madde "[Önceki: X Beyin Güncellemesi → Skor Y]" bilgisi taşıyorsa, aciklamanın SON cümlesinde bu etkiyi dahil et:
+       - Skor > 0 VE tip="olumlu"  → "Üstelik [X] çok uyumlu geçtiğinden bu dönemin fırsatları katlanarak büyüyebilir."
+       - Skor < 0 VE tip="uyari"   → "Buna ek olarak [X] uyumsuz geçtiğinden bu dönem ekstra zorlayıcı olabilir — özellikle dikkatli olunması önerilir."
+       - Skor > 0 VE tip="uyari"   → "[X] uyumlu geçtiğinden bu zorlu dönemde içsel dayanıklılık kaynaklarınız güçlü olacaktır."
+       - Skor < 0 VE tip="olumlu"  → "[X] uyumsuz geçtiğinden bu dönemin güzel fırsatlarını değerlendirmek biraz ek çaba gerektirebilir."
+       - Skor = 0: beyin güncellemesini ayrıca belirtme.
 
    ━ YAŞAM EVRELERİNDE TİPİK OLAYLAR ━
 

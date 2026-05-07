@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
-const ANTHROPIC_API_KEY = Deno.env.get("ANTHROPIC_API_KEY");
+const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
 
 const cors = {
   "Access-Control-Allow-Origin": "*",
@@ -33,7 +33,7 @@ serve(async (req) => {
   }
 
   try {
-    if (!ANTHROPIC_API_KEY) throw new Error("ANTHROPIC_API_KEY yapılandırılmamış");
+    if (!GEMINI_API_KEY) throw new Error("GEMINI_API_KEY yapılandırılmamış");
 
     const body: RequestBody = await req.json();
     const {
@@ -80,7 +80,7 @@ ${ixLabel[nextMilestone.interaction] ?? nextMilestone.interaction})`
   : ""}
 ${over60 ? "- Bu kişi 60 yıllık büyük kozmik döngüyü tamamlamıştır." : ""}
 
-Aşağıdaki JSON nesnesini döndür (başka metin ekleme):
+Aşağıdaki JSON nesnesini döndür (başka metin ekleme, sadece JSON):
 {
   "dogumHaritasi": "Üç sütunun birlikte yarattığı kişilik enerjisi.",
   "mevcutDonem": "Şu anki dönemin teması ve kişisel mesaj.",
@@ -88,24 +88,22 @@ Aşağıdaki JSON nesnesini döndür (başka metin ekleme):
   "buyukKutlama": "60 yıllık döngüyü tamamlamanın anlam ve kutlaması."` : ""}
 }`;
 
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": ANTHROPIC_API_KEY,
-        "anthropic-version": "2023-06-01",
-      },
-      body: JSON.stringify({
-        model: "claude-haiku-4-5-20251001",
-        max_tokens: 900,
-        messages: [{ role: "user", content: prompt }],
-      }),
-    });
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: { temperature: 0.7, maxOutputTokens: 900 },
+        }),
+      }
+    );
 
-    if (!res.ok) throw new Error(`Anthropic API hatası: ${await res.text()}`);
+    if (!res.ok) throw new Error(`Gemini API hatası: ${await res.text()}`);
 
-    const ai = await res.json();
-    const text: string = ai.content[0].text;
+    const gemini = await res.json();
+    const text: string = gemini.candidates[0].content.parts[0].text;
     const match = text.match(/\{[\s\S]*\}/);
     if (!match) throw new Error("AI yanıtı JSON formatında değil");
     const parsed = JSON.parse(match[0]);

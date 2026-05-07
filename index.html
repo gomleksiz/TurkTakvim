@@ -41,21 +41,6 @@
     }
 
     /* ── Converter Section ── */
-    .converter {
-      max-width: 620px;
-      margin: 2rem auto;
-      padding: 0 1rem;
-    }
-
-    .converter-card {
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(232,195,106,0.3);
-      border-radius: 16px;
-      padding: 2rem;
-      backdrop-filter: blur(4px);
-    }
-
-    .input-group {
       display: flex;
       gap: 0.75rem;
       flex-wrap: wrap;
@@ -925,38 +910,20 @@
   </div>
 </div>
 
-<!-- Converter -->
-<div class="converter">
-  <div class="converter-card">
-    <div class="input-group">
-      <label for="nameInput">İsminiz:</label>
-      <input type="text" id="nameInput" placeholder="Adınız">
-    </div>
-    <div class="input-group">
-      <label for="dateInput">Tarih seçin veya girin:</label>
-      <input type="date" id="dateInput">
-      <button class="btn-convert" onclick="convert()">Çevir</button>
-    </div>
-    <div class="result-box" id="resultBox">
-      <div class="result-date-line" id="resDateLine"></div>
-      <div class="result-turkic-date" id="resTurkicDate"></div>
-      <div class="pillars-grid" id="resPillars"></div>
-      <div class="result-desc" id="resDesc"></div>
-      <div class="result-years" id="resYears"></div>
-    </div>
-  </div>
-</div>
-
 <!-- Critical Years Calculator -->
 <div class="critical-section">
   <div class="section-title">— Kritik Yaş Haritası —</div>
   <div class="critical-card">
     <div class="birth-form">
-      <div class="form-group">
+      <div class="input-group">
+        <label for="nameInput">İsminiz</label>
+        <input type="text" id="nameInput" placeholder="Adınız (isteğe bağlı)">
+      </div>
+      <div class="input-group">
         <label for="birthDate">Doğum Tarihi</label>
         <input type="date" id="birthDate">
       </div>
-      <div class="form-group">
+      <div class="input-group" style="flex-direction:column">
         <label>Cinsiyet</label>
         <div class="gender-buttons">
           <button class="gender-btn active" id="genderF" onclick="selectGender('female')">♀ Kadın</button>
@@ -1315,7 +1282,7 @@
             <div class="lt-title">${m.title}</div>
             ${showDetail ? `
               <div class="lt-detail">${reading}</div>
-              <div class="lt-pillar-note"><strong style="color:${dp.color}">${dp.label}</strong></div>
+              <div class="lt-pillar-note" style="color:${dp.color}">${dp.icon}</div>
               ${critInteractionsHTML(animal.name, birthAnimal.name, birthMonthP.animal, birthDayP.animal)}
             ` : ''}
           </div>
@@ -1581,13 +1548,6 @@
     return new Date(y, m - 1, d);
   }
 
-  function toInputValue(date) {
-    const y = date.getFullYear();
-    const m = String(date.getMonth() + 1).padStart(2, '0');
-    const d = String(date.getDate()).padStart(2, '0');
-    return `${y}-${m}-${d}`;
-  }
-
   function pillarHTML(label, subtitle, desc, elem, animalName, animalIcon) {
     const ed = ELEMENT_DATA[elem] || {};
     return `<div class="pillar-card">
@@ -1601,26 +1561,10 @@
   }
 
   function getDominantPillar(age) {
-    if (age < 25) return {
-      label: 'Ay Hayvanı (İçsel) baskın',
-      note: 'Gençlik dönemi (0–24 yaş): iç dünya, ebeveyn ilişkisi ve aşk hayatını Ay Hayvanı yönetir.',
-      color: '#5bb8e8'
-    };
-    if (age < 32) return {
-      label: 'Geçiş dönemi',
-      note: 'Yıl ve Ay Hayvanı etkisi azalır; Gün Hayvanı (Gerçek Burç) yükselmeye başlar.',
-      color: '#c9a96e'
-    };
-    if (age === 32) return {
-      label: 'Gün Hayvanı devreye giriyor',
-      note: '32. yaşın büyük beyin güncellemesiyle Gün Hayvanı (Gerçek Burç) tam anlamıyla devralır: öz kimlik ve yetişkinlik.',
-      color: '#6dbf6d'
-    };
-    return {
-      label: 'Gün Hayvanı (Gerçek) baskın',
-      note: 'Yetişkinlik dönemi (32+ yaş): öz kimlik ve evliliği Gün Hayvanı yönetir. Yıl Hayvanı sosyal vitrin olarak varlığını sürdürür.',
-      color: '#6dbf6d'
-    };
+    if (age < 25) return { icon: '🌙', color: '#5bb8e8' };
+    if (age < 32)  return { icon: '🌗', color: '#c9a96e' };
+    if (age === 32) return { icon: '☀️', color: '#6dbf6d' };
+    return { icon: '☀️', color: '#6dbf6d' };
   }
 
   // ── Etkileşim Matrisi (Interaction Matrix) ──────────────────────
@@ -1684,65 +1628,6 @@
       + `<span class="int-badge ${ixD.type}">${ixD.icon} Gün ${bD}</span></div>`;
   }
 
-  function showResult(date) {
-    const solarYear  = getSolarYear(date);
-    const yearIdx    = animalIndex(solarYear);
-    const yearAnimal = ANIMALS[yearIdx];
-    const yearElem   = getElement(solarYear);
-    const monthP     = getMonthPillar(date, solarYear);
-    const dayP       = getDayPillar(date);
-    const lunar      = turkicLunarDate(date);
-
-    document.getElementById('resDateLine').textContent = formatDateTR(date);
-    document.getElementById('resTurkicDate').textContent =
-      `Türk Takvimi: ${lunar.monthName} · ${lunar.day}. gün`;
-
-    const monthAnimalObj = animalByName(monthP.animal);
-    const dayAnimalObj   = animalByName(dayP.animal);
-
-    document.getElementById('resPillars').innerHTML =
-      pillarHTML('Yıl Sütunu',  'Dış Hayvan · Sosyal Vitrin',     'Dışa yansıyan yüz; aile mirası ve genel yaşam çerçevesi.', yearElem.name, yearAnimal.name, yearAnimal.icon) +
-      pillarHTML('Ay Sütunu',   'İçsel Hayvan · Duygusal Temel',  'İç dünya, gençlik (0–24 yaş) ve aşk hayatı üzerinde güçlü etki.', monthP.element, monthP.animal, monthAnimalObj.icon) +
-      pillarHTML('Gün Sütunu',  'Gerçek Hayvan · Öz Kimlik',      '32 yaş sonrası baskın burç; öz kimlik ve evlilik.', dayP.element, dayP.animal, dayAnimalObj.icon) +
-      interactionsHTML(yearAnimal.name, monthP.animal, dayP.animal);
-
-    document.getElementById('resDesc').textContent = yearAnimal.prophecy;
-
-    const { past, future } = splitYears(yearIdx);
-    const pastHtml   = past.slice(-5).map(y => `<span onclick="setDateYear(${y})">${y}</span>`).join(' ');
-    const futureHtml = future.slice(0, 6).map(y => `<span class="future-year" onclick="setDateYear(${y})">${y}</span>`).join(' ');
-    document.getElementById('resYears').innerHTML =
-      `<span class="years-label">Geçmiş:</span> ${pastHtml} &nbsp;<span class="years-label">Gelecek:</span> ${futureHtml}`;
-
-    document.getElementById('resultBox').classList.add('visible');
-
-    document.querySelectorAll('.animal-card').forEach((c, i) => {
-      c.classList.toggle('active', i === yearIdx);
-    });
-
-  }
-
-  function convert() {
-    const val = document.getElementById('dateInput').value;
-    if (!val) return;
-    showResult(parseLocalDate(val));
-  }
-
-  // Set just the year, keep month+day from current input or use Jan 1
-  function setDateYear(year) {
-    const cur = document.getElementById('dateInput').value;
-    let newDate;
-    if (cur) {
-      const d = parseLocalDate(cur);
-      newDate = new Date(year, d.getMonth(), d.getDate());
-    } else {
-      newDate = new Date(year, 0, 1);
-    }
-    document.getElementById('dateInput').value = toInputValue(newDate);
-    showResult(newDate);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-
   // Build today banner
   function buildToday() {
     const today     = new Date();
@@ -1785,10 +1670,6 @@
         <div class="card-altname">${animal.altName}</div>
         <div class="card-years">${recentStr}…</div>
       `;
-      card.addEventListener('click', () => {
-        const nearestYear = getRecentYears(i).find(y => y >= currentYear - 6) || getRecentYears(i).at(-1);
-        setDateYear(nearestYear);
-      });
       grid.appendChild(card);
     });
   }
@@ -1796,10 +1677,6 @@
   // Init
   buildToday();
   buildGrid();
-
-  const today = new Date();
-  document.getElementById('dateInput').value = toInputValue(today);
-  showResult(today);
 </script>
 </body>
 </html>

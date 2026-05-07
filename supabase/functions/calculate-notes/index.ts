@@ -27,6 +27,17 @@ interface RequestBody {
   nextMilestone?: Milestone;
 }
 
+const responseSchema = {
+  type: "OBJECT",
+  required: ["dogumHaritasi", "mevcutDonem", "gelecekDonem", "buyukKutlama"],
+  properties: {
+    dogumHaritasi: { type: "STRING" },
+    mevcutDonem:   { type: "STRING" },
+    gelecekDonem:  { type: "STRING" },
+    buyukKutlama:  { type: "STRING" },
+  },
+};
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: cors });
@@ -56,7 +67,7 @@ serve(async (req) => {
 
     const prompt = `Sen 12 Hayvanlı Türk Takvimi (BaZi) astrolojisinde uzman bir yorumcusun. \
 Kısa, sıcak, içgörülü ve Türkçe yorumlar yazıyorsun. \
-Her bölüm 2-3 cümle olsun. Mistik ama gerçekçi bir ton kullan.
+Her alan 2-3 cümle olsun. Mistik ama gerçekçi bir ton kullan.
 
 Kişi bilgileri:
 - ${name ? `İsim: ${name}` : "İsimsiz"}
@@ -78,15 +89,14 @@ ${nextMilestone
 (${nextMilestone.element} ${nextMilestone.animal} yılı · \
 ${ixLabel[nextMilestone.interaction] ?? nextMilestone.interaction})`
   : ""}
-${over60 ? "- Bu kişi 60 yıllık büyük kozmik döngüyü tamamlamıştır." : ""}
 
-Aşağıdaki JSON nesnesini döndür (başka metin ekleme, sadece JSON):
-{
-  "dogumHaritasi": "Üç sütunun birlikte yarattığı kişilik enerjisi.",
-  "mevcutDonem": "Şu anki dönemin teması ve kişisel mesaj.",
-  "gelecekDonem": "Bir sonraki döneme hazırlık önerisi."${over60 ? `,
-  "buyukKutlama": "60 yıllık döngüyü tamamlamanın anlam ve kutlaması."` : ""}
-}`;
+Alanları şöyle doldur:
+- dogumHaritasi: Üç sütunun birlikte yarattığı kişilik enerjisi.
+- mevcutDonem: Şu anki dönemin teması ve kişisel mesaj.
+- gelecekDonem: Bir sonraki döneme hazırlık önerisi.
+- buyukKutlama: ${over60
+  ? "60 yıllık kozmik döngüyü tamamlamanın anlam ve kutlaması."
+  : "Bu kişi henüz 60 yıllık döngüyü tamamlamadı, bu alanı boş bırak."}`;
 
     const res = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-latest:generateContent?key=${GEMINI_API_KEY}`,
@@ -94,10 +104,11 @@ Aşağıdaki JSON nesnesini döndür (başka metin ekleme, sadece JSON):
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
+          contents: [{ role: "user", parts: [{ text: prompt }] }],
           generationConfig: {
-            maxOutputTokens: 900,
             thinkingConfig: { thinkingBudget: -1 },
+            responseMimeType: "application/json",
+            responseSchema,
           },
         }),
       }
@@ -106,10 +117,7 @@ Aşağıdaki JSON nesnesini döndür (başka metin ekleme, sadece JSON):
     if (!res.ok) throw new Error(`Gemini API hatası: ${await res.text()}`);
 
     const gemini = await res.json();
-    const text: string = gemini.candidates[0].content.parts[0].text;
-    const match = text.match(/\{[\s\S]*\}/);
-    if (!match) throw new Error("AI yanıtı JSON formatında değil");
-    const parsed = JSON.parse(match[0]);
+    const parsed = JSON.parse(gemini.candidates[0].content.parts[0].text);
 
     return new Response(JSON.stringify({ success: true, ...parsed }), {
       headers: { ...cors, "Content-Type": "application/json" },

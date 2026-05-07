@@ -1,6 +1,9 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
+const GEMINI_API_KEY  = Deno.env.get("GEMINI_API_KEY");
+const SUPABASE_URL    = Deno.env.get("SUPABASE_URL")!;
+const SUPABASE_KEY    = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
 const cors = {
   "Access-Control-Allow-Origin": "*",
@@ -127,6 +130,29 @@ ${over60 ? '\n- Bu kişi 60 yıllık büyük kozmik döngüyü tamamlamıştır.
 
     const outputPart = parts.find((p: { thought?: boolean; text?: string }) => !p.thought && p.text) ?? parts[parts.length - 1];
     const parsed = JSON.parse(outputPart.text);
+
+    // Veritabanına kaydet (hata olursa sessizce geç, yanıtı engelleme)
+    try {
+      const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+      await supabase.from("ai_requests").insert({
+        name:           name || null,
+        gender,
+        birth_date:     birthDate,
+        birth_year:     birthYear,
+        current_age:    currentAge,
+        over_60:        over60,
+        year_animal:    yearPillar.animal,
+        year_element:   yearPillar.element,
+        month_animal:   monthPillar.animal,
+        month_element:  monthPillar.element,
+        day_animal:     dayPillar.animal,
+        day_element:    dayPillar.element,
+        dogum_haritasi: parsed.dogumHaritasi ?? null,
+        mevcut_donem:   parsed.mevcutDonem   ?? null,
+        gelecek_donem:  parsed.gelecekDonem  ?? null,
+        buyuk_kutlama:  parsed.buyukKutlama  ?? null,
+      });
+    } catch (_dbErr) { /* DB hatası yanıtı engellemesin */ }
 
     return new Response(JSON.stringify({ success: true, ...parsed }), {
       headers: { ...cors, "Content-Type": "application/json" },

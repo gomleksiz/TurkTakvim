@@ -1772,13 +1772,13 @@
 
   function scoreIx(ixType) {
     if (ixType === 'trine')  return 1;
-    if (ixType === 'secret') return 0.5;
+    if (ixType === 'secret') return 1.5;
     if (ixType === 'clash')  return -1;
     return 0;
   }
 
   // Beyin güncellemesi skoru: kritik yıl hayvanı × 3 doğum sütunu uyumu
-  // trine=+1, gizli dostluk=+0.5, clash=-1, nötr/aynı=0 → toplam: -3 .. +3
+  // trine=+1, gizli dostluk=+1.5, clash=-1, nötr/aynı=0 → toplam: -3 .. +4.5
   function calcBrainScore(critAnim, bY, bM, bD) {
     return scoreIx(getInteraction(critAnim, bY).type)
          + scoreIx(getInteraction(critAnim, bM).type)

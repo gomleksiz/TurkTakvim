@@ -89,13 +89,16 @@ Aşağıdaki JSON nesnesini döndür (başka metin ekleme, sadece JSON):
 }`;
 
     const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-latest:generateContent?key=${GEMINI_API_KEY}`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: { temperature: 0.7, maxOutputTokens: 900 },
+          generationConfig: {
+            maxOutputTokens: 900,
+            thinkingConfig: { thinkingBudget: -1 },
+          },
         }),
       }
     );

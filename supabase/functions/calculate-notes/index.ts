@@ -117,7 +117,12 @@ Alanları şöyle doldur:
     if (!res.ok) throw new Error(`Gemini API hatası: ${await res.text()}`);
 
     const gemini = await res.json();
-    const parsed = JSON.parse(gemini.candidates[0].content.parts[0].text);
+    const parts = gemini.candidates?.[0]?.content?.parts;
+    if (!parts?.length) throw new Error(`Gemini yanıtı beklenmeyen formatta: ${JSON.stringify(gemini)}`);
+
+    // Thinking models return a thought part first; find the actual output part
+    const outputPart = parts.find((p: { thought?: boolean; text?: string }) => !p.thought && p.text) ?? parts[parts.length - 1];
+    const parsed = JSON.parse(outputPart.text);
 
     return new Response(JSON.stringify({ success: true, ...parsed }), {
       headers: { ...cors, "Content-Type": "application/json" },

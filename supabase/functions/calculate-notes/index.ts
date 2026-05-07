@@ -45,13 +45,15 @@ const responseSchema = {
       type: "ARRAY",
       items: {
         type: "OBJECT",
-        required: ["yil", "yas", "tip", "baslik", "aciklama"],
+        required: ["yil", "yas", "tip", "baslik", "aciklama", "hayvan", "element"],
         properties: {
           yil:      { type: "INTEGER" },
           yas:      { type: "INTEGER" },
           tip:      { type: "STRING" },   // "olumlu" | "uyari"
           baslik:   { type: "STRING" },
           aciklama: { type: "STRING" },
+          hayvan:   { type: "STRING" },
+          element:  { type: "STRING" },
         },
       },
     },
@@ -119,21 +121,59 @@ ${over60 ? '\n- Bu kişi 60 yıllık büyük kozmik döngüyü tamamlamıştır.
 2. mevcutDonem: Mevcut dönemi ve yakın geçmişteki 1-2 kritik yılı ele al. O yıllarda dünyada veya Türkiye'de yaşanan önemli olayları (krizler, dönüşümler, fırsatlar) o yılın hayvanı ile doğum hayvanının uyumu çerçevesinde yorumla. Kötü etkileşim (clash) varsa "dikkat" uyarısı ver.
 3. gelecekDonem: Önümüzdeki 2-3 kritik yılı spesifik yıllarıyla belirt (örn: "2031 yılında Metal Köpek enerjisiyle..."). Clash yıllarında açıkça uyar: "Bu yıl dikkat gerektiren bir dönemdir". Üçlü uyum veya gizli dostluk varsa güçlü destek dönemlerini vurgula.
 4. buyukKutlama: ${over60 ? '60 yıllık kozmik döngüyü tamamlamanın derin anlamını ve nadir bilgelik evresini kutla.' : 'Bu kişi henüz 60 yıllık döngüyü tamamlamadı, bu alanı boş bırak.'}
-5. onemliAnlar: Tüm dönemlerden (geçmiş + gelecek) sadece TRINE (üçlü uyum), SECRET (gizli dostluk) ve CLASH (zıtlık) etkileşimli olanları seç. Maksimum 8 madde. Her madde için:
-   - tip: "olumlu" (trine/secret) veya "uyari" (clash)
-   - baslik: 2-4 kelimelik, yaşa uygun olay başlığı (örn: "Kariyer Atılımı", "İlişki Gerginliği", "Sağlığa Dikkat")
-   - aciklama: 2 cümle — (1) o yılın hayvanıyla doğum hayvanının uyumunu açıkla, (2) kişinin o yaşında olası yaşam olaylarını belirt
+5. onemliAnlar: Tüm dönemlerden (geçmiş + gelecek) sadece TRINE, SECRET ve CLASH etkileşimli olanları seç. Maksimum 10 madde, KRONOLOJİK SIRA ile (eski yıldan yeni yıla). Her madde için:
+   - yil, yas: tablodakinin aynısı
+   - hayvan, element: o kritik yılın hayvanı ve elementi
+   - tip: "olumlu" (TRINE/SECRET) veya "uyari" (CLASH)
+   - baslik: 2-4 kelime, ŞİİRSEL ve İÇGÖRÜLÜ (düz "Kariyer Atılımı" yerine "Yıldızının Parladığı Yıl", "Köprüden Geçiş", "Sabır Dönemi", "Yeniden Doğuş", "Kalbinin Sınavı", "Bereket Yılı", "İçsel Yolculuk" gibi)
+   - aciklama: 2-3 cümle. Şu yapıda yaz:
+     • Yıl geçmişse: "Yaşamış olabilirsiniz", "Hatırlarsanız o dönemde", "Belki o yıllarda…" tonu (sertçe varsayma)
+     • Yıl gelecekse: "Bu yıl … için elverişli olabilir" / "Bu dönemde dikkatli olmak faydalıdır" tonu (kesin tahmin değil, hazırlık)
+     • Mutlaka o yılın hayvanı ile doğum hayvanının ilişkisine değin (örn: "At, doğum hayvanınız Köpek ile aksiyon-liderlik üçlüsünde yer alır")
+     • Yaş grubuna uygun YAŞAM OLAYI öner (aşağıdaki rehbere göre)
 
-   Yaş rehberi (kesinlikle uygulanacak):
-   - 0–17: Eğitim, aile dinamikleri, kişilik gelişimi
-   - 18–24: Üniversite, ilk iş, bağımsızlık, ilk ciddi ilişki
-   - 25–35: Kariyer yerleşimi, evlilik, ilk çocuk, ev/araba alma
-   - 36–49: Kariyer zirvesi, aile kararları, ikinci çocuk, girişim
-   - 50–64: Kariyer geçişi, sağlık bilinci, çocukların bağımsızlığı, torunlar
-   - 65–74: Emeklilik, yeni hobiler, torunlar, seyahat
-   - 75+: Sağlık ve denge, aile bağları, miras, bilgelik
+   ━ YAŞAM EVRELERİNDE TİPİK OLAYLAR ━
 
-   YASAK: Yaşa uymayan öneriler yapma. 45+ için "ilk çocuk" deme. 70+ için "yeni iş kur" deme. 75+ için "evlenme" deme.`;
+   ÇOCUKLUK (0–12)
+     Olumlu: ailede mutluluk dönemi, yetenek keşfi, sevgi dolu bir dönem, sağlıklı büyüme
+     Uyari: ailede gerginlik, taşınma zorluğu, okul stresine maruz kalma
+
+   ERGENLIK (13–17)
+     Olumlu: kişiliğin parladığı yıl, yetenek keşfi, akademik başarı, önemli bir dostluk, ilk gönül bağı
+     Uyari: aile-kimlik çatışması, akademik zorluk, içe kapanma dönemi
+
+   GENÇ YETIŞKINLIK (18–24)
+     Olumlu: üniversite/yurt dışı yolculuğu, ilk ciddi iş, bağımsızlığa adım, ciddi bir aşk, yeni şehir
+     Uyari: kariyer belirsizliği, ilk büyük ayrılık, maddi sıkıntı, ailesinden uzaklaşmak
+
+   KURULUŞ (25–35)
+     Olumlu: kariyer atılımı, evlilik veya derin ortaklık, ilk çocuk, ev/araba alma, anlamlı bir terfi
+     Uyari: ilişkide gerginlik veya ayrılık, iş kaybı, maddi zorluk, ailede sınanma
+
+   OLGUNLAŞMA (36–49)
+     Olumlu: kariyer zirvesi, aile genişlemesi (ikinci çocuk olabilir, ilk çocuk için sınırda), yeni girişim, önemli bir başarı
+     Uyari: orta yaş içsel sorgulaması, iş değişikliği zorluğu, ilişkide sınav, ebeveyn sağlığı endişesi
+
+   GEÇIŞ (50–64)
+     Olumlu: kariyer olgunluğu, çocukların başarısı (mezuniyet/evlilik), ilk torun, anlamlı seyahat, yeni hobi
+     Uyari: sağlık bilinci ön plana çıkar, çocukların evden ayrılışı, kariyer değişimi zorluğu, ebeveyn kaybı ihtimali
+
+   HASAT (65–74)
+     Olumlu: emeklilik özgürlüğü, torunlarla bağ, anlamlı yolculuklar, manevi olgunluk, hobiler
+     Uyari: sağlığa özen, yakın çevrede kayıp acısı, fiziksel sınırlara saygı, yalnızlık duygusu
+
+   BILGELIK (75+)
+     Olumlu: aile bağlarının güçlenmesi, bilgelik paylaşımı, huzurlu anlar, manevi derinlik
+     Uyari: sağlığa azami dikkat, dengeli ve sakin yaşam, kaybı kabullenme, bağımsızlık endişesi
+
+   ━ KESİN YASAKLAR ━
+   • 45+ yaşa "İLK çocuk" önerme (ikinci çocuk istisna). 50+ yaşa hiç "çocuk" önerme.
+   • 65+ yaşa "yeni iş kur", "kariyere başla", "üniversite başla", "ilk evlilik" deme.
+   • 70+ yaşa "gençlik enerjisi", "yoğun aktivite" gibi yaşa uymayan ifadeler kullanma.
+   • HİÇBİR yaşa kesin "ÖLÜM" / "ciddi hastalık" / "boşanma garantisi" deme. Bunun yerine yumuşat:
+     - "ailede zorlu bir dönem" / "ilişkilerde gerginlik" / "sağlığa dikkat etmenin önemi"
+   • Geçmiş zorluklar için "yaşadınız" demek yerine "yaşamış olabilirsiniz" de — kişi yaşamamış olabilir.
+   • Kötü olay GARANTISI verme; "X olacak" yerine "X için dikkatli olmak iyi olur" tonu.`;
 
     const res = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${GEMINI_API_KEY}`,
@@ -180,6 +220,7 @@ ${over60 ? '\n- Bu kişi 60 yıllık büyük kozmik döngüyü tamamlamıştır.
         mevcut_donem:   parsed.mevcutDonem   ?? null,
         gelecek_donem:  parsed.gelecekDonem  ?? null,
         buyuk_kutlama:  parsed.buyukKutlama  ?? null,
+        onemli_anlar:   parsed.onemliAnlar   ?? null,
       });
     } catch (_dbErr) { /* DB hatası yanıtı engellemesin */ }
 

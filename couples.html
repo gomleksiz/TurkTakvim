@@ -225,7 +225,7 @@
     /* ── Birth Cards Side by Side ── */
     .couple-birth-grid {
       display: grid;
-      grid-template-columns: 1fr auto 1fr;
+      grid-template-columns: 1fr 1fr;
       gap: 0.8rem;
       align-items: start;
     }
@@ -274,47 +274,115 @@
     .pm-gift     { font-size: 0.52rem; color: #d4a657; margin-top: 0.1rem; line-height: 1.3; }
 
     /* ── Cross Interaction Matrix ── */
-    .cx-matrix {
+    .cx-intro {
+      font-size: 0.85rem;
+      color: #c9a96e;
+      line-height: 1.6;
+      margin-bottom: 0.9rem;
+    }
+
+    .cx-legend {
       display: flex;
-      flex-direction: column;
-      gap: 0.25rem;
-      justify-content: center;
-      align-items: stretch;
-      min-width: 140px;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-bottom: 0.9rem;
+      padding-bottom: 0.7rem;
+      border-bottom: 1px solid rgba(232,195,106,0.1);
     }
 
-    .cx-title {
-      font-size: 0.55rem;
+    .cx-leg {
+      font-size: 0.7rem;
+      padding: 3px 9px;
+      border-radius: 14px;
+      border: 1px solid;
+    }
+    .cx-leg.trine   { color: #6dbf6d; border-color: rgba(109,191,109,0.4); background: rgba(109,191,109,0.10); }
+    .cx-leg.secret  { color: #5bb8e8; border-color: rgba(91,184,232,0.4);  background: rgba(91,184,232,0.10); }
+    .cx-leg.same    { color: #e8c36a; border-color: rgba(232,195,106,0.4); background: rgba(232,195,106,0.10); }
+    .cx-leg.neutral { color: #9a7850; border-color: rgba(154,120,80,0.3);  background: rgba(154,120,80,0.08); }
+    .cx-leg.clash   { color: #e87050; border-color: rgba(232,112,80,0.4);  background: rgba(232,112,80,0.10); }
+
+    .cx-summary {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 0.9rem;
+    }
+
+    .cx-tag {
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 14px;
+    }
+    .cx-tag.trine   { background: rgba(109,191,109,0.18); color: #6dbf6d; }
+    .cx-tag.secret  { background: rgba(91,184,232,0.18);  color: #5bb8e8; }
+    .cx-tag.same    { background: rgba(232,195,106,0.18); color: #e8c36a; }
+    .cx-tag.neutral { background: rgba(122,96,64,0.18);   color: #9a7850; }
+    .cx-tag.clash   { background: rgba(232,112,80,0.18);  color: #e87050; }
+
+    .cx-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 0.6rem;
+    }
+
+    .cx-card {
+      background: rgba(0,0,0,0.22);
+      border: 1px solid rgba(232,195,106,0.12);
+      border-radius: 10px;
+      padding: 0.7rem 0.85rem;
+      border-left-width: 3px;
+      border-left-style: solid;
+    }
+    .cx-card.trine   { border-left-color: #6dbf6d; }
+    .cx-card.secret  { border-left-color: #5bb8e8; }
+    .cx-card.same    { border-left-color: #e8c36a; }
+    .cx-card.neutral { border-left-color: #7a6040; }
+    .cx-card.clash   { border-left-color: #e87050; }
+
+    .cx-channel {
+      font-size: 0.62rem;
       text-transform: uppercase;
-      letter-spacing: 1.5px;
-      color: #5a4020;
-      text-align: center;
-      margin-bottom: 0.3rem;
+      letter-spacing: 1.2px;
+      color: #7a6040;
+      margin-bottom: 0.35rem;
     }
 
-    .cx-row {
+    .cx-pair {
       display: flex;
       align-items: center;
-      gap: 0.25rem;
+      gap: 0.45rem;
+      flex-wrap: wrap;
+      font-size: 0.82rem;
+      color: #f5e6c8;
+      margin-bottom: 0.4rem;
     }
+    .cx-pair .arrow { color: #7a6040; font-size: 0.9rem; }
+    .cx-pair .p1 { color: #6dbf6d; }
+    .cx-pair .p2 { color: #5bb8e8; }
 
-    .cx-label-a { font-size: 0.58rem; color: #6dbf6d; width: 40px; text-align: right; flex-shrink: 0; }
-    .cx-label-b { font-size: 0.58rem; color: #5bb8e8; width: 40px; text-align: left; flex-shrink: 0; }
-
-    .cx-badge {
-      flex: 1;
-      text-align: center;
-      font-size: 0.62rem;
+    .cx-result {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-size: 0.78rem;
       font-weight: 700;
-      padding: 2px 4px;
-      border-radius: 8px;
+      padding: 3px 9px;
+      border-radius: 12px;
+      margin-bottom: 0.3rem;
     }
+    .cx-result.trine   { background: rgba(109,191,109,0.16); color: #6dbf6d; border: 1px solid rgba(109,191,109,0.4); }
+    .cx-result.secret  { background: rgba(91,184,232,0.14);  color: #5bb8e8; border: 1px solid rgba(91,184,232,0.4); }
+    .cx-result.same    { background: rgba(232,195,106,0.14); color: #e8c36a; border: 1px solid rgba(232,195,106,0.4); }
+    .cx-result.neutral { background: rgba(122,96,64,0.14);   color: #9a7850; border: 1px solid rgba(154,120,80,0.3); }
+    .cx-result.clash   { background: rgba(232,112,80,0.16);  color: #e87050; border: 1px solid rgba(232,112,80,0.4); }
 
-    .cx-badge.trine   { background: rgba(109,191,109,0.18); color: #6dbf6d; border: 1px solid rgba(109,191,109,0.4); }
-    .cx-badge.secret  { background: rgba(91,184,232,0.15);  color: #5bb8e8; border: 1px solid rgba(91,184,232,0.3); }
-    .cx-badge.clash   { background: rgba(232,112,80,0.18);  color: #e87050; border: 1px solid rgba(232,112,80,0.4); }
-    .cx-badge.neutral { background: rgba(122,96,64,0.12);   color: #7a6040; border: 1px solid rgba(122,96,64,0.2); }
-    .cx-badge.same    { background: rgba(232,195,106,0.12); color: #e8c36a; border: 1px solid rgba(232,195,106,0.3); }
+    .cx-explain {
+      font-size: 0.72rem;
+      color: #a08050;
+      line-height: 1.5;
+    }
 
     /* ── Phase Sync ── */
     .phase-sync-list {
@@ -323,20 +391,72 @@
       gap: 0.4rem;
     }
 
+    .ps-intro {
+      font-size: 0.85rem;
+      color: #c9a96e;
+      line-height: 1.6;
+      margin-bottom: 0.9rem;
+      padding-bottom: 0.7rem;
+      border-bottom: 1px solid rgba(232,195,106,0.1);
+    }
+
+    .ps-foot {
+      font-size: 0.75rem;
+      color: #7a6040;
+      line-height: 1.55;
+      margin-top: 0.8rem;
+      padding-top: 0.7rem;
+      border-top: 1px solid rgba(232,195,106,0.1);
+      font-style: italic;
+    }
+
     .ps-item {
       display: flex;
-      align-items: center;
-      gap: 0.7rem;
-      padding: 0.55rem 0.8rem;
-      border-radius: 8px;
+      align-items: flex-start;
+      gap: 0.8rem;
+      padding: 0.7rem 0.9rem;
+      border-radius: 10px;
       background: rgba(109,191,109,0.07);
       border: 1px solid rgba(109,191,109,0.2);
     }
 
-    .ps-icon  { font-size: 1.1rem; }
-    .ps-years { font-size: 0.82rem; font-weight: 700; color: #e8c36a; min-width: 80px; }
-    .ps-phase { font-size: 0.78rem; color: #c9a96e; }
-    .ps-ages  { font-size: 0.68rem; color: #7a6040; margin-top: 0.1rem; }
+    .ps-item.now {
+      background: rgba(232,195,106,0.12);
+      border-color: rgba(232,195,106,0.5);
+      box-shadow: 0 0 12px rgba(232,195,106,0.15);
+    }
+
+    .ps-icon  { font-size: 1.6rem; flex-shrink: 0; line-height: 1; }
+    .ps-info  { flex: 1; }
+
+    .ps-row1 {
+      display: flex;
+      align-items: baseline;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+    }
+    .ps-years { font-size: 0.95rem; font-weight: 700; color: #e8c36a; }
+    .ps-duration {
+      font-size: 0.7rem;
+      color: #7a6040;
+      background: rgba(0,0,0,0.25);
+      padding: 1px 7px;
+      border-radius: 8px;
+    }
+    .ps-now-tag {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: #1a0a00;
+      background: #e8c36a;
+      padding: 1px 8px;
+      border-radius: 8px;
+      text-transform: uppercase;
+    }
+
+    .ps-phase { font-size: 0.92rem; font-weight: 600; color: #f5e6c8; margin-top: 0.15rem; }
+    .ps-phase-desc { font-size: 0.72rem; color: #a08050; margin-top: 0.15rem; line-height: 1.5; }
+    .ps-ages  { font-size: 0.7rem; color: #7a6040; margin-top: 0.3rem; }
 
     /* ── Dual Timeline ── */
     .dt-header {
@@ -399,11 +519,18 @@
     .dt-dot.p2only  { background: #5bb8e8; }
 
     .dt-year {
-      font-size: 0.6rem;
-      color: #7a6040;
-      font-weight: 600;
+      font-size: 0.62rem;
+      color: #e8c36a;
+      font-weight: 700;
       letter-spacing: 0.5px;
       white-space: nowrap;
+      background: #1a0a00;
+      border: 1px solid rgba(232,195,106,0.45);
+      border-radius: 10px;
+      padding: 1px 7px;
+      box-shadow: 0 0 6px rgba(0,0,0,0.6);
+      z-index: 3;
+      position: relative;
     }
 
     .dt-event {
@@ -487,7 +614,6 @@
       .couple-forms { grid-template-columns: 1fr; }
       .form-divider  { flex-direction: row; padding: 0.4rem 0; }
       .couple-birth-grid { grid-template-columns: 1fr; }
-      .cx-matrix { min-width: unset; }
       .dt-header, .dt-row { grid-template-columns: 1fr 44px 1fr; }
     }
 
@@ -573,17 +699,43 @@
     <div class="compat-score-card" id="compatScoreCard"></div>
   </div>
 
-  <!-- İki Doğum Kartı + Çapraz Matris -->
+  <!-- İki Doğum Kartı -->
   <div class="section">
     <div class="section-title">— Sütun Karşılaştırması —</div>
     <div class="couple-birth-grid" id="couplebirthGrid"></div>
+  </div>
+
+  <!-- Çapraz Etkileşimler -->
+  <div class="section">
+    <div class="section-title">— Çapraz Etkileşimler —</div>
+    <div class="card">
+      <div class="cx-intro">
+        Her iki kişinin <strong style="color:#6dbf6d">Vitrin</strong> (Yıl), <strong style="color:#5bb8e8">İç Dünya</strong> (Ay) ve <strong style="color:#e8c36a">Öz Kimlik</strong> (Gün) sütunları
+        karşılıklı eşleştirilir; ortaya 9 farklı uyum noktası çıkar. Bu noktalar ilişkinin
+        farklı kanallarını besler — sosyal görünüş, duygusal yakınlık, derin karakter uyumu.
+      </div>
+      <div class="cx-legend">
+        <span class="cx-leg trine">✨ Üçlü Uyum — doğal akış ve destek</span>
+        <span class="cx-leg secret">🤝 Gizli Dostluk — sessiz koruma</span>
+        <span class="cx-leg same">⭕ Aynı Hayvan — yoğunlaşma</span>
+        <span class="cx-leg neutral">· Nötr — etkisi az</span>
+        <span class="cx-leg clash">⚡ Zıtlık — bilinçli denge ister</span>
+      </div>
+      <div class="cx-summary" id="cxSummary"></div>
+      <div class="cx-grid" id="cxGrid"></div>
+    </div>
   </div>
 
   <!-- Evre Uyumu -->
   <div class="section" id="phaseSyncSection">
     <div class="section-title">— Aynı Yaşam Evresinde Olduğunuz Dönemler —</div>
     <div class="card">
+      <div class="ps-intro" id="psIntro"></div>
       <div class="phase-sync-list" id="phaseSyncList"></div>
+      <div class="ps-foot">
+        Yaşam birlikte yaşansa da herkesin biyolojik saati farklı tıkar. Yukarıdaki dönemler her ikinizin de aynı evrede olduğu yıllardır —
+        ortak hedefler, benzer enerji ve karşılıklı anlayış için en doğal zamanlar bunlardır.
+      </div>
     </div>
   </div>
 
@@ -938,7 +1090,28 @@ function renderPartnerBirthCard(name, p, cls) {
   </div>`;
 }
 
-function renderMatrix(p1, p2) {
+// Açıklama: her kanal ne anlama geliyor
+const CHANNEL_DESC = {
+  'Vitrin-Vitrin':       'Sosyal ortamlardaki ortak imaj, dış dünyaya birlikte yansıyan yüz.',
+  'Vitrin-İç Dünya':     'A\'nın sosyal yüzünün B\'nin duygu dünyasına nasıl temas ettiği.',
+  'Vitrin-Öz Kimlik':    'A\'nın dış imajı ile B\'nin gerçek özünün buluşma noktası.',
+  'İç Dünya-Vitrin':     'A\'nın iç dünyasının B\'nin dış imajıyla iletişimi.',
+  'İç Dünya-İç Dünya':   'Duygusal yakınlık, aşk ve sevgi dilinin ortak frekansı.',
+  'İç Dünya-Öz Kimlik':  'A\'nın duyguları ile B\'nin gerçek özünün rezonansı.',
+  'Öz Kimlik-Vitrin':    'A\'nın gerçek özünün B\'nin sosyal yüzüne ne kadar uyduğu.',
+  'Öz Kimlik-İç Dünya':  'A\'nın özü ile B\'nin duygusal dünyası arasındaki bağ.',
+  'Öz Kimlik-Öz Kimlik': 'En derin karakter ve ruh uyumu — uzun vadeli ortaklığın kalbi.',
+};
+
+const IX_EXPLAIN = {
+  trine:   'Aynı üçlüden gelen doğal güç ve akış. Birbirinizi zorlanmadan tamamlarsınız.',
+  secret:  'Yüzeyde belli olmayan ama derinde sürekli destek veren sessiz dostluk.',
+  same:    'Aynı enerji yoğunlaşır; ya çift kat güç ya çift kat sürtüşme yaratır.',
+  neutral: 'Belirgin uyum da gerilim de yok; ilişkide nötr ve sakin bir kanal.',
+  clash:   'Karşıt kutuplar; bilinçli iletişim ve karşılıklı saygı ile dengelenir.',
+};
+
+function renderMatrix(p1, p2, n1, n2) {
   const pairs = [
     { lA:'Vitrin',    lB:'Vitrin',    a:p1.yearPillar.animal,   b:p2.yearPillar.animal  },
     { lA:'Vitrin',    lB:'İç Dünya',  a:p1.yearPillar.animal,   b:p2.monthPillar.animal },
@@ -951,17 +1124,41 @@ function renderMatrix(p1, p2) {
     { lA:'Öz Kimlik', lB:'Öz Kimlik', a:p1.dayPillar.animal,    b:p2.dayPillar.animal   },
   ];
 
-  let html = `<div class="cx-matrix"><div class="cx-title">Çapraz Etkileşimler</div>`;
-  for (const pair of pairs) {
+  // Summary counts
+  const counts = { trine:0, secret:0, same:0, neutral:0, clash:0 };
+  const cards = pairs.map(pair => {
     const ix = getInteraction(pair.a, pair.b);
-    html += `<div class="cx-row">
-      <div class="cx-label-a">${pair.lA}</div>
-      <div class="cx-badge ${ix.type}">${ix.icon}</div>
-      <div class="cx-label-b">${pair.lB}</div>
+    counts[ix.type]++;
+    const animA = animalByName(pair.a);
+    const animB = animalByName(pair.b);
+    const channelKey = `${pair.lA}-${pair.lB}`;
+    return `<div class="cx-card ${ix.type}">
+      <div class="cx-channel">${pair.lA} × ${pair.lB}</div>
+      <div class="cx-pair">
+        <span class="p1">${n1} · ${pair.lA}</span>
+        <span style="font-size:1rem">${animA.icon}</span>
+        <span class="arrow">⇄</span>
+        <span style="font-size:1rem">${animB.icon}</span>
+        <span class="p2">${n2} · ${pair.lB}</span>
+      </div>
+      <div class="cx-result ${ix.type}">${ix.icon} ${ix.label}</div>
+      <div class="cx-explain">
+        <strong style="color:#c9a96e">${pair.a} × ${pair.b}.</strong>
+        ${CHANNEL_DESC[channelKey] || ''} ${IX_EXPLAIN[ix.type] || ''}
+      </div>
     </div>`;
-  }
-  html += `</div>`;
-  return html;
+  });
+
+  // Render summary tags
+  const summaryTags = [];
+  if (counts.trine)   summaryTags.push(`<span class="cx-tag trine">✨ ${counts.trine} üçlü uyum</span>`);
+  if (counts.secret)  summaryTags.push(`<span class="cx-tag secret">🤝 ${counts.secret} gizli dostluk</span>`);
+  if (counts.same)    summaryTags.push(`<span class="cx-tag same">⭕ ${counts.same} aynı hayvan</span>`);
+  if (counts.neutral) summaryTags.push(`<span class="cx-tag neutral">· ${counts.neutral} nötr</span>`);
+  if (counts.clash)   summaryTags.push(`<span class="cx-tag clash">⚡ ${counts.clash} zıtlık</span>`);
+
+  document.getElementById('cxSummary').innerHTML = summaryTags.join('');
+  document.getElementById('cxGrid').innerHTML = cards.join('');
 }
 
 function calcPhaseSync(birthYear1, birthYear2) {
@@ -995,6 +1192,20 @@ function phaseIcon(phase) {
   return map[phase] || '✦';
 }
 
+function phaseDesc(phase) {
+  const map = {
+    'Çocukluk':         'Aile, oyun ve büyüme — temel güven ve sevgi yılları.',
+    'Ergenlik':         'Kimlik arayışı, ilk gönül bağları, akran etkisi yoğun.',
+    'Genç Yetişkinlik': 'Bağımsızlık, eğitim/kariyer ilk adımları, dünyayı keşif.',
+    'Kuruluş':          'Kariyer kuruluşu, ortaklık/evlilik, çocuk ve yuva yılları.',
+    'Olgunlaşma':       'Kariyer zirvesi, sorumluluk, içsel sorgulamanın derinleşmesi.',
+    'Geçiş':            'Çocukların yuvadan ayrılışı, sağlık bilinci, anlam arayışı.',
+    'Hasat':            'Emeklilik özgürlüğü, torun sevgisi, biriktirilenin paylaşımı.',
+    'Bilgelik':         'Aktarım yılları, manevi derinlik, sade ve huzurlu varoluş.',
+  };
+  return map[phase] || '';
+}
+
 function renderDualTimeline(m1, m2, n1, n2) {
   const currentYear = new Date().getFullYear();
 
@@ -1010,8 +1221,8 @@ function renderDualTimeline(m1, m2, n1, n2) {
      <div class="dt-header-mid">yıl</div>
      <div class="dt-header-right">💙 ${n2}</div>`;
 
-  const MIN_GAP_PX = 60; // minimum pixels between event rows
-  const PX_PER_YEAR = 44;
+  const MIN_GAP_PX = 50; // minimum pixels between event rows
+  const PX_PER_YEAR = 12;
 
   let html = '';
   let prevYear = allYears[0];
@@ -1133,26 +1344,45 @@ function calcCouple() {
 
   document.getElementById('couplebirthGrid').innerHTML =
     renderPartnerBirthCard(n1, p1, 'p1') +
-    renderMatrix(p1, p2) +
     renderPartnerBirthCard(n2, p2, 'p2');
 
-  // Phase sync list
+  renderMatrix(p1, p2, n1, n2);
+
+  // Phase sync intro + list
+  const ageDiff = Math.abs(p1.birthYear - p2.birthYear);
+  const older = p1.birthYear < p2.birthYear ? n1 : (p1.birthYear > p2.birthYear ? n2 : null);
+  const introText = ageDiff === 0
+    ? `İkiniz aynı yıl doğmuşsunuz; ömrünüz boyunca her zaman aynı yaşam evresindesiniz. Bu sürekli bir senkron — büyüme ve olgunlaşmayı paralel yaşarsınız.`
+    : `Aralarınızda <strong style="color:#e8c36a">${ageDiff} yıl</strong> var — ${older} daha kıdemli yola çıktı. Bu nedenle bazen biriniz <em>Kuruluş</em>'tayken diğeri henüz <em>Genç Yetişkinlik</em>'te olabilir. Aşağıdaki dönemler her ikinizin de <strong>aynı yaşam evresinde</strong> olduğu yıllardır — ortak hedefler, benzer hayat ritmi ve karşılıklı anlayış için en doğal pencereler.`;
+  document.getElementById('psIntro').innerHTML = introText;
+
+  const currentYear = now.getFullYear();
   const psl = document.getElementById('phaseSyncList');
   if (phaseSyncPeriods.length === 0) {
     psl.innerHTML = '<div style="color:#5a4020;font-size:0.82rem;text-align:center;padding:0.8rem">Aynı anda aynı yaşam evresinde olduğunuz uzun bir dönem hesaplanamadı.</div>';
   } else {
-    psl.innerHTML = phaseSyncPeriods.map(p =>
-      `<div class="ps-item">
+    psl.innerHTML = phaseSyncPeriods.map(p => {
+      const duration = p.endYear - p.startYear + 1;
+      const isNow = currentYear >= p.startYear && currentYear <= p.endYear;
+      const p1End = p.p1StartAge + duration - 1;
+      const p2End = p.p2StartAge + duration - 1;
+      const isPast = p.endYear < currentYear;
+      const isFuture = p.startYear > currentYear;
+      const timeNote = isNow ? '' : isPast ? ' · geçmişte yaşandı' : isFuture ? ' · gelecekte' : '';
+      return `<div class="ps-item ${isNow ? 'now' : ''}" style="${isPast ? 'opacity:0.65' : ''}">
         <div class="ps-icon">${phaseIcon(p.phase)}</div>
-        <div>
-          <div style="display:flex;gap:0.6rem;align-items:center">
+        <div class="ps-info">
+          <div class="ps-row1">
             <div class="ps-years">${p.startYear}–${p.endYear}</div>
-            <div class="ps-phase">${p.phase} Evresi</div>
+            <div class="ps-duration">${duration} yıl${timeNote}</div>
+            ${isNow ? '<div class="ps-now-tag">şu an</div>' : ''}
           </div>
-          <div class="ps-ages">${n1} ${p.p1StartAge} yaş · ${n2} ${p.p2StartAge} yaş ile başlar</div>
+          <div class="ps-phase">${p.phase} Evresi</div>
+          <div class="ps-phase-desc">${phaseDesc(p.phase)}</div>
+          <div class="ps-ages">💚 ${n1}: ${p.p1StartAge}–${p1End} yaş · 💙 ${n2}: ${p.p2StartAge}–${p2End} yaş</div>
         </div>
-      </div>`
-    ).join('');
+      </div>`;
+    }).join('');
   }
 
   renderDualTimeline(m1, m2, n1, n2);

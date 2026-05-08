@@ -553,8 +553,8 @@
       <div class="input-group">
         <label>Cinsiyet</label>
         <div class="gender-buttons">
-          <button class="gender-btn active" id="g2F" onclick="setGender(2,'female')">♀ Kadın</button>
-          <button class="gender-btn" id="g2M" onclick="setGender(2,'male')">♂ Erkek</button>
+          <button class="gender-btn" id="g2F" onclick="setGender(2,'female')">♀ Kadın</button>
+          <button class="gender-btn active" id="g2M" onclick="setGender(2,'male')">♂ Erkek</button>
         </div>
       </div>
     </div>
@@ -857,7 +857,7 @@ function buildMilestones(birthDateObj, gender) {
 // STATE
 // ─────────────────────────────────────────────
 
-let g1 = 'female', g2 = 'female';
+let g1 = 'female', g2 = 'male';
 let _aiData = null;
 
 function setGender(partner, g) {
@@ -1182,10 +1182,7 @@ async function requestAI() {
   result.classList.remove('visible');
 
   try {
-    const SUPABASE_URL = 'https://ebdorluqxlxubfqawkbb.supabase.co';
-    const ANON_KEY     = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImViZG9ybHVxeGx4dWJmcWF3a2JiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYxOTk0MjcsImV4cCI6MjA2MTc3NTQyN30.4RGkFlBr9Y0HbqN2KhiVVi6pUaTH0Sn02hCuNAbvTOI';
-
-    const res = await fetch(`${SUPABASE_URL}/functions/v1/couple-notes`, {
+    const res = await fetch('https://mkmohmyrarqbkpwjpicx.supabase.co/functions/v1/couple-notes', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

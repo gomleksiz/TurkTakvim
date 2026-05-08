@@ -1182,11 +1182,14 @@ async function requestAI() {
   result.classList.remove('visible');
 
   try {
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1rbW9obXlyYXJxYmtwd2pwaWN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ2OTQ5MjcsImV4cCI6MjA2MDI3MDkyN30.hkP0Pr3IF-171bFq2oV_kgiph7uwHJAjKrqvsRbVP_o';
+
     const res = await fetch('https://mkmohmyrarqbkpwjpicx.supabase.co/functions/v1/couple-notes', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${ANON_KEY}`,
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+        'apikey': SUPABASE_ANON_KEY,
       },
       body: JSON.stringify(_aiData),
     });

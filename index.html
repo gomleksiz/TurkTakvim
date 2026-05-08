@@ -596,6 +596,14 @@
       margin-top: 0.05rem;
     }
 
+    .pillar-strengths {
+      font-size: 0.62rem;
+      color: #d4a657;
+      margin-top: 0.2rem;
+      line-height: 1.35;
+      font-weight: 600;
+    }
+
     .pillar-desc {
       font-size: 0.57rem;
       color: #5a4020;
@@ -994,6 +1002,16 @@
   <div class="ornament">✦ ✦ ✦</div>
 </header>
 
+<!-- Info -->
+<div class="info-section">
+  <div class="info-card">
+    <h3>12 Hayvanlı Türk Takvimi Hakkında</h3>
+    Türk halklarının doğa, hayvan ve zaman anlayışına dayanan bu geleneksel takvim sisteminde her yıl bir hayvanla simgelenir ve <strong>müçel</strong> adı verilen 12 yıllık döngülerden oluşur. Bu sistem yalnızca bir takvim değil; aynı zamanda bir dünya görüşü, mitoloji, kehanet aracı ve kişilik göstergesi olarak da tanımlanmaktadır.<br><br>
+    <strong>Köken:</strong> <a href="https://tr.wikipedia.org/wiki/Orhun_yaz%C4%B1tlar%C4%B1" target="_blank" rel="noopener">Orhun Yazıtları</a>'nda "Kül Tigin Koyun Yılının on yedinci gününde öldü" gibi ifadeler bu takvimin Göktürk döneminde yaygın biçimde kullanıldığını kanıtlar. En eski yazılı kaynaklardan biri Kaşgarlı Mahmud'un <a href="https://tr.wikipedia.org/wiki/Divan%C3%BC_L%C3%BC%C4%9Fat-it-T%C3%BCrk" target="_blank" rel="noopener"><em>Divanü Lüğat-it-Türk</em></a>'üdür. Kaşgarlı, bir Türk hakanının savaşın hangi yılda olduğunu sorunca danışmanlarının hatırlayamaması üzerine her yıla bir hayvan adı verilmesini emrettiğini anlatır.<br><br>
+    <strong>Müçel:</strong> 12 yıllık her döngüye Türkçede <em>müçel</em>, Kazakçada <em>müşel</em>, Kırgızcada <em>müçöl</em>, Hakascada <em>müçe</em> denir. Gün de 12'ye bölünür; her birime <em>çağ</em> adı verilir. Aylar yalnızca sayısal sırayla adlandırılır (Aram ay, İkinç ay… Çakşaput ay).
+  </div>
+</div>
+
 <!-- Today Banner -->
 <div class="today-banner">
   <div class="today-card">
@@ -1038,16 +1056,6 @@
 <div class="all-animals-section">
   <div class="section-title">— Oniki Hayvan —</div>
   <div class="animals-grid" id="animalsGrid"></div>
-</div>
-
-<!-- Info -->
-<div class="info-section">
-  <div class="info-card">
-    <h3>12 Hayvanlı Türk Takvimi Hakkında</h3>
-    Türk halklarının doğa, hayvan ve zaman anlayışına dayanan bu geleneksel takvim sisteminde her yıl bir hayvanla simgelenir ve <strong>müçel</strong> adı verilen 12 yıllık döngülerden oluşur. Bu sistem yalnızca bir takvim değil; aynı zamanda bir dünya görüşü, mitoloji, kehanet aracı ve kişilik göstergesi olarak da tanımlanmaktadır.<br><br>
-    <strong>Köken:</strong> <a href="https://tr.wikipedia.org/wiki/Orhun_yaz%C4%B1tlar%C4%B1" target="_blank" rel="noopener">Orhun Yazıtları</a>'nda "Kül Tigin Koyun Yılının on yedinci gününde öldü" gibi ifadeler bu takvimin Göktürk döneminde yaygın biçimde kullanıldığını kanıtlar. En eski yazılı kaynaklardan biri Kaşgarlı Mahmud'un <a href="https://tr.wikipedia.org/wiki/Divan%C3%BC_L%C3%BC%C4%9Fat-it-T%C3%BCrk" target="_blank" rel="noopener"><em>Divanü Lüğat-it-Türk</em></a>'üdür. Kaşgarlı, bir Türk hakanının savaşın hangi yılda olduğunu sorunca danışmanlarının hatırlayamaması üzerine her yıla bir hayvan adı verilmesini emrettiğini anlatır.<br><br>
-    <strong>Müçel:</strong> 12 yıllık her döngüye Türkçede <em>müçel</em>, Kazakçada <em>müşel</em>, Kırgızcada <em>müçöl</em>, Hakascada <em>müçe</em> denir. Gün de 12'ye bölünür; her birime <em>çağ</em> adı verilir. Aylar yalnızca sayısal sırayla adlandırılır (Aram ay, İkinç ay… Çakşaput ay).
-  </div>
 </div>
 
 <!-- Sources -->
@@ -1312,9 +1320,9 @@
           </div>
         </div>
         <div class="pillars-grid">
-          ${pillarHTML('Yıl Sütunu', 'Dış Hayvan · Sosyal Vitrin', 'Dışa yansıyan yüz; aile mirası ve genel yaşam çerçevesi.', birthElem.name, birthAnimal.name, birthAnimal.icon)}
-          ${pillarHTML('Ay Sütunu', 'İçsel Hayvan · Duygusal Temel', 'İç dünya, gençlik (0–24 yaş) ve aşk hayatı üzerinde güçlü etki.', birthMonthP.element, birthMonthP.animal, birthMonthAnim.icon)}
-          ${pillarHTML('Gün Sütunu', 'Gerçek Hayvan · Öz Kimlik', '32 yaş sonrası baskın burç; öz kimlik ve evlilik.', birthDayP.element, birthDayP.animal, birthDayAnim.icon)}
+          ${pillarHTML('Vitrin', 'Yıl · Sosyal Vitrin', 'Dışa yansıyan yüz; aile mirası ve genel yaşam çerçevesi.', birthElem.name, birthAnimal.name, birthAnimal.icon)}
+          ${pillarHTML('İç Dünya', 'Ay · Duygusal Temel', 'İç dünya, gençlik (0–24 yaş) ve aşk hayatı üzerinde güçlü etki.', birthMonthP.element, birthMonthP.animal, birthMonthAnim.icon)}
+          ${pillarHTML('Öz Kimlik', 'Gün · Gerçek Hayvan', '32 yaş sonrası baskın burç; öz kimlik ve evlilik.', birthDayP.element, birthDayP.animal, birthDayAnim.icon)}
           ${interactionsHTML(birthAnimal.name, birthMonthP.animal, birthDayP.animal)}
         </div>
       </div>`;
@@ -1409,13 +1417,38 @@
       },
       currentAge,
       over60,
-      allMilestones: milestones.map(m => {
-        const yr = gercekYil + m.age, ai2 = animalIndex(yr), el = getElement(yr);
-        const ix = getInteraction(ANIMALS[ai2].name, birthAnimal.name).type;
-        return { age: m.age, title: m.title, type: m.type, critYear: yr,
-                 animal: ANIMALS[ai2].name, element: el.name, interaction: ix,
-                 isPast: yr < currentYear - 1, isPresent: Math.abs(yr - currentYear) <= 1 };
-      }),
+      allMilestones: (() => {
+        const list = milestones.map(m => {
+          const yr  = gercekYil + m.age;
+          const ai2 = animalIndex(yr);
+          const el  = getElement(yr);
+          const ix  = getInteraction(ANIMALS[ai2].name, birthAnimal.name).type;
+          const entry = {
+            age: m.age, title: m.title, type: m.type, critYear: yr,
+            animal: ANIMALS[ai2].name, element: el.name, interaction: ix,
+            isPast: yr < currentYear - 1, isPresent: Math.abs(yr - currentYear) <= 1,
+          };
+          if (m.type === 'norolojik' || m.type === 'kesisim') {
+            entry.brainScore = calcBrainScore(
+              ANIMALS[ai2].name, birthAnimal.name, birthMonthP.animal, birthDayP.animal
+            );
+          }
+          return entry;
+        });
+        // Beyin güncellemesi sonraki döneme etki eder: bir sonraki biyolojik/kozmolojik milestona skoru aktar
+        let lastBrain = null;
+        list.forEach(e => {
+          if (e.brainScore !== undefined) {
+            lastBrain = { score: e.brainScore, title: e.title, year: e.critYear };
+          } else if (lastBrain !== null) {
+            e.precedingBrainScore = lastBrain.score;
+            e.precedingBrainTitle = lastBrain.title;
+            e.precedingBrainYear  = lastBrain.year;
+            lastBrain = null;
+          }
+        });
+        return list;
+      })(),
       currentMilestone: milestones
         .filter(m => Math.abs((gercekYil + m.age) - currentYear) <= 1)
         .map(m => {
@@ -1435,7 +1468,7 @@
     };
 
     html += `<div class="ai-summary-section">
-      <button class="btn-ai" id="btnAI" onclick="requestAISummary()">🔮 Yapay Zeka Yorumu Al</button>
+      <button class="btn-ai" id="btnAI" onclick="requestAISummary()">🔮 Kişiselleştirilmiş Yorum Al</button>
       <div class="ai-result" id="aiResult"></div>
     </div>`;
 
@@ -1520,7 +1553,7 @@
       result.classList.add('visible');
     } finally {
       btn.disabled = false;
-      btn.textContent = '🔮 Yapay Zeka Yorumu Al';
+      btn.textContent = '🔮 Kişiselleştirilmiş Yorum Al';
     }
   }
 
@@ -1691,12 +1724,16 @@
 
   function pillarHTML(label, subtitle, desc, elem, animalName, animalIcon) {
     const ed = ELEMENT_DATA[elem] || {};
+    const aIdx = ANIMALS.findIndex(a => a.name === animalName);
+    const ae = aIdx >= 0 ? ANIMAL_ENERGIES[aIdx] : null;
+    const strengths = ae ? `<div class="pillar-strengths">✦ ${ae.gift}</div>` : '';
     return `<div class="pillar-card">
       <div class="pillar-label">${label}</div>
       <div class="pillar-subtitle">${subtitle}</div>
       <div class="pillar-icon">${animalIcon}</div>
       <div class="pillar-elem" style="color:${ed.color||'#e8c36a'}">${ed.icon||''} ${elem}</div>
       <div class="pillar-animal">${animalName}</div>
+      ${strengths}
       <div class="pillar-desc">${desc}</div>
     </div>`;
   }
@@ -1743,6 +1780,21 @@
     if (SECRET_FRIENDS[a] === b) return { type: 'secret', label: 'Gizli Dostluk', icon: '🤝' };
     if (CLASHES[a] === b)        return { type: 'clash',  label: 'Zıtlık / Gerilim', icon: '⚡' };
     return { type: 'neutral', label: 'Nötr', icon: '·' };
+  }
+
+  function scoreIx(ixType) {
+    if (ixType === 'trine')  return 1;
+    if (ixType === 'secret') return 1.5;
+    if (ixType === 'clash')  return -1;
+    return 0;
+  }
+
+  // Beyin güncellemesi skoru: kritik yıl hayvanı × 3 doğum sütunu uyumu
+  // trine=+1, gizli dostluk=+1.5, clash=-1, nötr/aynı=0 → toplam: -3 .. +4.5
+  function calcBrainScore(critAnim, bY, bM, bD) {
+    return scoreIx(getInteraction(critAnim, bY).type)
+         + scoreIx(getInteraction(critAnim, bM).type)
+         + scoreIx(getInteraction(critAnim, bD).type);
   }
 
   function ixBadge(a, b, labelA, labelB) {

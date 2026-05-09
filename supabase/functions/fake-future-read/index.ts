@@ -11,33 +11,42 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: cors });
 
   try {
-    const SUPABASE_URL  = Deno.env.get("SUPABASE_URL");
-    const SUPABASE_KEY  = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
+    const SUPABASE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
     if (!SUPABASE_URL || !SUPABASE_KEY) throw new Error("Supabase yapılandırması eksik");
 
-    const url         = new URL(req.url);
-    let birth_date    = url.searchParams.get("birth_date");
+    const url        = new URL(req.url);
+    let code         = url.searchParams.get("code");
+    let birth_date   = url.searchParams.get("birth_date");
 
-    if (!birth_date && req.method === "POST") {
+    if (!code && !birth_date && req.method === "POST") {
       const body = await req.json();
-      birth_date = body.birth_date;
+      code       = body.code       ?? null;
+      birth_date = body.birth_date ?? null;
     }
 
-    if (!birth_date) throw new Error("birth_date zorunlu");
+    if (!code) throw new Error("code zorunlu");
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
     const { data, error } = await supabase
       .from("fake_future")
-      .select("dh, md, nd, oa")
-      .eq("birth_date", birth_date)
+      .select("dh, md, nd, oa, birth_date")
+      .eq("code", code)
       .maybeSingle();
 
     if (error) throw new Error(error.message);
+    if (!data)  return new Response(JSON.stringify({ success: true, data: null }), { headers: { ...cors, "Content-Type": "application/json" } });
 
-    return new Response(JSON.stringify({ success: true, data: data || null }), {
-      headers: { ...cors, "Content-Type": "application/json" },
-    });
+    // If birth_date supplied, verify it matches (prevents showing content for wrong date)
+    if (birth_date && data.birth_date !== birth_date) {
+      return new Response(JSON.stringify({ success: true, data: null }), { headers: { ...cors, "Content-Type": "application/json" } });
+    }
+
+    return new Response(
+      JSON.stringify({ success: true, data: { dh: data.dh, md: data.md, nd: data.nd, oa: data.oa } }),
+      { headers: { ...cors, "Content-Type": "application/json" } }
+    );
   } catch (err) {
     return new Response(
       JSON.stringify({ success: false, error: (err as Error).message }),

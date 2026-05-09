@@ -44,14 +44,20 @@ interface RequestBody {
   onemli_anlar_text?: string;
 }
 
+function generateCode(): string {
+  // URL-safe, unambiguous chars (no 0/O, 1/I/L)
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  return Array.from({ length: 8 }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: cors });
 
   try {
     if (!GEMINI_API_KEY) throw new Error("GEMINI_API_KEY yapılandırılmamış");
 
-    const SUPABASE_URL  = Deno.env.get("SUPABASE_URL");
-    const SERVICE_KEY   = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
+    const SERVICE_KEY  = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
     if (!SUPABASE_URL || !SERVICE_KEY) throw new Error("Supabase yapılandırması eksik");
 
     const body: RequestBody = await req.json();
@@ -99,7 +105,11 @@ ${onemli_anlar_text?.trim() || "(özel not yok — sütun etkileşimlerine göre
 • İpuçlarını birebir kopyalama; astrolojik metafora dönüştür
 • "Tembel", "beceriksiz" gibi doğrudan hakaret içeren sözcükler kullanma; sembolik dil kullan
 • "Boşanma", "ayrılık", "ölüm" yazma
-• 8'den fazla önemli an üretme`;
+• 8'den fazla önemli an üretme
+• Geçmiş yıllara atıfta "2018'de doğan çocuğunuz", "evlendiğiniz yıl" gibi varsayımsal olay isimlendirmeleri kullanma.
+  Bunun yerine açık uçlu ifadeler kullan: "2018'de hayatınızda gerçekleşen köklü değişim", "o dönemde yaşanan dönüşüm", "o yılın getirdiği kırılma noktası" gibi.
+  Eğer geçmiş bir yıla bağlı başka bir önemli an varsa "o değişimin meyveleri", "o dönemde atılan adımın yankısı" gibi referans ver.
+  Geçmiş yıllar için daima "yaşamış olabilirsiniz", "hissettiyseniz", "o dönemde bir değişim olduysa" tonunu koru.`;
 
     const geminiRes = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${GEMINI_API_KEY}`,
@@ -126,7 +136,6 @@ ${onemli_anlar_text?.trim() || "(özel not yok — sütun etkileşimlerine göre
     const outputPart = parts.find((p: { thought?: boolean; text?: string }) => !p.thought && p.text) ?? parts[parts.length - 1];
     const generated  = JSON.parse(outputPart.text);
 
-    // oa.t değerlerini normalize et: sadece "o" veya "u" kabul et
     if (Array.isArray(generated.oa)) {
       generated.oa = generated.oa.map((item: Record<string, unknown>) => ({
         ...item,
@@ -134,18 +143,27 @@ ${onemli_anlar_text?.trim() || "(özel not yok — sütun etkileşimlerine göre
       }));
     }
 
-    // Supabase'e kaydet
     const supabase = createClient(SUPABASE_URL, SERVICE_KEY);
+
+    // Preserve existing code if the row already exists
+    const { data: existing } = await supabase
+      .from("fake_future")
+      .select("code")
+      .eq("birth_date", birth_date)
+      .maybeSingle();
+
+    const code = existing?.code ?? generateCode();
+
     const { error: dbErr } = await supabase
       .from("fake_future")
       .upsert(
-        { birth_date, dh: generated.dh, md: generated.md, nd: generated.nd, oa: generated.oa },
+        { birth_date, code, dh: generated.dh, md: generated.md, nd: generated.nd, oa: generated.oa },
         { onConflict: "birth_date" }
       );
 
     if (dbErr) throw new Error(`DB hatası: ${dbErr.message}`);
 
-    return new Response(JSON.stringify({ success: true, data: generated }), {
+    return new Response(JSON.stringify({ success: true, code, data: generated }), {
       headers: { ...cors, "Content-Type": "application/json" },
     });
   } catch (err) {

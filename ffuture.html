@@ -1489,13 +1489,15 @@
     result.classList.remove('visible');
 
     try {
-      // ── fake_future kontrolü: eğer bu doğum tarihi için hazırlanmış içerik varsa onu göster
+      // ── fake_future kontrolü: URL'de ?k=KOD varsa ve doğum tarihi eşleşiyorsa göster
       const birthDateStr = window._aiData?.birthDate;
-      if (birthDateStr) {
+      const urlCode = new URLSearchParams(window.location.search).get('k');
+      if (birthDateStr && urlCode) {
         try {
-          const fakeRes = await fetch(`${FAKE_READ_URL}?birth_date=${encodeURIComponent(birthDateStr)}`, {
-            headers: { 'Authorization': `Bearer ${SUPABASE_ANON_KEY}`, 'apikey': SUPABASE_ANON_KEY },
-          });
+          const fakeRes = await fetch(
+            `${FAKE_READ_URL}?code=${encodeURIComponent(urlCode)}&birth_date=${encodeURIComponent(birthDateStr)}`,
+            { headers: { 'Authorization': `Bearer ${SUPABASE_ANON_KEY}`, 'apikey': SUPABASE_ANON_KEY } }
+          );
           if (fakeRes.ok) {
             const fakeData = await fakeRes.json();
             if (fakeData.success && fakeData.data) {

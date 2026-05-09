@@ -308,6 +308,8 @@
       if (!data.success) throw new Error(data.error || 'Oluşturma hatası');
 
       const d = data.data;
+      const code = data.code;
+      const shareURL = `${window.location.origin}${window.location.pathname.replace('fprepare.html', 'ffuture.html')}?k=${code}`;
       const [y,m,dy] = birthDate.split('-').map(Number);
       const dateStr = `${dy} ${TR_MONTHS[m-1]} ${y}`;
       const oaCards = Array.isArray(d.oa) ? d.oa.map(item => `
@@ -324,9 +326,19 @@
 
       resultEl.innerHTML = `<div class="save-ok">
         <div class="save-ok-title">✓ Profil oluşturuldu ve kaydedildi!</div>
-        <div class="save-ok-label">Hedefin doğum tarihi</div>
-        <div style="font-size:1rem;color:#e8c36a;font-weight:700">${dateStr}</div>
-        <div class="save-ok-hint">Artık hedef kişiye <strong>ffuture.html</strong> bağlantısını gönderebilirsiniz.<br>Kişi bu doğum tarihini girdiğinde, aşağıdaki içerikler gerçek AI yorumu gibi görünecek.</div>
+        <div class="save-ok-label">Paylaşılacak bağlantı</div>
+        <div style="display:flex;gap:0.5rem;align-items:center;margin-top:0.3rem">
+          <input id="shareURLInput" type="text" value="${shareURL}" readonly
+            style="flex:1;padding:0.55rem 0.8rem;font-size:0.82rem;border-radius:8px;border:1px solid rgba(232,195,106,0.4);background:rgba(0,0,0,0.3);color:#e8c36a;outline:none;font-family:monospace">
+          <button onclick="copyURL('${shareURL}')" id="copyBtn"
+            style="padding:0.55rem 1rem;background:rgba(232,195,106,0.15);border:1px solid rgba(232,195,106,0.4);border-radius:8px;color:#e8c36a;cursor:pointer;font-size:0.82rem;white-space:nowrap;transition:background 0.15s">
+            Kopyala
+          </button>
+        </div>
+        <div class="save-ok-hint" style="margin-top:0.6rem">
+          Bağlantıyı hedef kişiye gönderin. Kişi <strong>kendi doğum tarihini</strong> girdiğinde
+          normal profil hesaplamalarıyla birlikte oluşturduğunuz AI yorumu görünecek.
+        </div>
         <div class="preview-section">
           <button class="preview-toggle" onclick="togglePreview(this)">▼ Oluşturulan içeriği gör</button>
           <div class="preview-blocks">
@@ -344,6 +356,26 @@
       btn.disabled    = false;
       btn.textContent = '🔮 Yapay Zeka ile Profil Oluştur ve Kaydet';
     }
+  }
+
+  function copyURL(url) {
+    navigator.clipboard.writeText(url).then(() => {
+      const btn = document.getElementById('copyBtn');
+      btn.textContent = '✓ Kopyalandı';
+      btn.style.background = 'rgba(109,191,109,0.2)';
+      btn.style.borderColor = 'rgba(109,191,109,0.5)';
+      btn.style.color = '#6dbf6d';
+      setTimeout(() => {
+        btn.textContent = 'Kopyala';
+        btn.style.background = 'rgba(232,195,106,0.15)';
+        btn.style.borderColor = 'rgba(232,195,106,0.4)';
+        btn.style.color = '#e8c36a';
+      }, 2500);
+    }).catch(() => {
+      const input = document.getElementById('shareURLInput');
+      input.select();
+      document.execCommand('copy');
+    });
   }
 
   function togglePreview(btn) {

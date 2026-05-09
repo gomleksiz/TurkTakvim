@@ -30,14 +30,14 @@
     .field-group textarea {
       padding: 0.7rem 1rem; font-size: 0.95rem; border-radius: 10px;
       border: 1px solid rgba(232,195,106,0.35); background: rgba(0,0,0,0.3);
-      color: #f5e6c8; outline: none; color-scheme: dark; width: 100%;
-      font-family: inherit;
+      color: #f5e6c8; outline: none; color-scheme: dark; width: 100%; font-family: inherit;
     }
     .field-group input:focus, .field-group textarea:focus {
       border-color: #e8c36a; box-shadow: 0 0 0 3px rgba(232,195,106,0.12);
     }
-    .field-group textarea { resize: vertical; min-height: 90px; line-height: 1.55; }
-    .field-hint { font-size: 0.72rem; color: #6a5030; margin-top: 0.2rem; }
+    .field-group textarea { resize: vertical; line-height: 1.6; }
+    .field-hint { font-size: 0.73rem; color: #6a5030; margin-top: 0.25rem; line-height: 1.5; }
+    .field-example { font-size: 0.72rem; color: #5a3820; margin-top: 0.15rem; font-style: italic; }
 
     .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
 
@@ -54,32 +54,35 @@
     .gender-btn { padding: 0.62rem 1.1rem; border-radius: 10px; border: 1px solid rgba(232,195,106,0.25); background: rgba(0,0,0,0.2); color: #a08050; cursor: pointer; font-size: 0.88rem; transition: all 0.15s; }
     .gender-btn.active { background: rgba(232,195,106,0.14); border-color: #e8c36a; color: #e8c36a; font-weight: 600; }
 
-    /* Önemli Anlar */
-    .oa-list { display: flex; flex-direction: column; gap: 0.8rem; }
-    .oa-row { background: rgba(0,0,0,0.2); border: 1px solid rgba(232,195,106,0.15); border-radius: 10px; padding: 0.9rem 1rem; position: relative; }
-    .oa-row-fields { display: grid; grid-template-columns: 90px 1fr 1fr; gap: 0.6rem; margin-bottom: 0.6rem; }
-    .oa-row-desc { width: 100%; }
-    .oa-row-remove { position: absolute; top: 0.6rem; right: 0.7rem; background: none; border: none; color: #7a6040; cursor: pointer; font-size: 1rem; transition: color 0.15s; }
-    .oa-row-remove:hover { color: #e87050; }
-    select.field-select { padding: 0.7rem 0.8rem; font-size: 0.88rem; border-radius: 10px; border: 1px solid rgba(232,195,106,0.35); background: rgba(0,0,0,0.3); color: #f5e6c8; outline: none; cursor: pointer; width: 100%; font-family: inherit; color-scheme: dark; }
-    select.field-select:focus { border-color: #e8c36a; }
-    .btn-add-oa { width: 100%; padding: 0.6rem; margin-top: 0.8rem; background: rgba(232,195,106,0.07); border: 1px dashed rgba(232,195,106,0.3); border-radius: 10px; color: #a08050; cursor: pointer; font-size: 0.85rem; transition: all 0.15s; }
-    .btn-add-oa:hover { background: rgba(232,195,106,0.13); color: #e8c36a; }
-
-    /* Save button */
-    .btn-save { width: 100%; padding: 0.9rem; background: linear-gradient(135deg, #c8860a, #e8c36a); color: #1a0a00; font-weight: 700; font-size: 1.05rem; border: none; border-radius: 12px; cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; }
-    .btn-save:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(232,195,106,0.4); }
-    .btn-save:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    /* Generate button */
+    .btn-generate { width: 100%; padding: 0.9rem; background: linear-gradient(135deg, #c8860a, #e8c36a); color: #1a0a00; font-weight: 700; font-size: 1.05rem; border: none; border-radius: 12px; cursor: pointer; transition: transform 0.15s, box-shadow 0.15s; }
+    .btn-generate:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(232,195,106,0.4); }
+    .btn-generate:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
     /* Result */
     .save-result { display: none; margin-top: 1.2rem; }
     .save-result.visible { display: block; }
-    .save-ok { background: rgba(109,191,109,0.1); border: 1px solid rgba(109,191,109,0.4); border-radius: 12px; padding: 1.2rem 1.5rem; }
-    .save-ok-title { color: #6dbf6d; font-weight: 700; font-size: 1rem; margin-bottom: 0.6rem; }
-    .save-ok-label { font-size: 0.75rem; color: #7a6040; text-transform: uppercase; letter-spacing: 1px; margin-top: 0.8rem; margin-bottom: 0.2rem; }
-    .save-ok-date  { font-size: 1rem; color: #e8c36a; font-weight: 700; }
-    .save-ok-hint  { font-size: 0.78rem; color: #9a7850; margin-top: 0.4rem; line-height: 1.5; }
+    .save-ok { background: rgba(109,191,109,0.08); border: 1px solid rgba(109,191,109,0.35); border-radius: 12px; padding: 1.3rem 1.5rem; }
+    .save-ok-title { color: #6dbf6d; font-weight: 700; font-size: 1rem; margin-bottom: 0.8rem; }
+    .save-ok-label { font-size: 0.7rem; color: #7a6040; text-transform: uppercase; letter-spacing: 1px; margin-top: 0.9rem; margin-bottom: 0.2rem; }
+    .save-ok-hint  { font-size: 0.8rem; color: #9a7850; margin-top: 0.5rem; line-height: 1.55; }
     .save-err { background: rgba(232,112,80,0.1); border: 1px solid rgba(232,112,80,0.4); border-radius: 12px; padding: 1rem 1.4rem; color: #e87050; font-size: 0.88rem; }
+
+    /* Preview blocks */
+    .preview-section { margin-top: 0.8rem; }
+    .preview-toggle { font-size: 0.78rem; color: #a08050; cursor: pointer; background: none; border: none; padding: 0; text-decoration: underline; text-decoration-color: rgba(160,128,80,0.4); }
+    .preview-toggle:hover { color: #e8c36a; }
+    .preview-blocks { display: none; flex-direction: column; gap: 0.6rem; margin-top: 0.7rem; }
+    .preview-blocks.open { display: flex; }
+    .preview-block { background: rgba(0,0,0,0.22); border: 1px solid rgba(232,195,106,0.15); border-radius: 10px; padding: 0.7rem 0.9rem; }
+    .preview-block-title { font-size: 0.62rem; text-transform: uppercase; letter-spacing: 2px; color: #7a6040; margin-bottom: 0.3rem; }
+    .preview-block-text  { font-size: 0.82rem; color: #c9a96e; line-height: 1.6; }
+    .oa-preview-card { display: flex; gap: 0.5rem; padding: 0.5rem 0.6rem; border-radius: 8px; border: 1px solid rgba(232,195,106,0.1); background: rgba(0,0,0,0.15); margin-bottom: 0.35rem; }
+    .oa-preview-tip-o { color: #6dbf6d; font-size: 1rem; }
+    .oa-preview-tip-u { color: #e87050; font-size: 1rem; }
+    .oa-preview-year  { font-size: 0.85rem; font-weight: 700; color: #e8c36a; min-width: 2.8rem; }
+    .oa-preview-b     { font-size: 0.82rem; font-weight: 600; color: #f5e6c8; }
+    .oa-preview-ac    { font-size: 0.76rem; color: #9a7850; line-height: 1.5; margin-top: 0.1rem; }
 
     footer { text-align: center; padding: 2rem 1rem; font-size: 0.78rem; color: #6a5030; }
   </style>
@@ -89,15 +92,16 @@
 <header>
   <div class="ornament">✦ ✦ ✦</div>
   <h1>🎭 Saka Profil Hazırlayıcı</h1>
-  <p>12 Hayvanlı Türk Takvimi · ffuture.html için özel içerik oluşturucu</p>
+  <p>12 Hayvanlı Türk Takvimi · ffuture.html için yapay zeka destekli içerik oluşturucu</p>
   <div class="ornament">✦ ✦ ✦</div>
 </header>
 
 <div class="notice-bar">
   <div class="notice-card">
-    <strong>Nasıl çalışır?</strong> Hedef kişinin doğum tarihini ve onlara gösterilecek özel içerikleri buraya girin ve kaydedin.
-    Ardından hedef kişiye <strong>ffuture.html</strong> bağlantısını gönderin. Kişi kendi doğum tarihini girdiğinde,
-    normal profil hesaplamalarının yanında siz ne yazmışsanız <strong>Kişiselleştirilmiş Yorum</strong> alanında o çıkacak.
+    <strong>Nasıl çalışır?</strong> Hedef kişinin doğum tarihini ve iki kutuya notlarınızı yazın.
+    Yapay zeka bu notları astrolojik dile çevirerek gerçekçi bir profil oluşturur ve kaydeder.
+    Ardından hedef kişiye <strong>ffuture.html</strong> bağlantısını gönderin — kişi kendi doğum tarihini girdiğinde
+    <em>Kişiselleştirilmiş Yorum</em> butonu sizin notlarınızdan üretilen içeriği gösterecek.
   </div>
 </div>
 
@@ -106,7 +110,6 @@
   <!-- Adım 1: Kişi Bilgileri -->
   <div class="prep-card">
     <div class="prep-card-title">Adım 1 · Hedef Kişi Bilgileri</div>
-
     <div class="row2">
       <div class="field-group">
         <label for="birthDate">Doğum Tarihi <span style="color:#e87050">*</span></label>
@@ -121,43 +124,39 @@
         </div>
       </div>
     </div>
-
     <div id="pillarPreview" style="display:none">
       <div class="field-hint" style="margin-bottom:0.5rem">Bu doğum tarihinin hayvanlık sütunları:</div>
       <div class="pillar-preview" id="pillarCards"></div>
     </div>
   </div>
 
-  <!-- Adım 2: Yapay Zeka Yorumu -->
+  <!-- Adım 2: Notlar -->
   <div class="prep-card">
-    <div class="prep-card-title">Adım 2 · Yapay Zeka Yorumu (isteğe bağlı)</div>
-    <div class="field-hint" style="margin-bottom:1rem">Boş bırakılanlar gösterilmez. Hedef kişi butona tıkladığında bunlar gerçek AI yorumu gibi görünecek.</div>
+    <div class="prep-card-title">Adım 2 · İçerik Notları (isteğe bağlı)</div>
+    <div class="field-hint" style="margin-bottom:1.2rem">
+      Notlarınızı doğal dille yazın — yapay zeka bunları inandırıcı astroloji diline çevirecek.
+      Her iki alan da boş bırakılırsa yalnızca hayvanlık sütunlarına göre genel bir profil oluşturulur.
+    </div>
 
     <div class="field-group">
-      <label for="fDh">🗂 Doğum Haritası</label>
-      <textarea id="fDh" placeholder="Doğum haritası yorumu... (3-5 cümle, ikna edici ve kişisel bir dil kullanın)"></textarea>
+      <label for="genel_yorum">🗂 Genel Yorum Notları</label>
+      <textarea id="genel_yorum" rows="5" placeholder="Kişinin özellikleri, alışkanlıkları, güçlü/zayıf yönleri hakkında serbest notlar...
+
+Örnek: Para biriktiremiyor, her şeyi son dakikaya bırakır. Teknolojiye meraklı ama sabırsız. Sosyal medyayı çok seviyor."></textarea>
+      <div class="field-example">💡 İpucu: Bunları birebir yazmak zorunda değilsiniz — yapay zeka astroloji diliyle ifade edecek.</div>
     </div>
+
     <div class="field-group">
-      <label for="fMd">📍 Mevcut Dönem</label>
-      <textarea id="fMd" placeholder="Şu anki dönem yorumu..."></textarea>
-    </div>
-    <div class="field-group">
-      <label for="fNd">🔭 Sonraki Dönem</label>
-      <textarea id="fNd" placeholder="Bir sonraki dönem yorumu..."></textarea>
+      <label for="onemli_anlar_text">⭐ Önemli Anlar Notları</label>
+      <textarea id="onemli_anlar_text" rows="5" placeholder="Geçmiş veya gelecekteki olaylar, tahminler, uyarılar...
+
+Örnek: 2025'te büyük bir hata yapacak. 2023'te çok şanslıydı. 2027'de önemli bir karar vermek zorunda kalacak."></textarea>
+      <div class="field-example">💡 İpucu: Yılları belirtirseniz daha spesifik kartlar oluşturulur.</div>
     </div>
   </div>
 
-  <!-- Adım 3: Önemli Anlar -->
-  <div class="prep-card">
-    <div class="prep-card-title">Adım 3 · Önemli Anlar (isteğe bağlı)</div>
-    <div class="field-hint" style="margin-bottom:1rem">Geçmiş veya gelecek yıllar için özel kartlar ekleyin. Komik ya da çarpıcı başlıklar en etkili olanlar.</div>
-
-    <div class="oa-list" id="oaList"></div>
-    <button class="btn-add-oa" onclick="addOaRow()">+ Önemli An Ekle</button>
-  </div>
-
-  <!-- Kaydet -->
-  <button class="btn-save" id="btnSave" onclick="saveProfile()">✦ Profili Kaydet</button>
+  <!-- Oluştur butonu -->
+  <button class="btn-generate" id="btnGenerate" onclick="generateProfile()">🔮 Yapay Zeka ile Profil Oluştur ve Kaydet</button>
 
   <div class="save-result" id="saveResult"></div>
 
@@ -166,7 +165,7 @@
 <footer>12 Hayvanlı Türk Takvimi · Saka Profil Hazırlayıcı</footer>
 
 <script>
-  // ── Takvim Hesaplama (pillar preview için) ───────────────────────
+  // ── Takvim Hesaplama ─────────────────────────────────────────────
   const ANIMALS = [
     { name: 'Maymun', icon: '🐒' }, { name: 'Horoz',   icon: '🐓' },
     { name: 'Köpek',  icon: '🐕' }, { name: 'Domuz',   icon: '🐗' },
@@ -180,10 +179,11 @@
     'Ağaç':   { icon: '🌿',  color: '#6dbf6d' }, 'Ateş':   { icon: '🔥',  color: '#e87050' },
     'Toprak': { icon: '🏔️', color: '#c4956a' },
   };
-  const ELEM_BY_DIGIT = ['Metal','Metal','Su','Su','Ağaç','Ağaç','Ateş','Ateş','Toprak','Toprak'];
-  const MONTH_ANIMALS = ['Kaplan','Tavşan','Ejderha','Yılan','At','Koyun','Maymun','Horoz','Köpek','Domuz','Sıçan','Öküz'];
-  const DAY_ANIMALS   = ['Sıçan','Öküz','Kaplan','Tavşan','Ejderha','Yılan','At','Koyun','Maymun','Horoz','Köpek','Domuz'];
-  const DAY_ELEMENTS  = ['Ağaç','Ağaç','Ateş','Ateş','Toprak','Toprak','Metal','Metal','Su','Su'];
+  const ELEM_BY_DIGIT  = ['Metal','Metal','Su','Su','Ağaç','Ağaç','Ateş','Ateş','Toprak','Toprak'];
+  const MONTH_ANIMALS  = ['Kaplan','Tavşan','Ejderha','Yılan','At','Koyun','Maymun','Horoz','Köpek','Domuz','Sıçan','Öküz'];
+  const DAY_ANIMALS    = ['Sıçan','Öküz','Kaplan','Tavşan','Ejderha','Yılan','At','Koyun','Maymun','Horoz','Köpek','Domuz'];
+  const DAY_ELEMENTS   = ['Ağaç','Ağaç','Ateş','Ateş','Toprak','Toprak','Metal','Metal','Su','Su'];
+  const TR_MONTHS      = ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
 
   function getSolarYear(date) {
     const m = date.getMonth() + 1, d = date.getDate();
@@ -207,11 +207,11 @@
     if(md>=606&&md<707)return 4;   if(md>=707&&md<807)return 5;  if(md>=807&&md<908)return 6;
     if(md>=908&&md<1008)return 7;  if(md>=1008&&md<1107)return 8; return 9;
   }
-  function getMonthPillar(date, solarYear) {
-    const pos=getMonthPosition(date), yearStem=((solarYear%10)+10)%10;
-    const tigerStem=((Math.floor(yearStem/2)+4)%5)*2, monthStem=(tigerStem+pos)%10;
+  function getMonthPillar(date, sy) {
+    const pos=getMonthPosition(date), ys=((sy%10)+10)%10;
+    const ts=((Math.floor(ys/2)+4)%5)*2, ms=(ts+pos)%10;
     const en=['Ağaç','Ağaç','Ateş','Ateş','Toprak','Toprak','Metal','Metal','Su','Su'];
-    return { animal: MONTH_ANIMALS[pos], element: en[monthStem] };
+    return { animal: MONTH_ANIMALS[pos], element: en[ms] };
   }
   function getDayPillar(date) {
     const jd=dateToJD(date), epochJD=dateToJD(new Date(1900,0,1));
@@ -220,6 +220,8 @@
   }
 
   let selectedGender = 'female';
+  let cachedPillars  = null;
+
   function selectGender(g) {
     selectedGender = g;
     document.getElementById('genderF').classList.toggle('active', g==='female');
@@ -228,7 +230,7 @@
 
   function updatePreview() {
     const val = document.getElementById('birthDate').value;
-    if (!val) { document.getElementById('pillarPreview').style.display='none'; return; }
+    if (!val) { document.getElementById('pillarPreview').style.display='none'; cachedPillars=null; return; }
     const dateObj = parseLocalDate(val);
     const sy      = getSolarYear(dateObj);
     const yIdx    = animalIndex(sy);
@@ -239,6 +241,12 @@
     const dEd     = ELEMENT_DATA[dp.element] || {};
     const mAnim   = ANIMALS.find(a=>a.name===mp.animal) || { icon:'?' };
     const dAnim   = ANIMALS.find(a=>a.name===dp.animal) || { icon:'?' };
+
+    cachedPillars = {
+      yearPillar:  { animal: ANIMALS[yIdx].name, element: yElem.name },
+      monthPillar: { animal: mp.animal, element: mp.element },
+      dayPillar:   { animal: dp.animal, element: dp.element },
+    };
 
     document.getElementById('pillarCards').innerHTML = `
       <div class="pp-card">
@@ -262,83 +270,32 @@
     document.getElementById('pillarPreview').style.display = 'block';
   }
 
-  // ── Önemli Anlar ─────────────────────────────────────────────────
-  let oaCounter = 0;
-  function addOaRow(defaults) {
-    const id   = ++oaCounter;
-    const d    = defaults || {};
-    const row  = document.createElement('div');
-    row.className = 'oa-row';
-    row.id = `oa-${id}`;
-    row.innerHTML = `
-      <button class="oa-row-remove" onclick="removeOaRow(${id})" title="Kaldır">✕</button>
-      <div class="oa-row-fields">
-        <div class="field-group" style="margin:0">
-          <label style="font-size:0.72rem">Yıl</label>
-          <input type="text" class="oa-year" placeholder="${new Date().getFullYear()+1}" value="${d.y||''}" style="padding:0.5rem 0.7rem;font-size:0.9rem">
-        </div>
-        <div class="field-group" style="margin:0">
-          <label style="font-size:0.72rem">Tip</label>
-          <select class="field-select oa-tip" style="padding:0.5rem 0.7rem;font-size:0.88rem">
-            <option value="o" ${d.t==='o'?'selected':''}>✨ Olumlu</option>
-            <option value="u" ${d.t==='u'?'selected':''}>⚠️ Dikkat</option>
-          </select>
-        </div>
-        <div class="field-group" style="margin:0">
-          <label style="font-size:0.72rem">Başlık (2-4 kelime)</label>
-          <input type="text" class="oa-baslik" placeholder="Köklü Dönüşüm" value="${d.b||''}" style="padding:0.5rem 0.7rem;font-size:0.9rem">
-        </div>
-      </div>
-      <div class="field-group oa-row-desc" style="margin:0">
-        <label style="font-size:0.72rem">Açıklama (2-3 cümle)</label>
-        <textarea class="oa-aciklama" placeholder="Bu yıl için kişisel ve çarpıcı bir açıklama..." style="min-height:70px">${d.ac||''}</textarea>
-      </div>`;
-    document.getElementById('oaList').appendChild(row);
-  }
-  function removeOaRow(id) {
-    const el = document.getElementById(`oa-${id}`);
-    if (el) el.remove();
-  }
-  function collectOa() {
-    const rows = document.querySelectorAll('.oa-row');
-    const items = [];
-    rows.forEach(row => {
-      const y  = parseInt(row.querySelector('.oa-year').value);
-      const t  = row.querySelector('.oa-tip').value;
-      const b  = row.querySelector('.oa-baslik').value.trim();
-      const ac = row.querySelector('.oa-aciklama').value.trim();
-      if (!y || !b || !ac) return;
-      const birthVal = document.getElementById('birthDate').value;
-      const a = birthVal ? y - getSolarYear(parseLocalDate(birthVal)) : undefined;
-      items.push({ y, t, b, ac, ...(a != null ? { a } : {}) });
-    });
-    return items;
-  }
-
-  // ── Kaydet ───────────────────────────────────────────────────────
-  const WRITE_URL      = 'https://mkmohmyrarqbkpwjpicx.supabase.co/functions/v1/fake-future-write';
+  // ── Oluştur & Kaydet ─────────────────────────────────────────────
+  const GENERATE_URL   = 'https://mkmohmyrarqbkpwjpicx.supabase.co/functions/v1/fake-future-generate';
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1rbW9obXlyYXJxYmtwd2pwaWN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ2OTQ5MjcsImV4cCI6MjA2MDI3MDkyN30.hkP0Pr3IF-171bFq2oV_kgiph7uwHJAjKrqvsRbVP_o';
 
-  async function saveProfile() {
-    const btn       = document.getElementById('btnSave');
-    const resultEl  = document.getElementById('saveResult');
+  async function generateProfile() {
+    const btn      = document.getElementById('btnGenerate');
+    const resultEl = document.getElementById('saveResult');
     const birthDate = document.getElementById('birthDate').value;
     if (!birthDate) { alert('Lütfen doğum tarihini girin.'); return; }
+    if (!cachedPillars) updatePreview();
+    if (!cachedPillars) { alert('Doğum tarihi hesaplanamadı.'); return; }
 
     btn.disabled    = true;
-    btn.textContent = '⏳ Kaydediliyor...';
+    btn.textContent = '⏳ Yapay zeka profil oluşturuyor...';
     resultEl.classList.remove('visible');
 
     const payload = {
       birth_date: birthDate,
-      dh: document.getElementById('fDh').value.trim() || null,
-      md: document.getElementById('fMd').value.trim() || null,
-      nd: document.getElementById('fNd').value.trim() || null,
-      oa: collectOa().length ? collectOa() : null,
+      gender: selectedGender,
+      ...cachedPillars,
+      genel_yorum:       document.getElementById('genel_yorum').value.trim() || null,
+      onemli_anlar_text: document.getElementById('onemli_anlar_text').value.trim() || null,
     };
 
     try {
-      const res  = await fetch(WRITE_URL, {
+      const res  = await fetch(GENERATE_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -348,27 +305,51 @@
         body: JSON.stringify(payload),
       });
       const data = await res.json();
-      if (!data.success) throw new Error(data.error || 'Kayıt hatası');
+      if (!data.success) throw new Error(data.error || 'Oluşturma hatası');
 
-      const TR_MONTHS = ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
-      const [y,m,d] = birthDate.split('-').map(Number);
-      const dateStr = `${d} ${TR_MONTHS[m-1]} ${y}`;
+      const d = data.data;
+      const [y,m,dy] = birthDate.split('-').map(Number);
+      const dateStr = `${dy} ${TR_MONTHS[m-1]} ${y}`;
+      const oaCards = Array.isArray(d.oa) ? d.oa.map(item => `
+        <div class="oa-preview-card">
+          <div class="oa-preview-tip-${item.t}">${item.t==='o'?'✨':'⚠️'}</div>
+          <div style="flex:1">
+            <div style="display:flex;align-items:baseline;gap:0.4rem">
+              <span class="oa-preview-year">${item.y}</span>
+              <span class="oa-preview-b">${item.b}</span>
+            </div>
+            <div class="oa-preview-ac">${item.ac}</div>
+          </div>
+        </div>`).join('') : '';
+
       resultEl.innerHTML = `<div class="save-ok">
-        <div class="save-ok-title">✓ Profil kaydedildi!</div>
+        <div class="save-ok-title">✓ Profil oluşturuldu ve kaydedildi!</div>
         <div class="save-ok-label">Hedefin doğum tarihi</div>
-        <div class="save-ok-date">${dateStr}</div>
-        <div class="save-ok-hint">
-          Artık hedef kişiye <strong>ffuture.html</strong> bağlantısını gönderebilirsiniz.<br>
-          Kişi bu doğum tarihini girdiğinde, yazdığınız içerikler gerçek AI yorumu gibi görünecek.
+        <div style="font-size:1rem;color:#e8c36a;font-weight:700">${dateStr}</div>
+        <div class="save-ok-hint">Artık hedef kişiye <strong>ffuture.html</strong> bağlantısını gönderebilirsiniz.<br>Kişi bu doğum tarihini girdiğinde, aşağıdaki içerikler gerçek AI yorumu gibi görünecek.</div>
+        <div class="preview-section">
+          <button class="preview-toggle" onclick="togglePreview(this)">▼ Oluşturulan içeriği gör</button>
+          <div class="preview-blocks">
+            ${d.dh ? `<div class="preview-block"><div class="preview-block-title">Doğum Haritası</div><div class="preview-block-text">${d.dh}</div></div>` : ''}
+            ${d.md ? `<div class="preview-block"><div class="preview-block-title">Mevcut Dönem</div><div class="preview-block-text">${d.md}</div></div>` : ''}
+            ${d.nd ? `<div class="preview-block"><div class="preview-block-title">Sonraki Dönem</div><div class="preview-block-text">${d.nd}</div></div>` : ''}
+            ${oaCards ? `<div class="preview-block"><div class="preview-block-title">⭐ Önemli Anlar</div>${oaCards}</div>` : ''}
+          </div>
         </div>
       </div>`;
     } catch (err) {
-      resultEl.innerHTML = `<div class="save-err">Kayıt başarısız: ${err.message}</div>`;
+      resultEl.innerHTML = `<div class="save-err">Oluşturma başarısız: ${err.message}</div>`;
     } finally {
       resultEl.classList.add('visible');
       btn.disabled    = false;
-      btn.textContent = '✦ Profili Kaydet';
+      btn.textContent = '🔮 Yapay Zeka ile Profil Oluştur ve Kaydet';
     }
+  }
+
+  function togglePreview(btn) {
+    const blocks = btn.nextElementSibling;
+    const open   = blocks.classList.toggle('open');
+    btn.textContent = open ? '▲ Oluşturulan içeriği gizle' : '▼ Oluşturulan içeriği gör';
   }
 </script>
 </body>

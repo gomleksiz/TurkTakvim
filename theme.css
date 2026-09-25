@@ -336,11 +336,12 @@ button, input { font: inherit; color: inherit; }
 .ix-same    { --c: var(--gold); }
 .ix-neutral { --c: var(--neutral); }
 
-/* Kritik yaş türleri */
-.t-biyolojik  { --c: var(--green); }
-.t-norolojik  { --c: var(--blue); }
-.t-kozmolojik { --c: var(--red); }
-.t-kesisim    { --c: var(--gold); }
+/* Yıl türleri (müçel haritası) */
+.t-mucel { --c: var(--gold); }
+.t-buyuk { --c: var(--gold); }
+.t-zit   { --c: var(--red); }
+.t-uyum  { --c: var(--green); }
+.t-dost  { --c: var(--blue); }
 
 /* Elementler */
 .el-metal  { --c: var(--metal); }

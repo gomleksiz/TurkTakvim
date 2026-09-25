@@ -92,6 +92,10 @@
     .score-bar-wrap { height: 10px; border-radius: 999px; background: var(--sunken); border: 1px solid var(--line); }
     .score-bar { height: 100%; border-radius: 999px; background: var(--c); }
     .score-info .btn { justify-self: start; margin-top: 0.3rem; }
+    .reasons-title { font-weight: 700; margin-top: 0.3rem; }
+    .reasons { list-style: none; display: grid; gap: 0.4rem; }
+    .reasons li { display: flex; flex-wrap: wrap; align-items: center; gap: 0.3rem 0.5rem; }
+    .cx-weight { display: block; margin-top: 0.15rem; font-size: 0.875rem; font-weight: 700; color: var(--muted); }
 
     .couple-birth-grid {
       display: grid;
@@ -180,7 +184,7 @@
     .legend-list { list-style: none; display: grid; gap: 0.55rem; }
     .legend-list li { display: flex; flex-wrap: wrap; align-items: center; gap: 0.3rem 0.6rem; }
 
-    /* Aynı yaşam evresi */
+    /* Aynı müçel dönemi */
     .ps-intro { margin-bottom: 1rem; }
     .phase-sync-list { list-style: none; display: grid; gap: 0.6rem; }
 
@@ -371,13 +375,6 @@
             <label for="date1">Doğum tarihi</label>
             <input type="date" id="date1" min="1900-01-01" required>
           </div>
-          <div class="field">
-            <span class="field-label" id="g1Label">Cinsiyet</span>
-            <div class="seg" role="group" aria-labelledby="g1Label">
-              <button type="button" class="seg-btn" id="g1F" aria-pressed="true" onclick="setGender(1,'female')">♀ Kadın</button>
-              <button type="button" class="seg-btn" id="g1M" aria-pressed="false" onclick="setGender(1,'male')">♂ Erkek</button>
-            </div>
-          </div>
         </fieldset>
 
         <div class="form-divider" aria-hidden="true">♥</div>
@@ -392,13 +389,6 @@
             <label for="date2">Doğum tarihi</label>
             <input type="date" id="date2" min="1900-01-01" required>
           </div>
-          <div class="field">
-            <span class="field-label" id="g2Label">Cinsiyet</span>
-            <div class="seg" role="group" aria-labelledby="g2Label">
-              <button type="button" class="seg-btn" id="g2F" aria-pressed="false" onclick="setGender(2,'female')">♀ Kadın</button>
-              <button type="button" class="seg-btn" id="g2M" aria-pressed="true" onclick="setGender(2,'male')">♂ Erkek</button>
-            </div>
-          </div>
         </fieldset>
       </div>
 
@@ -412,7 +402,7 @@
 
     <section class="section" aria-labelledby="scoreTitle">
       <h2 id="scoreTitle">Doğum uyumu</h2>
-      <p class="section-lead">Dokuz sütun eşleşmesinden çıkan toplam puan.</p>
+      <p class="section-lead">9 sütun eşleşmesi ve elementlerden çıkan puan (0–100). Öz Kimlikler en çok sayılır.</p>
       <div class="card score-card reveal" id="compatScoreCard"></div>
     </section>
 
@@ -450,7 +440,7 @@
     </section>
 
     <section class="section" id="phaseSyncSection" aria-labelledby="psTitle">
-      <h2 id="psTitle">Aynı yaşam evresinde olduğunuz dönemler</h2>
+      <h2 id="psTitle">Aynı müçel döneminde olduğunuz yıllar</h2>
       <div class="card reveal">
         <p class="ps-intro" id="psIntro"></p>
         <ol class="phase-sync-list" id="phaseSyncList"></ol>
@@ -460,7 +450,7 @@
 
     <section class="section" aria-labelledby="dtTitle">
       <h2 id="dtTitle">İkili hayat çizgisi</h2>
-      <p class="section-lead">İki kişinin kritik yaşları, yıllara göre sıralı.</p>
+      <p class="section-lead">İki kişinin müçel ve zıt yılları, yıllara göre sıralı.</p>
       <div class="card reveal">
         <div class="dt-header" id="dtHeader"></div>
         <div class="dt-body" id="dtBody">
@@ -537,41 +527,6 @@ const DAY_ANIMALS  = ['Sıçan','Öküz','Kaplan','Tavşan','Ejderha','Yılan',
 const DAY_ELEMENTS = ['Ağaç','Ağaç','Ateş','Ateş','Toprak','Toprak',
                        'Metal','Metal','Su','Su'];
 
-const FEMALE_MILESTONES = [
-  { age:7,  type:'biyolojik',  title:'Fiziksel Gelişim'         },
-  { age:9,  type:'norolojik',  title:'1. Beyin Güncellemesi'    },
-  { age:14, type:'biyolojik',  title:'Ergenlik'                 },
-  { age:21, type:'biyolojik',  title:'Biyolojik Zirve Başlangıcı' },
-  { age:28, type:'biyolojik',  title:'Fiziksel Zirve'           },
-  { age:32, type:'norolojik',  title:'2. Beyin Güncellemesi'    },
-  { age:35, type:'biyolojik',  title:'Form Değişimi'            },
-  { age:42, type:'biyolojik',  title:'Ruhsal Derinleşme'       },
-  { age:49, type:'biyolojik',  title:'Bilgelik Çağı'           },
-  { age:56, type:'biyolojik',  title:'İkinci Bahar'            },
-  { age:60, type:'kozmolojik', title:'Büyük Devir Tamamlandı'  },
-  { age:63, type:'biyolojik',  title:'Zihinsel Olgunluk'       },
-  { age:66, type:'norolojik',  title:'3. Beyin Güncellemesi'   },
-  { age:70, type:'biyolojik',  title:'Aktarım Dönemi'          },
-  { age:83, type:'norolojik',  title:'4. Beyin Güncellemesi'   },
-];
-
-const MALE_MILESTONES = [
-  { age:8,  type:'biyolojik',  title:'Fiziksel Gelişim'         },
-  { age:9,  type:'norolojik',  title:'1. Beyin Güncellemesi'    },
-  { age:16, type:'biyolojik',  title:'Ergenlik'                 },
-  { age:24, type:'biyolojik',  title:'Biyolojik Zirve'         },
-  { age:32, type:'kesisim',    title:'Büyük Kesişim'            },
-  { age:40, type:'biyolojik',  title:'Zihinsel Kayma'          },
-  { age:48, type:'biyolojik',  title:'Orta Yaş Olgunluğu'      },
-  { age:56, type:'biyolojik',  title:'Bilgelik Çağı'           },
-  { age:60, type:'kozmolojik', title:'Büyük Devir Tamamlandı'  },
-  { age:64, type:'biyolojik',  title:'İkinci Bahar'            },
-  { age:66, type:'norolojik',  title:'3. Beyin Güncellemesi'   },
-  { age:72, type:'biyolojik',  title:'Derin Bilgelik'          },
-  { age:80, type:'biyolojik',  title:'Kabulleniş'              },
-  { age:83, type:'norolojik',  title:'4. Beyin Güncellemesi'   },
-];
-
 const TRINES = [
   { names:['Koyun','Tavşan','Domuz'],    label:'Diplomasi ve Sanat'   },
   { names:['Kaplan','At','Köpek'],       label:'Aksiyon ve Liderlik'  },
@@ -597,17 +552,50 @@ const CLASHES = {
   'Yılan':'Domuz',   'Domuz':'Yılan',
 };
 
-// Yaşam evreleri
+// Müçel dönemleri: her 12 yılda doğum hayvanı döner ve yeni bir dönem başlar (ana sayfayla aynı)
 const LIFE_PHASES = [
-  { name:'Çocukluk',         from:0,  to:12  },
-  { name:'Ergenlik',         from:13, to:17  },
-  { name:'Genç Yetişkinlik', from:18, to:24  },
-  { name:'Kuruluş',          from:25, to:35  },
-  { name:'Olgunlaşma',       from:36, to:49  },
-  { name:'Geçiş',            from:50, to:64  },
-  { name:'Hasat',            from:65, to:74  },
-  { name:'Bilgelik',         from:75, to:120 },
+  { name:'Çocukluk',     from:0,  to:11  },
+  { name:'Gençlik',      from:12, to:23  },
+  { name:'Kuruluş',      from:24, to:35  },
+  { name:'Olgunlaşma',   from:36, to:47  },
+  { name:'Deneyim',      from:48, to:59  },
+  { name:'İkinci bahar', from:60, to:71  },
+  { name:'Bilgelik',     from:72, to:83  },
+  { name:'Aksakallık',   from:84, to:120 },
 ];
+
+// İlişki değerleri — ana sayfayla aynı
+const REL_VALUE = { trine: 1, secret: 1, same: 0.5, neutral: 0, clash: -1 };
+
+// Element döngüleri: besleme (Ağaç → Ateş → Toprak → Metal → Su → Ağaç)
+// ve sınırlama (Ağaç → Toprak → Su → Ateş → Metal → Ağaç)
+const ELEM_ORDER = ['Ağaç', 'Ateş', 'Toprak', 'Metal', 'Su'];
+
+const ACCUSATIVE = {
+  'Metal': "Metal'i", 'Su': "Su'yu", 'Ağaç': "Ağaç'ı", 'Ateş': "Ateş'i", 'Toprak': "Toprak'ı",
+};
+
+// İki kişinin elementi: biri diğerini besliyorsa +1, aynıysa +0.5, biri diğerini sınırlıyorsa −1
+function elementPair(a, b) {
+  const i = ELEM_ORDER.indexOf(a), j = ELEM_ORDER.indexOf(b);
+  if (i === j) return { value: 0.5, text: `İkisi de ${a}: aynı element, güç birliği.` };
+  if ((i + 1) % 5 === j) return { value: 1, text: `${a}, ${ACCUSATIVE[b]} besler: doğal destek.` };
+  if ((j + 1) % 5 === i) return { value: 1, text: `${b}, ${ACCUSATIVE[a]} besler: doğal destek.` };
+  const [x, y] = (i + 2) % 5 === j ? [a, b] : [b, a];
+  return { value: -1, text: `${x}, ${ACCUSATIVE[y]} sınırlar: denge için emek ister.` };
+}
+
+// Sütun ağırlıkları: öz kimlikler (gün × gün) en çok sayılır
+const PAIR_WEIGHT = { 'Öz Kimlik-Öz Kimlik': 3, 'Vitrin-Vitrin': 2, 'İç Dünya-İç Dünya': 2 };
+
+function pairWeight(labelA, labelB) {
+  return PAIR_WEIGHT[`${labelA}-${labelB}`] || 1;
+}
+
+// 9 eşleşme (toplam ağırlık 13) + 2 element eşleşmesi → ham puan −15 … +15 → 0–100
+function toPercent(raw) {
+  return Math.round((raw + 15) / 30 * 100);
+}
 
 // ─────────────────────────────────────────────
 // HESAPLAMA FONKSİYONLARI
@@ -646,8 +634,8 @@ function getMonthPosition(date) {
 
 function getMonthPillar(date, solarYear) {
   const pos       = getMonthPosition(date);
-  const yearStem  = ((solarYear % 10) + 10) % 10;
-  const tigerStem = ((Math.floor(yearStem / 2) + 4) % 5) * 2;
+  const yearStem  = (((solarYear - 4) % 10) + 10) % 10;   // 0 = Ağaç (Jia) yılı
+  const tigerStem = ((yearStem % 5) * 2 + 2) % 10;         // "beş kaplan" kuralı
   const monthStem = (tigerStem + pos) % 10;
   const elemNames = ['Ağaç','Ağaç','Ateş','Ateş','Toprak','Toprak','Metal','Metal','Su','Su'];
   return { animal: MONTH_ANIMALS[pos], element: elemNames[monthStem] };
@@ -664,8 +652,8 @@ function dateToJD(date) {
 
 function getDayPillar(date) {
   const jd      = dateToJD(date);
-  const epochJD = dateToJD(new Date(1900, 0, 1));
-  const pos     = ((jd - epochJD) % 60 + 60) % 60;
+  const epochJD = dateToJD(new Date(1900, 0, 1));          // 1 Oca 1900 = Ağaç Köpek (10. gün)
+  const pos     = ((jd - epochJD + 10) % 60 + 60) % 60;
   return { animal: DAY_ANIMALS[pos % 12], element: DAY_ELEMENTS[pos % 10] };
 }
 
@@ -689,65 +677,51 @@ function getInteraction(a, b) {
   return { type:'neutral', label:'Nötr', icon:'·' };
 }
 
-function scoreIx(type) {
-  if (type === 'trine')  return 3;
-  if (type === 'secret') return 2;
-  if (type === 'same')   return 1;
-  if (type === 'clash')  return -2;
-  return 0;
-}
-
 function getLifePhase(age) {
   return LIFE_PHASES.find(p => age >= p.from && age <= p.to)?.name ?? 'Bilgelik';
 }
 
-function buildMilestones(birthDateObj, gender) {
-  const milestones = gender === 'female' ? FEMALE_MILESTONES : MALE_MILESTONES;
-  const solarYear  = getSolarYear(birthDateObj);
+// Müçel ve zıt yıllar (ana sayfadaki hayat çizgisiyle aynı kural)
+function buildMilestones(birthDateObj) {
+  const solarYear   = getSolarYear(birthDateObj);
   const currentYear = new Date().getFullYear();
-  return milestones.map(m => {
-    const critYear  = solarYear + m.age;
-    const aIdx      = animalIndex(critYear);
-    const elem      = getElement(critYear);
-    const yearAnim  = ANIMALS[animalIndex(solarYear)].name;
-    const ix        = getInteraction(ANIMALS[aIdx].name, yearAnim);
-    return {
-      age:      m.age,
-      type:     m.type,
-      title:    m.title,
-      critYear,
-      animal:   ANIMALS[aIdx].name,
-      element:  elem.name,
+  const yearAnim    = ANIMALS[animalIndex(solarYear)].name;
+  const list = [];
+  for (let age = 6; age <= 96; age += 6) {
+    const critYear = solarYear + age;
+    const aIdx     = animalIndex(critYear);
+    const ix       = getInteraction(ANIMALS[aIdx].name, yearAnim);
+    const type     = ix.type === 'clash' ? 'zit' : age % 60 === 0 ? 'buyuk' : 'mucel';
+    const title    = type === 'zit'   ? `Zıt yıl · ${Math.floor(age / 12) + 1}. müçelin ortası`
+                   : type === 'buyuk' ? `Büyük müçel · ${getLifePhase(age)} başlar`
+                                      : `${age / 12}. müçel tamamlanır · ${getLifePhase(age)} başlar`;
+    list.push({
+      age, type, title, critYear,
+      animal:      ANIMALS[aIdx].name,
+      element:     getElement(critYear).name,
       interaction: ix.type,
-      isPast:   critYear < currentYear - 1,
-      isPresent: Math.abs(critYear - currentYear) <= 1,
-    };
-  });
+      isPast:      critYear < currentYear - 1,
+      isPresent:   Math.abs(critYear - currentYear) <= 1,
+    });
+  }
+  return list;
 }
 
 // ─────────────────────────────────────────────
 // STATE
 // ─────────────────────────────────────────────
 
-let g1 = 'female', g2 = 'male';
 let _aiData = null;
 let _shareText = '';
-
-function setGender(partner, g) {
-  if (partner === 1) g1 = g; else g2 = g;
-  document.getElementById(`g${partner}F`).setAttribute('aria-pressed', g === 'female');
-  document.getElementById(`g${partner}M`).setAttribute('aria-pressed', g === 'male');
-}
 
 // ─────────────────────────────────────────────
 // RENDER HELPERS
 // ─────────────────────────────────────────────
 
 const TYPE_LABEL = {
-  biyolojik:  'Biyolojik',
-  norolojik:  'Nörolojik',
-  kozmolojik: 'Kozmolojik',
-  kesisim:    'Büyük kesişim',
+  mucel: 'Müçel yılı',
+  buyuk: 'Büyük müçel',
+  zit:   'Zıt yıl',
 };
 
 const IX_SHORT = {
@@ -769,28 +743,29 @@ function elemChip(name) {
 }
 
 function scoreInfo(score) {
-  // score range: -18 (9 clashes) to 27 (9 trines)
-  if (score >= 18) return { label:'Nadir Ruh İkizi',      tone:'gold',    desc:'Dokuz kombinasyonun büyük bölümü uyum içinde. Son derece güçlü bir çekim.' };
-  if (score >= 12) return { label:'Güçlü Uyum',           tone:'green',   desc:'Birbirini tamamlayan güçlü bir enerji. Destekleyici ve büyütücü bir birliktelik.' };
-  if (score >= 5)  return { label:'Dengeli Ortaklık',     tone:'blue',    desc:'Hem uyum hem farklılık içeren zengin bir denge. Büyüme için verimli zemin.' };
-  if (score >= -2) return { label:'Nötr Birliktelik',     tone:'neutral', desc:'Ne güçlü çekim ne güçlü gerilim. Bilinçli çaba ilişkiyi derinleştirir.' };
+  // score range: 0–100 (all neutral ≈ 50)
+  if (score >= 75) return { label:'Nadir Ruh İkizi',      tone:'gold',    desc:'Eşleşmelerin büyük bölümü uyum içinde. Son derece güçlü bir çekim.' };
+  if (score >= 65) return { label:'Güçlü Uyum',           tone:'green',   desc:'Birbirini tamamlayan güçlü bir enerji. Destekleyici ve büyütücü bir birliktelik.' };
+  if (score >= 55) return { label:'Dengeli Ortaklık',     tone:'blue',    desc:'Hem uyum hem farklılık içeren zengin bir denge. Büyüme için verimli zemin.' };
+  if (score >= 45) return { label:'Emek İsteyen Uyum',    tone:'neutral', desc:'Uyum ve gerilim bir arada. Açık iletişim ve sabır ilişkiyi güçlendirir.' };
   return                 { label:'Dönüştürücü Gerilim',  tone:'red',     desc:'Gerilim dönüşümü besler. Zorlu ama derin bir öğretici ortaklık.' };
 }
 
-function renderScoreCard(score) {
-  const si  = scoreInfo(score);
-  const pct = Math.round(((score + 18) / 45) * 100);
+function renderScoreCard(score, reasons) {
+  const si = scoreInfo(score);
   return `
     <div class="score-circle tone-${si.tone}">
       <span class="score-number">${score}</span>
-      <span class="score-max">/ 27</span>
+      <span class="score-max">/ 100</span>
     </div>
     <div class="score-info tone-${si.tone}">
       <p class="score-label">${si.label}</p>
       <p>${si.desc}</p>
-      <div class="score-bar-wrap" role="img" aria-label="Uyum çubuğu: yüzde ${pct}">
-        <div class="score-bar" style="width:${pct}%"></div>
+      <div class="score-bar-wrap" role="img" aria-label="Uyum çubuğu: 100 üzerinden ${score}">
+        <div class="score-bar" style="width:${score}%"></div>
       </div>
+      <p class="reasons-title">Neden?</p>
+      <ul class="reasons">${reasons.map(r => `<li>${r}</li>`).join('')}</ul>
       <button type="button" class="btn btn-secondary" onclick="shareCouple()">📤 Sonucu paylaş</button>
     </div>`;
 }
@@ -874,7 +849,8 @@ function renderMatrix(p1, p2, n1, n2) {
         <p class="cx-pair">${animA.icon} ${r.anim} ⇄ ${animB.icon} ${c.anim} <span class="chip ix-${ix.type}">${ix.icon} ${ix.label}</span></p>
         <p class="cx-explain">${CHANNEL_DESC[`${r.label}-${c.label}`] || ''} ${IX_EXPLAIN[ix.type] || ''}</p>
       </div>`);
-      return `<td><span class="chip ix-${ix.type}">${IX_SHORT[ix.type]}</span></td>`;
+      const w  = pairWeight(r.label, c.label);
+      return `<td><span class="chip ix-${ix.type}">${IX_SHORT[ix.type]}</span>${w > 1 ? `<span class="cx-weight">×${w}</span>` : ''}</td>`;
     }).join('');
     return `<tr><th scope="row"><span class="p1-text">${r.label}</span><span class="cx-anim">${animalByName(r.anim).icon} ${r.anim}</span></th>${cells}</tr>`;
   }).join('');
@@ -920,23 +896,22 @@ function calcPhaseSync(birthYear1, birthYear2) {
 
 function phaseIcon(phase) {
   const map = {
-    'Çocukluk':'🌱', 'Ergenlik':'🌿', 'Genç Yetişkinlik':'🌟',
-    'Kuruluş':'🏗️', 'Olgunlaşma':'🌳', 'Geçiş':'🌅',
-    'Hasat':'🌾', 'Bilgelik':'🦅'
+    'Çocukluk':'🌱', 'Gençlik':'🌿', 'Kuruluş':'🏗️', 'Olgunlaşma':'🌳',
+    'Deneyim':'🌾', 'İkinci bahar':'🌸', 'Bilgelik':'🦉', 'Aksakallık':'🦅'
   };
   return map[phase] || '✦';
 }
 
 function phaseDesc(phase) {
   const map = {
-    'Çocukluk':         'Aile, oyun ve büyüme — temel güven ve sevgi yılları.',
-    'Ergenlik':         'Kimlik arayışı, ilk gönül bağları, akran etkisi yoğun.',
-    'Genç Yetişkinlik': 'Bağımsızlık, eğitim/kariyer ilk adımları, dünyayı keşif.',
-    'Kuruluş':          'Kariyer kuruluşu, ortaklık/evlilik, çocuk ve yuva yılları.',
-    'Olgunlaşma':       'Kariyer zirvesi, sorumluluk, içsel sorgulamanın derinleşmesi.',
-    'Geçiş':            'Çocukların yuvadan ayrılışı, sağlık bilinci, anlam arayışı.',
-    'Hasat':            'Emeklilik özgürlüğü, torun sevgisi, biriktirilenin paylaşımı.',
-    'Bilgelik':         'Aktarım yılları, manevi derinlik, sade ve huzurlu varoluş.',
+    'Çocukluk':     'Aile, oyun ve büyüme — temel güven ve sevgi yılları.',
+    'Gençlik':      'Kimlik arayışı, okul, ilk gönül bağları ve ilk bağımsız adımlar.',
+    'Kuruluş':      'Kariyer kuruluşu, ortaklık/evlilik, çocuk ve yuva yılları.',
+    'Olgunlaşma':   'Sorumluluk, kariyer zirvesi, içsel sorgulamanın derinleşmesi.',
+    'Deneyim':      'Birikimin meyve verdiği yıllar; çocuklar yuvadan ayrılır, anlam arayışı artar.',
+    'İkinci bahar': 'Büyük müçelden sonra yeni başlangıç: emeklilik özgürlüğü, torun sevgisi.',
+    'Bilgelik':     'Aktarım yılları, manevi derinlik, sade ve huzurlu yaşam.',
+    'Aksakallık':   'Saygı, huzur ve uzun ömür yılları.',
   };
   return map[phase] || '';
 }
@@ -945,7 +920,7 @@ function renderPhaseSync(periods, n1, n2) {
   const currentYear = new Date().getFullYear();
   const list = document.getElementById('phaseSyncList');
   if (periods.length === 0) {
-    list.innerHTML = '<li class="ps-empty">Aynı anda aynı yaşam evresinde olduğunuz uzun bir dönem hesaplanamadı.</li>';
+    list.innerHTML = '<li class="ps-empty">Aynı anda aynı müçel döneminde olduğunuz uzun bir süre bulunamadı.</li>';
     return;
   }
   list.innerHTML = periods.map(p => {
@@ -965,7 +940,7 @@ function renderPhaseSync(periods, n1, n2) {
           <span class="chip">${duration} yıl</span>
           ${timeNote}
         </div>
-        <p class="ps-phase">${p.phase} evresi</p>
+        <p class="ps-phase">${p.phase} dönemi</p>
         <p class="ps-phase-desc">${phaseDesc(p.phase)}</p>
         <p class="ps-ages"><span class="p1-text">💚 ${n1}</span>: ${p.p1StartAge}–${p1End} yaş · <span class="p2-text">💙 ${n2}</span>: ${p.p2StartAge}–${p2End} yaş</p>
       </div>
@@ -1060,7 +1035,7 @@ function calcCouple(event) {
   const sy2 = getSolarYear(d2);
 
   const p1 = {
-    name: n1, gender: g1, birthDate: val1,
+    name: n1, birthDate: val1,
     birthYear: sy1,
     yearPillar:  { animal: ANIMALS[animalIndex(sy1)].name, element: getElement(sy1).name },
     monthPillar: getMonthPillar(d1, sy1),
@@ -1069,7 +1044,7 @@ function calcCouple(event) {
   };
 
   const p2 = {
-    name: n2, gender: g2, birthDate: val2,
+    name: n2, birthDate: val2,
     birthYear: sy2,
     yearPillar:  { animal: ANIMALS[animalIndex(sy2)].name, element: getElement(sy2).name },
     monthPillar: getMonthPillar(d2, sy2),
@@ -1089,32 +1064,51 @@ function calcCouple(event) {
     { label:'Öz Kimlik',anim: p2.dayPillar.animal   },
   ];
 
-  let compatScore = 0;
+  // Uyum puanı: 9 sütun eşleşmesi (ağırlıklı) + yıl ve gün elementleri
+  let raw = 0;
   const crossInteractions = [];
   for (const a of pillars1) {
     for (const b of pillars2) {
-      const ix = getInteraction(a.anim, b.anim);
-      compatScore += scoreIx(ix.type);
-      crossInteractions.push({ labelA: a.label, labelB: b.label, animalA: a.anim, animalB: b.anim, ...ix });
+      const ix     = getInteraction(a.anim, b.anim);
+      const weight = pairWeight(a.label, b.label);
+      raw += weight * REL_VALUE[ix.type];
+      crossInteractions.push({ labelA: a.label, labelB: b.label, animalA: a.anim, animalB: b.anim, weight, ...ix });
     }
   }
+  const elementHarmony = {
+    year: elementPair(p1.yearPillar.element, p2.yearPillar.element),
+    day:  elementPair(p1.dayPillar.element,  p2.dayPillar.element),
+  };
+  raw += elementHarmony.year.value + elementHarmony.day.value;
+  const compatScore = toPercent(raw);
 
-  // Milestones
-  const m1 = buildMilestones(d1, g1);
-  const m2 = buildMilestones(d2, g2);
+  // Müçel ve zıt yıllar
+  const m1 = buildMilestones(d1);
+  const m2 = buildMilestones(d2);
 
   // Phase sync
   const phaseSyncPeriods = calcPhaseSync(sy1, sy2);
 
   // Store for AI
-  _aiData = { partner1: { ...p1, milestones: m1 }, partner2: { ...p2, milestones: m2 }, crossInteractions, compatScore, phaseSyncPeriods, currentYear: now.getFullYear() };
+  _aiData = { partner1: { ...p1, milestones: m1 }, partner2: { ...p2, milestones: m2 }, crossInteractions, compatScore, elementHarmony, phaseSyncPeriods, currentYear: now.getFullYear() };
 
   // ── Render ──
   const namesGiven = document.getElementById('name1').value.trim() && document.getElementById('name2').value.trim();
   const name1 = escapeHTML(n1);
   const name2 = escapeHTML(n2);
 
-  document.getElementById('compatScoreCard').innerHTML = renderScoreCard(compatScore);
+  // "Neden?" listesi: en güçlü bağ, en zor nokta ve elementler
+  const weighted = ix => ix.weight * REL_VALUE[ix.type];
+  const ranked   = [...crossInteractions].sort((x, y) => weighted(y) - weighted(x));
+  const pairText = ix => `<span class="p1-text">${name1} · ${ix.labelA}</span> (${ix.animalA}) × <span class="p2-text">${name2} · ${ix.labelB}</span> (${ix.animalB})`;
+  const reasons  = [];
+  if (weighted(ranked[0]) > 0) reasons.push(`<span class="chip ix-${ranked[0].type}">${IX_SHORT[ranked[0].type]}</span> En güçlü bağ: ${pairText(ranked[0])}`);
+  const worst = ranked[ranked.length - 1];
+  if (weighted(worst) < 0) reasons.push(`<span class="chip ix-clash">${IX_SHORT.clash}</span> En zor nokta: ${pairText(worst)}`);
+  reasons.push(`Vitrin elementleri: ${elementHarmony.year.text}`);
+  reasons.push(`Öz Kimlik elementleri: ${elementHarmony.day.text}`);
+
+  document.getElementById('compatScoreCard').innerHTML = renderScoreCard(compatScore, reasons);
 
   document.getElementById('couplebirthGrid').innerHTML =
     renderPartnerBirthCard(name1, p1, 'p1') +
@@ -1126,15 +1120,15 @@ function calcCouple(event) {
   const ageDiff = Math.abs(p1.birthYear - p2.birthYear);
   const older   = p1.birthYear < p2.birthYear ? name1 : name2;
   document.getElementById('psIntro').innerHTML = ageDiff === 0
-    ? 'İkiniz aynı yıl doğmuşsunuz. Ömrünüz boyunca hep aynı yaşam evresindesiniz; büyüme ve olgunlaşmayı paralel yaşarsınız.'
-    : `Aranızda <strong>${ageDiff} yıl</strong> var; ${older} yola daha önce çıktı. Bu yüzden biriniz Kuruluş evresindeyken diğeri henüz Genç Yetişkinlik evresinde olabilir. Aşağıdaki yıllarda ikiniz de <strong>aynı yaşam evresindesiniz</strong>.`;
+    ? 'İkiniz aynı yıl doğmuşsunuz. Ömrünüz boyunca hep aynı müçel dönemindesiniz; büyüme ve olgunlaşmayı paralel yaşarsınız.'
+    : `Aranızda <strong>${ageDiff} yıl</strong> var; ${older} yola daha önce çıktı. Bu yüzden biriniz Kuruluş dönemindeyken diğeri henüz Gençlik döneminde olabilir. Aşağıdaki yıllarda ikiniz de <strong>aynı müçel dönemindesiniz</strong>.`;
 
   renderPhaseSync(phaseSyncPeriods, name1, name2);
   renderDualTimeline(m1, m2, name1, name2);
 
   // Paylaşım metni (bağlantı her zaman eş uyumu sayfasına gider)
   const si = scoreInfo(compatScore);
-  _shareText = `💚💙 ${namesGiven ? `${n1} & ${n2}` : 'Uyumumuz'}: ${si.label} (${compatScore} puan). 12 Hayvanlı Türk Takvimi ile siz de uyumunuza bakın:`;
+  _shareText = `💚💙 ${namesGiven ? `${n1} & ${n2}` : 'Uyumumuz'}: ${si.label} (${compatScore}/100). 12 Hayvanlı Türk Takvimi ile siz de uyumunuza bakın:`;
 
   // Reset AI
   const btn = document.getElementById('btnAI');

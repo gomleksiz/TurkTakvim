@@ -10,22 +10,26 @@ const cors = {
 
 interface Pillar { animal: string; element: string; }
 interface MilestoneEntry {
-  age: number; type: string; title: string;
+  age: number;
+  type: string;                 // "mucel" | "buyuk" | "zit"
+  title: string;
   critYear: number; animal: string; element: string;
   interaction: string; isPast: boolean; isPresent: boolean;
 }
 interface CrossIx {
   labelA: string; labelB: string;
   animalA: string; animalB: string;
+  weight?: number;              // Öz Kimlik × Öz Kimlik 3, Vitrin × Vitrin 2, İç Dünya × İç Dünya 2, diğerleri 1
   type: string; label: string; icon: string;
 }
+interface ElementPair { value: number; text: string; }
 interface PhasePeriod {
   startYear: number; endYear: number; phase: string;
   p1StartAge: number; p2StartAge: number;
 }
 interface PartnerData {
   name?: string;
-  gender: "female" | "male";
+  gender?: "female" | "male";   // eski sürüm gönderir; müçel mantığı kullanmaz
   birthDate: string;
   birthYear: number;
   yearPillar: Pillar;
@@ -38,7 +42,8 @@ interface RequestBody {
   partner1: PartnerData;
   partner2: PartnerData;
   crossInteractions: CrossIx[];
-  compatScore: number;
+  compatScore: number;          // 0–100
+  elementHarmony?: { year: ElementPair; day: ElementPair };
   phaseSyncPeriods: PhasePeriod[];
   currentYear: number;
 }
@@ -74,13 +79,20 @@ const ixLabel: Record<string, string> = {
   same:    "Aynı Hayvan",
 };
 
+// Puan 0–100 (hepsi nötr ≈ 50). Sayfadaki scoreInfo() ile aynı eşikler.
 function scoreLabel(score: number): string {
-  if (score >= 18) return "Nadir Ruh İkizi";
-  if (score >= 12) return "Güçlü Uyum";
-  if (score >= 5)  return "Dengeli Ortaklık";
-  if (score >= -2) return "Nötr Birliktelik";
+  if (score >= 75) return "Nadir Ruh İkizi";
+  if (score >= 65) return "Güçlü Uyum";
+  if (score >= 55) return "Dengeli Ortaklık";
+  if (score >= 45) return "Emek İsteyen Uyum";
   return "Dönüştürücü Gerilim";
 }
+
+const typeLabel: Record<string, string> = {
+  mucel: "müçel yılı",
+  buyuk: "büyük müçel",
+  zit:   "zıt yıl",
+};
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: cors });
@@ -89,7 +101,7 @@ serve(async (req) => {
     if (!GEMINI_API_KEY) throw new Error("GEMINI_API_KEY yapılandırılmamış");
 
     const body: RequestBody = await req.json();
-    const { partner1: p1, partner2: p2, crossInteractions, compatScore, phaseSyncPeriods, currentYear } = body;
+    const { partner1: p1, partner2: p2, crossInteractions, compatScore, elementHarmony, phaseSyncPeriods, currentYear } = body;
 
     const n1 = p1.name || "Birinci Kişi";
     const n2 = p2.name || "İkinci Kişi";
@@ -97,12 +109,12 @@ serve(async (req) => {
     const older = p1.birthYear < p2.birthYear ? n1 : n2;
 
     const ixSummary = crossInteractions
-      .map(ix => `  • ${ix.labelA} (${ix.animalA}) × ${ix.labelB} (${ix.animalB}): ${ixLabel[ix.type] ?? ix.type} ${ix.type === 'clash' ? '⚡' : ix.type === 'trine' ? '✨' : ix.type === 'secret' ? '🤝' : ''}`)
+      .map(ix => `  • ${ix.labelA} (${ix.animalA}) × ${ix.labelB} (${ix.animalB}): ${ixLabel[ix.type] ?? ix.type} ${ix.type === 'clash' ? '⚡' : ix.type === 'trine' ? '✨' : ix.type === 'secret' ? '🤝' : ''}${ix.weight && ix.weight > 1 ? ` (ağırlık ×${ix.weight})` : ''}`)
       .join('\n');
 
     const syncSummary = phaseSyncPeriods.length
-      ? phaseSyncPeriods.map(p => `  • ${p.startYear}–${p.endYear}: ${p.phase} evresi (${n1} ${p.p1StartAge} yaş, ${n2} ${p.p2StartAge} yaş)`).join('\n')
-      : '  (örtüşen evre bulunamadı)';
+      ? phaseSyncPeriods.map(p => `  • ${p.startYear}–${p.endYear}: ${p.phase} dönemi (${n1} ${p.p1StartAge} yaş, ${n2} ${p.p2StartAge} yaş)`).join('\n')
+      : '  (örtüşen müçel dönemi bulunamadı)';
 
     const sharedMilestoneYears = new Set([
       ...p1.milestones.map(m => m.critYear),
@@ -117,40 +129,47 @@ serve(async (req) => {
       ? bothInSameYear.map(y => {
           const m1 = p1.milestones.find(m => m.critYear === y)!;
           const m2 = p2.milestones.find(m => m.critYear === y)!;
-          return `  • ${y}: ${n1} ${m1.age} yaşında "${m1.title}" · ${n2} ${m2.age} yaşında "${m2.title}"`;
+          return `  • ${y}: ${n1} ${m1.age} yaşında ${typeLabel[m1.type] ?? m1.title} · ${n2} ${m2.age} yaşında ${typeLabel[m2.type] ?? m2.title}`;
         }).join('\n')
-      : '  (aynı yılda kritik dönüm noktası yok)';
+      : '  (aynı yılda müçel ya da zıt yıl yok)';
 
-    const prompt = `Sen 12 Hayvanlı Türk Takvimi astrolojisinde uzman, iki kişinin uyumunu yorumlayan bilge bir danışmansın.
-Yorumların Türkçe, sıcak, içgörülü ve yapıcı olsun. Her alan 3-5 cümle. Spesifik yıl adları (örn "2031'de") kullan.
+    const genderTR = (g?: string) => g === 'female' ? 'Kadın, ' : g === 'male' ? 'Erkek, ' : '';
+
+    const prompt = `Sen 12 Hayvanlı Türk Takvimi ve müçel geleneği konusunda uzman, iki kişinin uyumunu yorumlayan bilge bir danışmansın.
+Yorumların Türkçe, sıcak, içgörülü ve yapıcı olsun. Kısa ve net cümleler kur. Her alan 3-5 cümle. Spesifik yıl adları (örn "2031'de") kullan.
+
+━━ MÜÇEL SİSTEMİ ━━
+- Doğum hayvanı her 12 yılda bir döner: müçel yılı (12, 24, 36… yaş). Bir 12 yıllık dönem kapanır, yenisi açılır. 60 yaş büyük müçeldir.
+- Müçelin ortasında (6, 18, 30… yaş) karşıt hayvanın yılı gelir: zıt yıl.
+- 12 yıllık dönemler: 0–11 Çocukluk, 12–23 Gençlik, 24–35 Kuruluş, 36–47 Olgunlaşma, 48–59 Deneyim, 60–71 İkinci bahar, 72–83 Bilgelik, 84+ Aksakallık.
 
 ━━ KİŞİLER ━━
-• ${n1} (${p1.gender === 'female' ? 'Kadın' : 'Erkek'}, ${p1.currentAge} yaş, Doğum: ${p1.birthYear})
+• ${n1} (${genderTR(p1.gender)}${p1.currentAge} yaş, Doğum: ${p1.birthYear})
   Vitrin: ${p1.yearPillar.element} ${p1.yearPillar.animal} · İç Dünya: ${p1.monthPillar.element} ${p1.monthPillar.animal} · Öz Kimlik: ${p1.dayPillar.element} ${p1.dayPillar.animal}
-• ${n2} (${p2.gender === 'female' ? 'Kadın' : 'Erkek'}, ${p2.currentAge} yaş, Doğum: ${p2.birthYear})
+• ${n2} (${genderTR(p2.gender)}${p2.currentAge} yaş, Doğum: ${p2.birthYear})
   Vitrin: ${p2.yearPillar.element} ${p2.yearPillar.animal} · İç Dünya: ${p2.monthPillar.element} ${p2.monthPillar.animal} · Öz Kimlik: ${p2.dayPillar.element} ${p2.dayPillar.animal}
 • Yaş farkı: ${ageDiff} yıl (büyük olan: ${older})
 
 ━━ DOĞUM HARİTASI ÇAPRAZ ETKİLEŞİMLERİ (9 Kombinasyon) ━━
 ${ixSummary}
-• Genel Uyum Skoru: ${compatScore} → ${scoreLabel(compatScore)}
+${elementHarmony ? `• Vitrin elementleri: ${elementHarmony.year.text}\n• Öz Kimlik elementleri: ${elementHarmony.day.text}\n` : ''}• Genel Uyum Puanı: ${compatScore}/100 → ${scoreLabel(compatScore)} (Öz Kimlik × Öz Kimlik en çok sayılır)
 
-━━ YAŞAM EVRESİ ÖRTÜŞME DÖNEMLERİ ━━
+━━ AYNI MÜÇEL DÖNEMİNDE OLDUKLARI YILLAR ━━
 ${syncSummary}
 
-━━ AYNI YILDA KRİTİK DÖNÜM NOKTALARI ━━
+━━ AYNI YILDA MÜÇEL YA DA ZIT YIL ━━
 ${sharedYearDesc}
 
 ━━ YORUM KURALLARI ━━
 1. dogumUyumu: Üç sütun çapraz etkileşimlerini yorumla. Özellikle trine/gizli dostluk/clash olan kombinasyonları vurgula.
    Çiftlerin en güçlü ortak enerjisini ve en büyük gerilim noktasını belirt.
 2. zamanAkisi: Yaş farkının getirdiği faz kaymalarını açıkla. Hangisi hayatın hangi evresinde birbirinden ne kadar ileride?
-   Evre örtüşme dönemlerini vurgula — "İkisi birden Kuruluş evresindeyken" gibi ifadeler kullan.
-3. zirveDonemleri: Yakın gelecekte (${currentYear}–${currentYear + 15}) her iki partnerin kritik dönüm noktalarının çakıştığı ya da birbirini desteklediği yılları tespit et.
-   Aynı yılda her ikisi de kritik eşikte olacaksa özellikle belirt. Üçlü uyum yıllarını vurgula.
+   Aynı müçel döneminde oldukları yılları vurgula — "İkisi birden Kuruluş dönemindeyken" gibi ifadeler kullan.
+3. zirveDonemleri: Yakın gelecekte (${currentYear}–${currentYear + 15}) her iki partnerin müçel ya da zıt yıllarının çakıştığı ya da birbirini desteklediği yılları tespit et.
+   Aynı yılda ikisinin de müçel ya da zıt yılı varsa özellikle belirt. Üçlü uyum yıllarını vurgula.
 4. onemliAnlar: Gelecekteki önemli yılları sırala (maks 8 madde, kronolojik). Her madde için:
    - yil: takvim yılı (${currentYear} veya sonrası)
-   - tip: "uyum" (her iki kişi için destekleyici etkileşim) | "dikkat" (clash ya da her iki tarafın da zor eşiği) | "donusum" (büyük dönüm, kozmolojik ya da aynı anda iki kritik)
+   - tip: "uyum" (her iki kişi için destekleyici etkileşim) | "dikkat" (zıt yıl ya da her iki tarafın da zor eşiği) | "donusum" (müçel yılı, büyük müçel ya da aynı anda iki dönüm)
    - baslik: 2-4 kelime, şiirsel
    - aciklama: 2-3 cümle. Her iki kişinin o yıldaki durumunu belirt. Clash varsa dikkat uyarısı ver; trine/gizli dostluk varsa potansiyeli vurgula.
 

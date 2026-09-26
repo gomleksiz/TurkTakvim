@@ -4,1106 +4,595 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>12 Hayvanlı Türk Takvimi</title>
+  <meta name="description" content="Doğum tarihinizi girin. 12 Hayvanlı Türk Takvimi'ne göre hayvanınızı ve hayatınızdaki kritik yaşları görün.">
+  <script>try{var t=localStorage.getItem('tt-theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t}catch(e){}</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;600;700&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Old+Turkic&text=%F0%90%B1%85%F0%90%B0%87%F0%90%B0%BC%F0%90%B0%9C&display=swap">
+  <link rel="stylesheet" href="theme.css">
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #1a0a00 0%, #3d1500 50%, #1a0a00 100%);
-      min-height: 100vh;
-      color: #f5e6c8;
+    /* ── Giriş: form + bu yıl ── */
+    .intro-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+      gap: 1.2rem;
+      align-items: start;
     }
 
-    header {
-      text-align: center;
-      padding: 2.5rem 1rem 1.5rem;
-      background: linear-gradient(to bottom, rgba(0,0,0,0.4), transparent);
+    .form-card h2 { font-size: 1.35rem; }
+    .form-card > p { color: var(--muted); margin: 0.2rem 0 1.1rem; }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0 1rem;
     }
 
-    header h1 {
-      font-size: 2.2rem;
-      color: #e8c36a;
-      text-shadow: 0 0 20px rgba(232,195,106,0.5);
-      letter-spacing: 2px;
+    .today-card { text-align: center; }
+    .today-icon { font-size: 4rem; line-height: 1.15; margin-top: 0.3rem; }
+    .today-animal { font-size: 1.45rem; margin-top: 0.2rem; }
+    .today-elem { margin-top: 0.3rem; }
+
+    .today-list {
+      display: grid;
+      gap: 0.45rem;
+      margin-top: 1rem;
+      padding-top: 0.9rem;
+      border-top: 1px solid var(--line);
+      text-align: left;
     }
 
-    header p {
-      margin-top: 0.5rem;
-      color: #c9a96e;
-      font-size: 0.95rem;
+    .today-list div { display: flex; justify-content: space-between; gap: 1rem; }
+    .today-list dt { color: var(--muted); }
+    .today-list dd { font-weight: 600; text-align: right; }
+    .today-card .link-btn { margin-top: 1rem; }
+
+    /* ── Sonuç ── */
+    .result { margin-top: 2.8rem; scroll-margin-top: 1rem; }
+    .result > h2 { margin-bottom: 1rem; }
+
+    .summary-card { display: grid; gap: 0.9rem; }
+    .summary-top { display: flex; align-items: center; gap: 1rem; }
+    .summary-icon { font-size: 3.6rem; line-height: 1; flex-shrink: 0; }
+    .summary-title { font-size: 1.8rem; }
+    .summary-actions { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+
+    .note {
+      background: var(--sunken);
+      border-left: 4px solid var(--blue);
+      border-radius: 8px;
+      padding: 0.7rem 0.9rem;
     }
 
-    .ornament {
-      font-size: 1.4rem;
-      color: #e8c36a;
-      margin: 0.3rem 0;
-      letter-spacing: 6px;
+    .focus-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
     }
 
-    /* ── Converter Section ── */
+    .focus-card { border-left: 6px solid var(--c); }
+    .focus-card h3 { margin: 0.15rem 0 0.4rem; }
+    .focus-card p + p { margin-top: 0.6rem; }
+
+    .focus-meta {
       display: flex;
-      gap: 0.75rem;
       flex-wrap: wrap;
+      align-items: center;
+      gap: 0.35rem 0.6rem;
+      color: var(--muted);
     }
 
-    .input-group label {
-      display: block;
-      width: 100%;
-      font-size: 0.9rem;
-      color: #c9a96e;
-      margin-bottom: 0.4rem;
+    .result-block { margin-top: 2.4rem; }
+    .result-block > h3 { font-size: 1.35rem; }
+    .result-block > p.muted { margin-top: 0.2rem; }
+
+    /* Müçel çarkı */
+    .wheel {
+      --seg: 3.9rem;
+      container-type: inline-size;
+      position: relative;
+      width: min(100%, 23rem);
+      aspect-ratio: 1;
+      margin: 1.2rem auto 0.6rem;
     }
 
-    .input-group input {
-      flex: 1;
-      padding: 0.75rem 1rem;
-      font-size: 1.1rem;
-      border-radius: 10px;
-      border: 1px solid rgba(232,195,106,0.4);
-      background: rgba(0,0,0,0.3);
-      color: #f5e6c8;
-      outline: none;
-      min-width: 140px;
+    .wheel::before {
+      content: "";
+      position: absolute;
+      inset: calc(var(--seg) / 2);
+      border-radius: 50%;
+      border: 2px dashed var(--line-strong);
     }
 
-    .input-group input:focus {
-      border-color: #e8c36a;
-      box-shadow: 0 0 0 3px rgba(232,195,106,0.15);
-    }
-
-    .btn-convert {
-      padding: 0.75rem 1.8rem;
-      background: linear-gradient(135deg, #c8860a, #e8c36a);
-      color: #1a0a00;
-      font-weight: 700;
-      font-size: 1rem;
-      border: none;
-      border-radius: 10px;
+    .wheel-seg {
+      --r: calc(50cqw - var(--seg) / 2 - 4px);
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: var(--seg);
+      height: var(--seg);
+      margin: calc(var(--seg) / -2) 0 0 calc(var(--seg) / -2);
+      transform: rotate(var(--a)) translateY(calc(-1 * var(--r))) rotate(calc(-1 * var(--a)));
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      line-height: 1.15;
+      border-radius: 50%;
+      border: 3px solid var(--c);
+      background: var(--surface);
+      color: var(--text);
       cursor: pointer;
-      transition: transform 0.15s, box-shadow 0.15s;
     }
 
-    .btn-convert:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(232,195,106,0.4);
+    .wheel-seg[aria-pressed="true"] { background: color-mix(in srgb, var(--c) 22%, var(--surface)); }
+    .wheel-seg.is-now { box-shadow: 0 0 0 4px var(--accent); }
+    .ws-icon { font-size: 1.3rem; }
+    .ws-year { font-size: 0.875rem; font-weight: 700; }
+
+    .wheel-center {
+      position: absolute;
+      inset: 29%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      border-radius: 50%;
+      background: var(--sunken);
     }
 
-    .result-box {
-      margin-top: 1.5rem;
-      display: none;
+    .wc-icon { font-size: 2.3rem; line-height: 1.1; }
+    .wc-title { font-size: 1.15rem; font-weight: 700; }
+    .wc-sub { font-size: 0.9375rem; color: var(--muted); }
+    .wheel-legend { justify-content: center; }
+
+    .year-detail { display: grid; gap: 0.6rem; border-left: 6px solid var(--accent); }
+    .yd-title { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; font-size: 1.2rem; }
+    .year-detail .ix-list { margin-top: 0; }
+    .tone-line { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
+    .focus-card h4 { font-size: 1.25rem; margin: 0.15rem 0 0.4rem; }
+
+    /* Üç sütun */
+    .pillars {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.8rem;
+      margin-top: 1rem;
     }
 
-    .result-box.visible { display: block; }
+    .pillar {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 1rem;
+    }
 
-    .result-animal {
+    .pillar-icon { font-size: 2.3rem; line-height: 1.1; }
+    .pillar-text { display: grid; gap: 0.25rem; }
+    .pillar-name { font-weight: 700; color: var(--accent); }
+    .pillar-animal { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; font-weight: 700; }
+    .pillar-gift { font-weight: 600; }
+    .pillar-desc { color: var(--muted); font-size: 0.9375rem; }
+
+    .ix-title { margin-top: 1.2rem; }
+    #btnAI { margin-top: 0.8rem; }
+
+    .ix-list { list-style: none; display: grid; gap: 0.45rem; margin-top: 0.9rem; }
+    .ix-list li { display: flex; flex-wrap: wrap; align-items: center; gap: 0.3rem 0.5rem; }
+    .ix-list .chip { white-space: normal; }
+
+    .legend-list { list-style: none; display: grid; gap: 0.55rem; }
+    .legend-list li { display: flex; flex-wrap: wrap; align-items: center; gap: 0.3rem 0.6rem; }
+
+    /* Hayat çizgisi */
+    .type-legend { list-style: none; display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; margin: 0.8rem 0 1rem; }
+    .type-legend li { display: flex; align-items: center; gap: 0.4rem; color: var(--muted); font-size: 0.9375rem; }
+
+    .tl { list-style: none; position: relative; }
+
+    .tl::before {
+      content: "";
+      position: absolute;
+      left: 21px;
+      top: 12px;
+      bottom: 12px;
+      width: 3px;
+      border-radius: 2px;
+      background: var(--line-strong);
+    }
+
+    .tl .tl::before { display: none; }
+
+    .tl-item > details > summary,
+    .tl-past > details > summary {
+      list-style: none;
       display: flex;
       align-items: center;
-      gap: 1.2rem;
-      background: rgba(0,0,0,0.3);
-      border: 1px solid rgba(232,195,106,0.4);
+      gap: 0.8rem;
+      padding: 0.6rem 0.4rem 0.6rem 0;
       border-radius: 12px;
-      padding: 1.2rem 1.5rem;
     }
 
-    .result-animal .animal-icon {
-      font-size: 3.5rem;
-      line-height: 1;
-      filter: drop-shadow(0 0 8px rgba(232,195,106,0.5));
-    }
+    .tl-item > details > summary::-webkit-details-marker,
+    .tl-past > details > summary::-webkit-details-marker { display: none; }
 
-    .result-animal .animal-info h2 {
-      font-size: 1.5rem;
-      color: #e8c36a;
-    }
-
-    .result-animal .animal-info .animal-alt {
-      font-size: 0.85rem;
-      color: #c9a96e;
-      margin-top: 0.1rem;
-    }
-
-    .result-animal .animal-info .animal-cycle {
-      margin-top: 0.5rem;
-      font-size: 0.9rem;
-      color: #f5e6c8;
-    }
-
-    .result-desc {
-      margin-top: 1rem;
-      padding: 1rem 1.2rem;
-      background: rgba(0,0,0,0.2);
-      border-left: 3px solid #e8c36a;
-      border-radius: 0 8px 8px 0;
-      font-size: 0.92rem;
-      line-height: 1.6;
-      color: #ddd0b3;
-    }
-
-    .result-years {
-      margin-top: 0.8rem;
-      font-size: 0.82rem;
-      color: #c9a96e;
-    }
-
-    .result-years span {
-      display: inline-block;
-      background: rgba(232,195,106,0.12);
-      border: 1px solid rgba(232,195,106,0.25);
-      border-radius: 4px;
-      padding: 2px 7px;
-      margin: 2px 3px;
-      cursor: pointer;
-      transition: background 0.15s;
-    }
-
-    .result-years span:hover { background: rgba(232,195,106,0.25); }
-
-    .result-years .future-year {
-      background: rgba(232,195,106,0.22);
-      border-color: rgba(232,195,106,0.55);
-      color: #e8c36a;
-      font-weight: 600;
-    }
-
-    .result-years .future-year:hover { background: rgba(232,195,106,0.38); }
-
-    .result-years .years-label {
-      background: none;
-      border: none;
-      cursor: default;
-      color: #a08050;
-      font-size: 0.78rem;
-      padding: 0;
-      margin: 0 2px 0 6px;
-    }
-
-    /* ── All Animals Grid ── */
-    .all-animals-section {
-      max-width: 900px;
-      margin: 2.5rem auto 3rem;
-      padding: 0 1rem;
-    }
-
-    .section-title {
-      text-align: center;
+    .tl-item > details > summary::after,
+    .tl-past > details > summary::after {
+      content: "▾";
+      margin-left: auto;
+      color: var(--muted);
       font-size: 1.1rem;
-      color: #e8c36a;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      margin-bottom: 1.5rem;
+      transition: transform 0.2s;
     }
 
+    .tl-item > details[open] > summary::after,
+    .tl-past > details[open] > summary::after { transform: rotate(180deg); }
+
+    .tl-item > details > summary:hover .tl-title { text-decoration: underline; text-underline-offset: 3px; }
+
+    .tl-marker {
+      --c: var(--neutral);
+      position: relative;
+      z-index: 1;
+      flex-shrink: 0;
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.35rem;
+      background: var(--surface);
+      border: 3px solid var(--c);
+    }
+
+    .tl-item .tl-marker { --c: inherit; }
+    .tl-item.is-present .tl-marker,
+    .tl-item.is-next .tl-marker { box-shadow: 0 0 0 5px color-mix(in srgb, var(--c) 28%, transparent); }
+
+    .tl-age { flex-shrink: 0; width: 3.4rem; font-size: 1.25rem; font-weight: 700; line-height: 1.1; }
+    .tl-age small { display: block; font-size: 0.875rem; font-weight: 400; color: var(--muted); }
+
+    .tl-main { flex: 1; min-width: 0; display: grid; gap: 0.2rem; }
+    .tl-title { font-weight: 700; }
+    .tl-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 0.3rem 0.5rem; color: var(--muted); font-size: 0.9375rem; }
+
+    .tl-flag {
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: var(--on-accent);
+      background: var(--accent);
+      border-radius: 999px;
+      padding: 0 0.55rem;
+    }
+
+    .tl-body {
+      margin: 0 0 0.8rem 57px;
+      padding: 0.9rem 1rem;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-left: 4px solid var(--c);
+      border-radius: 12px;
+    }
+
+    .tl-body > * + * { margin-top: 0.6rem; }
+    .tl-body .ix-list { margin-top: 0.3rem; }
+
+    .celebrate {
+      background: color-mix(in srgb, var(--gold) 12%, var(--surface));
+      border: 1px solid color-mix(in srgb, var(--gold) 45%, transparent);
+      border-radius: 10px;
+      padding: 0.7rem 0.9rem;
+    }
+
+    .tl-past > details > summary { font-weight: 700; color: var(--muted); }
+
+    .tl-today {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      padding: 0.5rem 0;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .tl-today::before {
+      content: "";
+      position: relative;
+      z-index: 1;
+      flex-shrink: 0;
+      width: 17px;
+      height: 17px;
+      margin: 0 14px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 0 5px color-mix(in srgb, var(--accent) 25%, transparent);
+    }
+
+    .tl-today::after { content: ""; flex: 1; border-top: 2px dashed var(--accent); }
+
+    /* Yapay zekâ bölümü */
+    .oa-list { list-style: none; display: grid; gap: 0.6rem; margin-top: 0.4rem; }
+
+    .oa-card {
+      --c: var(--neutral);
+      display: flex;
+      align-items: flex-start;
+      gap: 0.8rem;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-left: 4px solid var(--c);
+      border-radius: 10px;
+      padding: 0.8rem 0.9rem;
+    }
+
+    .oa-card.olumlu { --c: var(--green); }
+    .oa-card.uyari  { --c: var(--red); }
+    .oa-icon { font-size: 1.3rem; line-height: 1.3; flex-shrink: 0; }
+    .oa-body { flex: 1; min-width: 0; }
+    .oa-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 0.3rem 0.5rem; margin-bottom: 0.25rem; }
+    .oa-year { font-weight: 700; }
+    .oa-baslik { font-weight: 700; }
+
+    /* ── On iki hayvan ── */
     .animals-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
-      gap: 1rem;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 0.8rem;
     }
 
     .animal-card {
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(232,195,106,0.2);
-      border-radius: 12px;
-      padding: 1rem;
-      text-align: center;
-      cursor: pointer;
-      transition: transform 0.2s, border-color 0.2s, background 0.2s;
       position: relative;
-    }
-
-    .animal-card:hover, .animal-card.active {
-      transform: translateY(-4px);
-      border-color: #e8c36a;
-      background: rgba(232,195,106,0.1);
-    }
-
-    .animal-card .card-icon { font-size: 2.2rem; }
-
-    .animal-card .card-order {
-      position: absolute;
-      top: 6px;
-      left: 10px;
-      font-size: 0.7rem;
-      color: #c9a96e;
-      font-weight: 700;
-    }
-
-    .animal-card .card-name {
-      font-size: 1rem;
-      font-weight: 700;
-      color: #e8c36a;
-      margin-top: 0.4rem;
-    }
-
-    .animal-card .card-altname {
-      font-size: 0.75rem;
-      color: #a08050;
-      margin-top: 0.1rem;
-    }
-
-    .animal-card .card-years {
-      font-size: 0.72rem;
-      color: #9a8060;
-      margin-top: 0.4rem;
-      line-height: 1.4;
-    }
-
-    /* ── Info Section ── */
-    .info-section {
-      max-width: 620px;
-      margin: 0 auto 3rem;
-      padding: 0 1rem;
-    }
-
-    .info-card {
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(232,195,106,0.2);
-      border-radius: 12px;
-      padding: 1.5rem;
-      font-size: 0.88rem;
-      line-height: 1.7;
-      color: #c9a96e;
-    }
-
-    .info-card h3 {
-      color: #e8c36a;
-      margin-bottom: 0.6rem;
-      font-size: 1rem;
-    }
-
-    /* ── Today Banner ── */
-    .today-banner {
-      max-width: 620px;
-      margin: 0 auto 0;
-      padding: 0 1rem 1.5rem;
-    }
-
-    .today-card {
-      display: flex;
-      align-items: center;
-      gap: 1.2rem;
-      background: linear-gradient(135deg, rgba(200,134,10,0.18), rgba(232,195,106,0.08));
-      border: 1px solid rgba(232,195,106,0.5);
-      border-radius: 14px;
-      padding: 1.1rem 1.5rem;
-    }
-
-    .today-card .today-icon {
-      font-size: 3rem;
-      line-height: 1;
-      filter: drop-shadow(0 0 10px rgba(232,195,106,0.6));
-    }
-
-    .today-card .today-info { flex: 1; }
-
-    .today-card .today-label {
-      font-size: 0.72rem;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      color: #c9a96e;
-    }
-
-    .today-card .today-date {
-      font-size: 1rem;
-      color: #f5e6c8;
-      margin-top: 0.15rem;
-    }
-
-    .today-card .today-animal {
-      font-size: 1.3rem;
-      font-weight: 700;
-      color: #e8c36a;
-      margin-top: 0.1rem;
-    }
-
-    .today-card .today-detail {
-      font-size: 0.8rem;
-      color: #a08050;
-      margin-top: 0.15rem;
-    }
-
-    /* ── Date input styling ── */
-    .input-group input[type="date"] {
-      flex: 1;
-      padding: 0.75rem 1rem;
-      font-size: 1rem;
-      border-radius: 10px;
-      border: 1px solid rgba(232,195,106,0.4);
-      background: rgba(0,0,0,0.3);
-      color: #f5e6c8;
-      outline: none;
-      min-width: 160px;
-      color-scheme: dark;
-    }
-
-    .input-group input[type="date"]:focus {
-      border-color: #e8c36a;
-      box-shadow: 0 0 0 3px rgba(232,195,106,0.15);
-    }
-
-    .result-date-line {
-      font-size: 0.88rem;
-      color: #c9a96e;
-      margin-bottom: 0.15rem;
-    }
-
-    .result-turkic-date {
-      font-size: 0.95rem;
-      color: #e8c36a;
-      font-weight: 600;
-      margin-bottom: 0.6rem;
-      letter-spacing: 0.3px;
-    }
-
-    /* ── Element Badge ── */
-    .elem-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      padding: 2px 9px;
-      border-radius: 20px;
-      font-size: 0.78rem;
-      font-weight: 700;
-      border: 1px solid;
-      vertical-align: middle;
-      margin-left: 0.4rem;
-    }
-
-    /* ── Critical Years Section ── */
-    .critical-section {
-      max-width: 720px;
-      margin: 2.5rem auto;
-      padding: 0 1rem;
-    }
-
-    .critical-card {
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(232,195,106,0.25);
-      border-radius: 16px;
-      padding: 1.8rem;
-    }
-
-    .birth-form {
-      display: flex;
-      gap: 0.75rem;
-      flex-wrap: wrap;
-      align-items: flex-end;
-    }
-
-    .birth-form .form-group { display: flex; flex-direction: column; gap: 0.35rem; }
-
-    .birth-form label { font-size: 0.85rem; color: #c9a96e; }
-
-    .birth-form input[type="number"] {
-      padding: 0.7rem 1rem;
-      font-size: 1rem;
-      border-radius: 10px;
-      border: 1px solid rgba(232,195,106,0.4);
-      background: rgba(0,0,0,0.3);
-      color: #f5e6c8;
-      outline: none;
-      width: 140px;
-    }
-
-    .birth-form input[type="number"]:focus {
-      border-color: #e8c36a;
-      box-shadow: 0 0 0 3px rgba(232,195,106,0.15);
-    }
-
-    .gender-buttons { display: flex; gap: 0.5rem; }
-
-    .gender-btn {
-      padding: 0.68rem 1.2rem;
-      border-radius: 10px;
-      border: 1px solid rgba(232,195,106,0.25);
-      background: rgba(0,0,0,0.2);
-      color: #a08050;
-      cursor: pointer;
-      font-size: 0.92rem;
-      transition: all 0.15s;
-    }
-
-    .gender-btn.active {
-      background: rgba(232,195,106,0.14);
-      border-color: #e8c36a;
-      color: #e8c36a;
-      font-weight: 600;
-    }
-
-    /* Timeline */
-    .timeline {
-      margin-top: 1.5rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.65rem;
-    }
-
-    .cy-card {
-      border-radius: 10px;
-      padding: 0.9rem 1.1rem;
-      border: 1px solid rgba(232,195,106,0.12);
-      background: rgba(0,0,0,0.18);
-      border-left: 3px solid rgba(232,195,106,0.15);
-      transition: transform 0.15s;
-    }
-
-    .cy-card:hover { transform: translateX(3px); }
-    .cy-card.past  { opacity: 0.5; }
-
-    .cy-card.present {
-      border-color: rgba(232,195,106,0.5);
-      border-left-color: #e8c36a;
-      background: rgba(232,195,106,0.07);
-      box-shadow: 0 0 14px rgba(232,195,106,0.12);
-    }
-
-    .cy-card.norolojik  { border-left-color: #5bb8e8; }
-    .cy-card.kozmolojik { border-left-color: #e87050; }
-    .cy-card.kesisim    { border-left-color: #e8c36a; }
-    .cy-card.present.norolojik  { border-color: rgba(91,184,232,0.5); }
-    .cy-card.present.kozmolojik { border-color: rgba(232,112,80,0.5); }
-
-    .cy-header {
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      flex-wrap: wrap;
-    }
-
-    .cy-age { font-size: 1rem; font-weight: 700; color: #e8c36a; min-width: 56px; }
-    .cy-year-badge {
-      font-size: 0.82rem;
-      background: rgba(232,195,106,0.1);
-      border: 1px solid rgba(232,195,106,0.25);
-      border-radius: 5px;
-      padding: 1px 7px;
-      color: #f5e6c8;
-    }
-
-    .cy-animal-elem { font-size: 0.88rem; color: #ddd0b3; }
-
-    .cy-type-badge {
-      font-size: 0.68rem;
-      padding: 2px 7px;
-      border-radius: 10px;
-      font-weight: 700;
-      letter-spacing: 0.4px;
-      margin-left: auto;
-    }
-
-    .cy-title {
-      font-size: 0.88rem;
-      color: #f5e6c8;
-      margin-top: 0.35rem;
-      font-weight: 600;
-    }
-
-    .cy-reading {
-      margin-top: 0.3rem;
-      font-size: 0.83rem;
-      color: #c0a878;
-      line-height: 1.6;
-    }
-
-    .critical-empty {
-      text-align: center;
-      color: #7a6040;
-      padding: 1.5rem;
-      font-size: 0.9rem;
-    }
-
-    /* Birth year summary card */
-    .cy-birth-card {
-      display: flex;
-      flex-direction: column;
-      gap: 0.8rem;
-      background: linear-gradient(135deg, rgba(232,195,106,0.1), rgba(0,0,0,0.2));
-      border: 1px solid rgba(232,195,106,0.4);
-      border-radius: 12px;
-      padding: 1rem 1.3rem;
-      margin-bottom: 1rem;
-    }
-
-    .cy-birth-icon { font-size: 2.6rem; line-height: 1; }
-
-    .cy-birth-label {
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      color: #a08050;
-    }
-
-    .cy-birth-year {
-      font-size: 1.4rem;
-      font-weight: 700;
-      color: #e8c36a;
-      line-height: 1.1;
-    }
-
-    .cy-birth-combo {
-      font-size: 0.95rem;
-      color: #f5e6c8;
-      margin-top: 0.2rem;
-    }
-
-    .cy-birth-desc {
-      font-size: 0.78rem;
-      color: #9a7850;
-      margin-top: 0.2rem;
-    }
-    /* ── Three Pillars ── */
-    .pillars-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 0.6rem;
-      margin: 0.7rem 0;
-    }
-
-    .pillar-card {
-      background: rgba(0,0,0,0.28);
-      border: 1px solid rgba(232,195,106,0.18);
-      border-radius: 10px;
-      padding: 0.7rem 0.5rem;
-      text-align: center;
-    }
-
-    .pillar-label {
-      font-size: 0.6rem;
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-      color: #7a6040;
-      margin-bottom: 0.1rem;
-    }
-
-    .pillar-subtitle {
-      font-size: 0.6rem;
-      color: #5a4020;
-      margin-bottom: 0.3rem;
-      font-style: italic;
-    }
-
-    .pillar-icon { font-size: 1.7rem; line-height: 1.2; }
-
-    .pillar-elem {
-      font-size: 0.75rem;
-      font-weight: 700;
-      margin-top: 0.2rem;
-    }
-
-    .pillar-animal {
-      font-size: 0.82rem;
-      font-weight: 700;
-      color: #f5e6c8;
-      margin-top: 0.05rem;
-    }
-
-    .pillar-strengths {
-      font-size: 0.62rem;
-      color: #d4a657;
-      margin-top: 0.2rem;
-      line-height: 1.35;
-      font-weight: 600;
-    }
-
-    .pillar-desc {
-      font-size: 0.57rem;
-      color: #5a4020;
-      margin-top: 0.25rem;
-      line-height: 1.4;
-      font-style: italic;
-    }
-
-    .cy-pillar-note {
-      margin-top: 0.45rem;
-      font-size: 0.75rem;
-      border-top: 1px solid rgba(232,195,106,0.08);
-      padding-top: 0.35rem;
-    }
-
-    .cy-birth-header {
-      display: flex;
-      align-items: center;
-      gap: 1.1rem;
-    }
-
-    /* ── Interaction Matrix ── */
-    .interactions-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.35rem;
-      margin-top: 0.55rem;
-      padding-top: 0.45rem;
-      border-top: 1px solid rgba(232,195,106,0.1);
-    }
-
-    .int-item {
-      display: flex;
-      align-items: center;
-      gap: 0.3rem;
-    }
-
-    .int-pair {
-      font-size: 0.65rem;
-      color: #6a5030;
-    }
-
-    .int-badge {
-      font-size: 0.68rem;
-      font-weight: 700;
-      padding: 2px 7px;
-      border-radius: 10px;
-    }
-
-    .int-badge.trine   { background: rgba(109,191,109,0.18); color: #6dbf6d; border: 1px solid rgba(109,191,109,0.4); }
-    .int-badge.secret  { background: rgba(91,184,232,0.15);  color: #5bb8e8; border: 1px solid rgba(91,184,232,0.3); }
-    .int-badge.clash   { background: rgba(232,112,80,0.18);  color: #e87050; border: 1px solid rgba(232,112,80,0.4); }
-    .int-badge.neutral { background: rgba(122,96,64,0.12);   color: #7a6040; border: 1px solid rgba(122,96,64,0.2); }
-    .int-badge.same    { background: rgba(232,195,106,0.12); color: #e8c36a; border: 1px solid rgba(232,195,106,0.3); }
-
-    .cy-interactions {
-      margin-top: 0.45rem;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.3rem;
-      align-items: center;
-    }
-
-    .cy-int-label {
-      font-size: 0.67rem;
-      color: #6a5030;
-      font-style: italic;
-    }
-
-    .sources-section {
-      max-width: 620px;
-      margin: 0 auto 3rem;
-      padding: 0 1rem;
-    }
-
-    .sources-card {
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(232,195,106,0.2);
-      border-radius: 12px;
-      padding: 1.5rem;
-    }
-
-    .sources-card h3 {
-      color: #e8c36a;
-      margin-bottom: 1rem;
-      font-size: 1rem;
-    }
-
-    .sources-card ol {
-      padding-left: 1.2rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.6rem;
-    }
-
-    .sources-card li {
-      font-size: 0.85rem;
-      color: #c9a96e;
-      line-height: 1.5;
-    }
-
-    .sources-card a {
-      color: #e8c36a;
-      text-decoration: none;
-      border-bottom: 1px solid rgba(232,195,106,0.3);
-      transition: border-color 0.15s, color 0.15s;
-    }
-
-    .sources-card a:hover {
-      color: #fff3c4;
-      border-bottom-color: #e8c36a;
-    }
-
-    .sources-card .cite-detail {
-      display: block;
-      font-size: 0.78rem;
-      color: #7a6040;
-      margin-top: 0.1rem;
-    }
-
-    /* ── Visual Life Timeline ── */
-    .life-timeline {
-      position: relative;
-      padding: 0.5rem 0 0.5rem 2.8rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0;
-    }
-
-    .lt-line {
-      position: absolute;
-      left: 1.1rem;
-      top: 0;
-      bottom: 0;
-      width: 4px;
-      background: linear-gradient(to bottom, #6dbf6d 0%, #5bb8e8 40%, #e87050 75%, #e8c36a 100%);
-      border-radius: 2px;
-    }
-
-    .lt-node {
-      position: relative;
-      display: flex;
-      align-items: flex-start;
-      gap: 0.7rem;
-      padding: 0.6rem 0.5rem 0.6rem 0;
-    }
-
-    .lt-node.major { padding: 0.9rem 0.5rem 0.9rem 0; }
-
-    .lt-left {
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 0.15rem;
-      flex-shrink: 0;
-      width: 2.1rem;
-    }
-
-    .lt-deco { font-size: 0.7rem; min-height: 0.9rem; }
-
-    .lt-circle {
-      width: 32px; height: 32px;
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.1rem;
-      background: rgba(0,0,0,0.35);
-      border: 2px solid rgba(232,195,106,0.2);
-      position: relative; left: -0.25rem;
-    }
-
-    .lt-node.major .lt-circle { width: 42px; height: 42px; font-size: 1.5rem; left: -0.5rem; }
-
-    .lt-circle.biyolojik  { border-color: rgba(109,191,109,0.6); box-shadow: 0 0 8px rgba(109,191,109,0.2); }
-    .lt-circle.norolojik  { border-color: rgba(91,184,232,0.6);  box-shadow: 0 0 8px rgba(91,184,232,0.2); }
-    .lt-circle.kozmolojik { border-color: rgba(232,112,80,0.6);  box-shadow: 0 0 8px rgba(232,112,80,0.2); }
-    .lt-circle.kesisim    { border-color: rgba(232,195,106,0.7); box-shadow: 0 0 10px rgba(232,195,106,0.25); }
-
-    .lt-age-label { font-size: 0.58rem; color: #7a6040; text-align: center; }
-
-    .lt-content { flex: 1; min-width: 0; }
-
-    .lt-row {
-      display: flex;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 0.3rem;
-    }
-
-    .lt-year  { font-size: 0.95rem; font-weight: 700; color: #e8c36a; min-width: 2.8rem; }
-    .lt-anim  { font-size: 0.78rem; color: #c0a878; }
-    .lt-title { font-size: 0.85rem; font-weight: 600; color: #f5e6c8; margin-top: 0.2rem; }
-    .lt-detail {
-      font-size: 0.8rem; color: #9a7850; margin-top: 0.25rem;
-      line-height: 1.55; border-top: 1px solid rgba(232,195,106,0.08);
-      padding-top: 0.3rem;
-    }
-    .lt-pillar-note { font-size: 0.73rem; margin-top: 0.3rem; }
-
-    .lt-node.past { opacity: 0.38; }
-
-    .lt-node.present .lt-circle {
-      border-color: #e8c36a !important;
-      box-shadow: 0 0 14px rgba(232,195,106,0.4) !important;
-    }
-    .lt-node.present .lt-year { color: #fff3c4; }
-
-    .lt-today {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      margin: 0.2rem 0;
-      padding-left: 0;
-    }
-
-    .lt-today-dot {
-      width: 10px; height: 10px;
-      border-radius: 50%;
-      background: #e8c36a;
-      box-shadow: 0 0 8px rgba(232,195,106,0.6);
-      position: relative; left: -0.42rem;
-      flex-shrink: 0;
-    }
-
-    .lt-today-label {
-      font-size: 0.65rem;
-      letter-spacing: 2px;
-      color: #e8c36a;
-      text-transform: uppercase;
-      border-top: 1px dashed rgba(232,195,106,0.4);
-      flex: 1;
-      padding-top: 0.1rem;
-    }
-
-    .lt-celebration {
-      background: linear-gradient(135deg, rgba(232,195,106,0.12), rgba(232,112,80,0.08));
-      border: 2px solid rgba(232,195,106,0.4);
-      border-radius: 12px;
-      padding: 0.9rem 1.1rem;
-      margin: 0.5rem 0;
+      padding: 1.5rem 0.5rem 0.9rem;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      box-shadow: var(--shadow);
+      cursor: pointer;
       text-align: center;
     }
 
-    .lt-celebration-icon  { font-size: 1.6rem; }
-    .lt-celebration-title { font-size: 1rem; font-weight: 700; color: #e8c36a; margin: 0.3rem 0 0.15rem; }
-    .lt-celebration-desc  { font-size: 0.78rem; color: #c0a878; line-height: 1.55; }
+    .animal-card:hover { border-color: var(--accent); }
+    .animal-card.is-mine { border: 2px solid var(--green); }
 
-    /* ── AI Summary ── */
-    .ai-summary-section { margin-top: 1.2rem; }
+    .card-order { position: absolute; top: 0.35rem; left: 0.65rem; font-size: 0.875rem; font-weight: 700; color: var(--muted); }
+    .card-icon { font-size: 2.3rem; line-height: 1.2; }
+    .card-name { font-weight: 700; }
+    .card-years { font-size: 0.875rem; color: var(--muted); }
 
-    .btn-ai {
-      width: 100%;
-      padding: 0.75rem;
-      background: linear-gradient(135deg, rgba(109,191,109,0.15), rgba(91,184,232,0.1));
-      border: 1px solid rgba(109,191,109,0.35);
-      border-radius: 10px;
-      color: #e8c36a;
-      font-size: 0.92rem;
-      font-weight: 600;
-      letter-spacing: 0.5px;
-      cursor: pointer;
-      transition: opacity 0.2s;
-    }
-    .btn-ai:hover  { opacity: 0.85; }
-    .btn-ai:disabled { opacity: 0.5; cursor: not-allowed; }
-
-    .ai-result { display: none; flex-direction: column; gap: 0.7rem; margin-top: 0.8rem; }
-    .ai-result.visible { display: flex; }
-
-    .ai-block {
-      background: rgba(0,0,0,0.22);
-      border: 1px solid rgba(232,195,106,0.15);
-      border-radius: 10px;
-      padding: 0.8rem 1rem;
-    }
-    .ai-block.kutlama {
-      background: linear-gradient(135deg, rgba(232,195,106,0.1), rgba(232,112,80,0.07));
-      border-color: rgba(232,195,106,0.35);
-    }
-
-    .ai-block-title { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 2px; color: #7a6040; margin-bottom: 0.4rem; }
-    .ai-block-text  { font-size: 0.85rem; color: #c9a96e; line-height: 1.65; }
-
-    /* ── Önemli Anlar ── */
-    .onemli-anlar-section { margin-top: 0.2rem; }
-
-    .onemli-anlar-title {
-      font-size: 0.65rem;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      color: #7a6040;
-      margin-bottom: 0.6rem;
-    }
-
-    .onemli-anlar-list {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-
-    .oa-card {
-      display: flex;
-      align-items: flex-start;
-      gap: 0.7rem;
-      padding: 0.7rem 0.85rem;
-      border-radius: 10px;
-      border: 1px solid rgba(232,195,106,0.1);
-      background: rgba(0,0,0,0.18);
-      transition: opacity 0.2s;
-    }
-
-    .oa-card.olumlu {
-      border-color: rgba(109,191,109,0.3);
-      background: rgba(109,191,109,0.06);
-    }
-
-    .oa-card.uyari {
-      border-color: rgba(232,112,80,0.3);
-      background: rgba(232,112,80,0.06);
-    }
-
-    /* Geçmiş kartlar hafifçe soluk — yaşandı duygusu */
-    .oa-card.past { opacity: 0.78; }
-    .oa-card.past:hover { opacity: 1; }
-
-    .oa-icon { font-size: 1.2rem; flex-shrink: 0; padding-top: 0.1rem; }
-
-    .oa-body { flex: 1; min-width: 0; }
-
-    .oa-meta {
-      display: flex;
-      align-items: center;
-      gap: 0.35rem;
-      flex-wrap: wrap;
-      margin-bottom: 0.25rem;
-    }
-
-    .oa-year {
-      font-size: 0.85rem;
+    .card-tag {
+      margin-top: 0.3rem;
+      font-size: 0.875rem;
       font-weight: 700;
-      color: #e8c36a;
+      line-height: 1.35;
+      padding: 0.1rem 0.55rem;
+      border-radius: 999px;
     }
 
-    .oa-chip {
-      font-size: 0.62rem;
-      font-weight: 600;
-      letter-spacing: 0.3px;
-      border-radius: 6px;
-      padding: 1px 6px;
-      border: 1px solid rgba(232,195,106,0.18);
-      background: rgba(232,195,106,0.06);
-      color: #c0a878;
+    .card-tag.now  { background: var(--accent); color: var(--on-accent); }
+    .card-tag.mine { color: var(--green); background: color-mix(in srgb, var(--green) 12%, var(--surface)); border: 1px solid var(--green); }
+
+    /* Hayvan penceresi */
+    .sheet {
+      border: 0;
+      padding: 0;
+      margin: auto;
+      width: min(34rem, calc(100% - 32px));
+      max-height: calc(100dvh - 32px);
+      overflow: auto;
+      border-radius: 18px;
+      background: var(--surface);
+      color: var(--text);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
     }
 
-    .oa-chip.elem { color: #c9a96e; }
+    .sheet::backdrop { background: var(--backdrop); }
+    .sheet-inner { position: relative; padding: 1.3rem 1.3rem 1.6rem; }
+    .sheet-close { position: absolute; top: 0.9rem; right: 0.9rem; }
+    .sheet-head { display: flex; align-items: center; gap: 1rem; padding-right: 6rem; }
+    .sheet-icon { font-size: 3.4rem; line-height: 1; }
+    .sheet h2 { font-size: 1.7rem; }
+    .sheet h3 { font-size: 1.1rem; color: var(--accent); margin: 1.2rem 0 0.35rem; }
+    .sheet p + p { margin-top: 0.4rem; }
 
-    .oa-chip.time-past   { color: #7a6040; background: rgba(0,0,0,0.25); border-color: rgba(122,96,64,0.3); }
-    .oa-chip.time-future { color: #e8c36a; background: rgba(232,195,106,0.1); border-color: rgba(232,195,106,0.3); }
+    .year-list { list-style: none; display: flex; flex-wrap: wrap; gap: 0.4rem; }
 
-    .oa-tag {
-      font-size: 0.62rem;
-      font-weight: 700;
-      letter-spacing: 0.5px;
-      border-radius: 6px;
-      padding: 1px 6px;
-      margin-left: auto;
+    .year-list li {
+      padding: 0.1rem 0.6rem;
+      border-radius: 8px;
+      background: var(--sunken);
+      border: 1px solid var(--line);
+      font-size: 0.9375rem;
     }
 
-    .oa-tag.olumlu { background: rgba(109,191,109,0.18); color: #6dbf6d; border: 1px solid rgba(109,191,109,0.35); }
-    .oa-tag.uyari  { background: rgba(232,112,80,0.18);  color: #e87050; border: 1px solid rgba(232,112,80,0.35); }
+    .year-list li.future { font-weight: 700; border-color: var(--line-strong); }
+    .year-list li.now { background: var(--accent); border-color: var(--accent); color: var(--on-accent); font-weight: 700; }
 
-    .oa-baslik  {
-      font-size: 0.88rem;
-      font-weight: 700;
-      color: #f5e6c8;
-      margin-bottom: 0.2rem;
-      font-style: italic;
-      letter-spacing: 0.2px;
+    .rel-list { list-style: none; display: grid; gap: 0.5rem; }
+    .rel-list li { display: flex; flex-wrap: wrap; align-items: center; gap: 0.3rem 0.6rem; }
+
+    /* ── Hakkında ── */
+    #about > p + p { margin-top: 0.7rem; }
+    .sources { padding-left: 1.3rem; display: grid; gap: 0.7rem; }
+    .cite-detail { display: block; color: var(--muted); font-size: 0.9375rem; }
+
+    /* ── Dar ekran ── */
+    @media (max-width: 900px) {
+      .animals-grid { grid-template-columns: repeat(4, 1fr); }
     }
-    .oa-aciklama { font-size: 0.79rem; color: #9a7850; line-height: 1.6; }
 
-    @media (max-width: 500px) {
-      header h1 { font-size: 1.5rem; }
-      .animals-grid { grid-template-columns: repeat(3, 1fr); }
-      .animal-card .card-icon { font-size: 1.6rem; }
-      .animal-card .card-name { font-size: 0.82rem; }
-      .animal-card .card-altname, .animal-card .card-years { display: none; }
+    @media (max-width: 760px) {
+      .intro-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 640px) {
+      .pillars { grid-template-columns: 1fr; }
+      .pillar { flex-direction: row; align-items: flex-start; gap: 0.9rem; }
+    }
+
+    @media (max-width: 520px) {
+      .form-row { grid-template-columns: 1fr; }
+      .card { padding: 1.1rem; }
+      .animals-grid { grid-template-columns: repeat(3, 1fr); gap: 0.5rem; }
+      .animal-card { padding: 1.4rem 0.25rem 0.7rem; }
+      .card-icon { font-size: 2rem; }
+      .tl-body { margin-left: 0; }
+      .tl-age { width: 2.9rem; font-size: 1.15rem; }
+      .summary-icon { font-size: 3rem; }
+      .summary-title { font-size: 1.5rem; }
     }
   </style>
 </head>
 <body>
 
-<header>
-  <div style="margin-bottom:0.6rem">
-    <a href="couples.html" style="display:inline-flex;align-items:center;gap:0.35rem;color:#c9a96e;font-size:0.82rem;text-decoration:none;border:1px solid rgba(232,195,106,0.25);border-radius:20px;padding:0.3rem 0.85rem;transition:all 0.15s" onmouseover="this.style.borderColor='#e8c36a'" onmouseout="this.style.borderColor='rgba(232,195,106,0.25)'">♥ Eş Uyumu</a>
+<nav class="topbar" aria-label="Site">
+  <div class="wrap topbar-inner">
+    <a class="brand" href="index.html">Türk Takvimi</a>
+    <div class="topbar-links">
+      <a class="pill" href="couples.html">♥ Eş Uyumu</a>
+      <button type="button" class="pill" data-theme-toggle aria-label="Koyu temaya geç">🌙 <span>Koyu</span></button>
+    </div>
   </div>
-  <div class="ornament">✦ ✦ ✦</div>
+</nav>
+
+<header class="hero wrap">
+  <div class="gokturk" role="img" aria-label="Türk, Göktürk harfleriyle" lang="otk" dir="rtl">𐱅𐰇𐰼𐰜</div>
+  <span class="gokturk-note" aria-hidden="true">Göktürk harfleriyle “Türk”</span>
   <h1>12 Hayvanlı Türk Takvimi</h1>
-  <p>Onikili Türk / Uygur Yıl Döngüsü — Yıl Çeviri Aracı</p>
-  <div class="ornament">✦ ✦ ✦</div>
+  <p class="lead">Doğum tarihinizi girin. Hayvanınızı ve önemli yaşlarınızı görün.</p>
 </header>
 
-<!-- Info -->
-<div class="info-section">
-  <div class="info-card">
-    <h3>12 Hayvanlı Türk Takvimi Hakkında</h3>
-    Türk halklarının doğa, hayvan ve zaman anlayışına dayanan bu geleneksel takvim sisteminde her yıl bir hayvanla simgelenir ve <strong>müçel</strong> adı verilen 12 yıllık döngülerden oluşur. Bu sistem yalnızca bir takvim değil; aynı zamanda bir dünya görüşü, mitoloji, kehanet aracı ve kişilik göstergesi olarak da tanımlanmaktadır.<br><br>
-    <strong>Köken:</strong> <a href="https://tr.wikipedia.org/wiki/Orhun_yaz%C4%B1tlar%C4%B1" target="_blank" rel="noopener">Orhun Yazıtları</a>'nda "Kül Tigin Koyun Yılının on yedinci gününde öldü" gibi ifadeler bu takvimin Göktürk döneminde yaygın biçimde kullanıldığını kanıtlar. En eski yazılı kaynaklardan biri Kaşgarlı Mahmud'un <a href="https://tr.wikipedia.org/wiki/Divan%C3%BC_L%C3%BC%C4%9Fat-it-T%C3%BCrk" target="_blank" rel="noopener"><em>Divanü Lüğat-it-Türk</em></a>'üdür. Kaşgarlı, bir Türk hakanının savaşın hangi yılda olduğunu sorunca danışmanlarının hatırlayamaması üzerine her yıla bir hayvan adı verilmesini emrettiğini anlatır.<br><br>
-    <strong>Müçel:</strong> 12 yıllık her döngüye Türkçede <em>müçel</em>, Kazakçada <em>müşel</em>, Kırgızcada <em>müçöl</em>, Hakascada <em>müçe</em> denir. Gün de 12'ye bölünür; her birime <em>çağ</em> adı verilir. Aylar yalnızca sayısal sırayla adlandırılır (Aram ay, İkinç ay… Çakşaput ay).
-  </div>
-</div>
-
-<!-- Today Banner -->
-<div class="today-banner">
-  <div class="today-card">
-    <div class="today-icon" id="todayIcon"></div>
-    <div class="today-info">
-      <div class="today-label">Bugün</div>
-      <div class="today-date" id="todayDate"></div>
-      <div class="today-animal" id="todayAnimal"></div>
-      <div class="today-detail" id="todayDetail"></div>
-      <div class="today-detail" id="todayTurkic" style="color:#e8c36a;margin-top:0.2rem;font-weight:600;"></div>
-    </div>
-  </div>
-</div>
-
-<!-- Critical Years Calculator -->
-<div class="critical-section">
-  <div class="section-title">— Kritik Yaş Haritası —</div>
-  <div class="critical-card">
-    <div class="birth-form">
-      <div class="input-group">
-        <label for="nameInput">İsminiz</label>
-        <input type="text" id="nameInput" placeholder="Adınız (isteğe bağlı)">
-      </div>
-      <div class="input-group">
-        <label for="birthDate">Doğum Tarihi</label>
-        <input type="date" id="birthDate">
-      </div>
-      <div class="input-group" style="flex-direction:column">
-        <label>Cinsiyet</label>
-        <div class="gender-buttons">
-          <button class="gender-btn active" id="genderF" onclick="selectGender('female')">♀ Kadın</button>
-          <button class="gender-btn" id="genderM" onclick="selectGender('male')">♂ Erkek</button>
+<main>
+  <!-- Form + Bu yıl -->
+  <div class="wrap intro-grid">
+    <section class="card form-card" aria-labelledby="formTitle">
+      <h2 id="formTitle">Müçel haritanız</h2>
+      <p>Hayvanınızı, 12 yıllık döngünüzü ve önemli yıllarınızı görün.</p>
+      <form id="birthForm" onsubmit="calcCritical(event)" novalidate>
+        <div class="form-row">
+          <div class="field">
+            <label for="nameInput">Adınız <span class="opt">(isteğe bağlı)</span></label>
+            <input type="text" id="nameInput" autocomplete="given-name">
+          </div>
+          <div class="field">
+            <label for="birthDate">Doğum tarihi</label>
+            <input type="date" id="birthDate" min="1900-01-01" required aria-describedby="dateError">
+            <p class="field-error" id="dateError" role="alert" hidden></p>
+          </div>
         </div>
+        <button type="submit" class="btn btn-primary btn-block" id="calcBtn">Hesapla</button>
+      </form>
+    </section>
+
+    <aside class="card today-card" aria-labelledby="todayTitle">
+      <p class="eyebrow" id="todayTitle">Bu yıl</p>
+      <div class="today-icon" id="todayIcon" aria-hidden="true"></div>
+      <h2 class="today-animal" id="todayAnimal"></h2>
+      <div class="today-elem" id="todayElem"></div>
+      <dl class="today-list">
+        <div><dt>Bugün</dt><dd id="todayDate"></dd></div>
+        <div><dt>Ayın hayvanı</dt><dd id="todayMonth"></dd></div>
+        <div><dt>Günün hayvanı</dt><dd id="todayDay"></dd></div>
+        <div><dt>Türk ayı</dt><dd id="todayTurkic"></dd></div>
+      </dl>
+      <button type="button" class="link-btn" id="todayMore"></button>
+    </aside>
+  </div>
+
+  <!-- Sonuç -->
+  <section class="wrap narrow result" id="resultSection" aria-labelledby="resultTitle" hidden>
+    <h2 id="resultTitle">Sonucunuz</h2>
+    <div id="criticalResult"></div>
+  </section>
+
+  <!-- On iki hayvan -->
+  <section class="wrap section" id="animals" aria-labelledby="animalsTitle">
+    <h2 id="animalsTitle">On iki hayvan</h2>
+    <p class="section-lead">Bir hayvana dokunun. Eski inanışları ve yıllarını görün.</p>
+    <div class="animals-grid" id="animalsGrid"></div>
+  </section>
+
+  <!-- Hakkında + Kaynaklar -->
+  <section class="wrap narrow section" id="about" aria-labelledby="aboutTitle">
+    <h2 id="aboutTitle">Takvim hakkında</h2>
+    <p>Bu geleneksel Türk takviminde her yıl bir hayvanla anılır. On iki yıllık her döngüye <strong>müçel</strong> denir.</p>
+    <p>Takvim Göktürk döneminden beri kullanılır. Orhun Yazıtları'nda bu takvimle yazılmış tarihler vardır.</p>
+
+    <details class="more">
+      <summary>Devamını oku</summary>
+      <div class="more-body">
+        <p>Türk halklarının doğa, hayvan ve zaman anlayışına dayanan bu geleneksel takvim sisteminde her yıl bir hayvanla simgelenir ve <strong>müçel</strong> adı verilen 12 yıllık döngülerden oluşur. Bu sistem yalnızca bir takvim değil; aynı zamanda bir dünya görüşü, mitoloji, kehanet aracı ve kişilik göstergesi olarak da tanımlanmaktadır.</p>
+        <p><strong>Köken:</strong> <a href="https://tr.wikipedia.org/wiki/Orhun_yaz%C4%B1tlar%C4%B1" target="_blank" rel="noopener">Orhun Yazıtları</a>'nda "Kül Tigin Koyun Yılının on yedinci gününde öldü" gibi ifadeler bu takvimin Göktürk döneminde yaygın biçimde kullanıldığını kanıtlar. En eski yazılı kaynaklardan biri Kaşgarlı Mahmud'un <a href="https://tr.wikipedia.org/wiki/Divan%C3%BC_L%C3%BC%C4%9Fat-it-T%C3%BCrk" target="_blank" rel="noopener">Divanü Lüğat-it-Türk</a>'üdür. Kaşgarlı, bir Türk hakanının savaşın hangi yılda olduğunu sorunca danışmanlarının hatırlayamaması üzerine her yıla bir hayvan adı verilmesini emrettiğini anlatır.</p>
+        <p><strong>Müçel yaşları:</strong> Doğum hayvanınız her 12 yılda bir geri döner: 12, 24, 36… yaşlarda. Geleneksel sayımda anne karnındaki yıl da sayılır; bu yüzden bu yaşlar 13, 25, 37… diye söylenir. Kazak ve Kırgız geleneğinde müçel yılları dikkatle karşılanır. Döngünün ortasında, 6 yıl sonra, karşıt hayvanın yılı gelir.</p>
+        <p><strong>Müçel:</strong> 12 yıllık her döngüye Türkçede müçel, Kazakçada müşel, Kırgızcada müçöl, Hakascada müçe denir. Gün de 12'ye bölünür; her birime çağ adı verilir. Aylar yalnızca sayısal sırayla adlandırılır (Aram ay, İkinç ay… Çakşaput ay).</p>
       </div>
-      <button class="btn-convert" onclick="calcCritical()" style="align-self:flex-end">Hesapla</button>
-    </div>
-    <div id="criticalResult"><div class="critical-empty">Doğum yılınızı ve cinsiyetinizi seçerek kritik yaş haritanızı görün.</div></div>
+    </details>
+
+    <details class="more">
+      <summary>Kaynaklar (8)</summary>
+      <div class="more-body">
+        <ol class="sources">
+          <li>
+            <a href="https://hwc.kureansiklopedi.com/en/detay/12-animal-turkish-calendar-9a578" target="_blank" rel="noopener">12 Animal Turkish Calendar — Küre Ansiklopedisi</a>
+            <span class="cite-detail">Şahinler, Duygu. Küre Dijital Ansiklopedisi, 2025.</span>
+          </li>
+          <li>
+            <a href="https://tr.wikipedia.org/wiki/Orhun_yaz%C4%B1tlar%C4%B1" target="_blank" rel="noopener">Orhun Yazıtları — Vikipedi</a>
+            <span class="cite-detail">Ergin, Muharrem. Orhun Abideleri. Hisar Yayınları, 2003.</span>
+          </li>
+          <li>
+            <a href="https://tr.wikipedia.org/wiki/Divan%C3%BC_L%C3%BC%C4%9Fat-it-T%C3%BCrk" target="_blank" rel="noopener">Divanü Lüğat-it-Türk — Vikipedi</a>
+            <span class="cite-detail">Kaşgarlı Mahmud, XI. yüzyıl.</span>
+          </li>
+          <li>
+            Biray, Nergis. "12 Hayvanlı Türk Takvimi: Zamana ve İnsana Hükmetmek."
+            <span class="cite-detail">Atatürk Üniversitesi Türkiyat Araştırmaları Enstitüsü Dergisi 39 (2009): 671–682.</span>
+          </li>
+          <li>
+            Külcü, Recep. "Türklerin Kültür Mirası Olarak '12 Hayvanlı Türk Takvimi.'"
+            <span class="cite-detail">Akademia Disiplinlerarası Bilimsel Araştırmalar Dergisi 1/1 (2015): 1–5.</span>
+          </li>
+          <li>
+            Tavkul, Ufuk. "Kültürel Etkileşim Açısından On İki Hayvanlı Türk Takviminin Yayılışı."
+            <span class="cite-detail">Modern Türklük Araştırmaları Dergisi 4/1 (Mart 2007): 25–45.</span>
+          </li>
+          <li>
+            Turan, Osman. On İki Hayvanlı Türk Takvimi.
+            <span class="cite-detail">İstanbul: Ötüken, 2019. s. 101–106.</span>
+          </li>
+          <li>
+            Karimova, Gülmira ve Fikret Türkmen. "Kazakistan'da Hayvan Kültü ve 12 Hayvanlı Halk Takvimi."
+            <span class="cite-detail">Folklor/Edebiyat Dergisi 1 (2022): 41–47.</span>
+          </li>
+        </ol>
+      </div>
+    </details>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">12 Hayvanlı Türk Takvimi · Referans: 1900 = Sıçan yılı · <a href="couples.html">Eş Uyumu</a></div>
+</footer>
+
+<!-- Hayvan ayrıntı penceresi -->
+<dialog id="animalDialog" class="sheet" aria-labelledby="adTitle">
+  <div class="sheet-inner">
+    <button type="button" class="pill sheet-close" onclick="closeAnimal()">Kapat ✕</button>
+    <div id="adBody"></div>
   </div>
-</div>
+</dialog>
 
-<!-- All Animals -->
-<div class="all-animals-section">
-  <div class="section-title">— Oniki Hayvan —</div>
-  <div class="animals-grid" id="animalsGrid"></div>
-</div>
-
-<!-- Sources -->
-<div class="sources-section">
-  <div class="sources-card">
-    <h3>Kaynaklar</h3>
-    <ol>
-      <li>
-        <a href="https://hwc.kureansiklopedi.com/en/detay/12-animal-turkish-calendar-9a578" target="_blank" rel="noopener">12 Animal Turkish Calendar — Küre Ansiklopedisi</a>
-        <span class="cite-detail">Şahinler, Duygu. Küre Dijital Ansiklopedisi, 2025.</span>
-      </li>
-      <li>
-        <a href="https://tr.wikipedia.org/wiki/Orhun_yaz%C4%B1tlar%C4%B1" target="_blank" rel="noopener">Orhun Yazıtları — Vikipedi</a>
-        <span class="cite-detail">Ergin, Muharrem. <em>Orhun Abideleri.</em> Hisar Yayınları, 2003.</span>
-      </li>
-      <li>
-        <a href="https://tr.wikipedia.org/wiki/Divan%C3%BC_L%C3%BC%C4%9Fat-it-T%C3%BCrk" target="_blank" rel="noopener">Divanü Lüğat-it-Türk — Vikipedi</a>
-        <span class="cite-detail">Kaşgarlı Mahmud, XI. yüzyıl.</span>
-      </li>
-      <li>
-        Biray, Nergis. "12 Hayvanlı Türk Takvimi: Zamana ve İnsana Hükmetmek."
-        <span class="cite-detail"><em>Atatürk Üniversitesi Türkiyat Araştırmaları Enstitüsü Dergisi</em> 39 (2009): 671–682.</span>
-      </li>
-      <li>
-        Külcü, Recep. "Türklerin Kültür Mirası Olarak '12 Hayvanlı Türk Takvimi.'"
-        <span class="cite-detail"><em>Akademia Disiplinlerarası Bilimsel Araştırmalar Dergisi</em> 1/1 (2015): 1–5.</span>
-      </li>
-      <li>
-        Tavkul, Ufuk. "Kültürel Etkileşim Açısından On İki Hayvanlı Türk Takviminin Yayılışı."
-        <span class="cite-detail"><em>Modern Türklük Araştırmaları Dergisi</em> 4/1 (Mart 2007): 25–45.</span>
-      </li>
-      <li>
-        Turan, Osman. <em>On İki Hayvanlı Türk Takvimi.</em>
-        <span class="cite-detail">İstanbul: Ötüken, 2019. s. 101–106.</span>
-      </li>
-      <li>
-        Karimova, Gülmira ve Fikret Türkmen. "Kazakistan'da Hayvan Kültü ve 12 Hayvanlı Halk Takvimi."
-        <span class="cite-detail"><em>Folklor/Edebiyat Dergisi</em> 1 (2022): 41–47.</span>
-      </li>
-    </ol>
-  </div>
-</div>
-
-<footer>12 Hayvanlı Türk Takvimi · Referans: 1900 = Sıçan Yılı</footer>
-
+<script src="theme.js"></script>
 <script>
   // ── Modül 0: Sabit Veriler ───────────────────────────────────────
   // HAYVANLAR: index 0 = Maymun → year % 12 formülüne tam oturur
@@ -1185,11 +674,11 @@
 
   // ── Element calculation ──────────────────────────────────────────
   const ELEMENT_DATA = {
-    'Metal':  { icon: '⚔️',  color: '#a8b8c8', border: 'rgba(168,184,200,0.5)', bg: 'rgba(168,184,200,0.12)', energy: 'keskin ve yapısal',      gift: 'disiplin ve kararlılık'     },
-    'Su':     { icon: '💧',  color: '#5bb8e8', border: 'rgba(91,184,232,0.5)',  bg: 'rgba(91,184,232,0.12)',  energy: 'derin ve akışkan',         gift: 'sezgi ve uyum gücü'         },
-    'Ağaç':   { icon: '🌿',  color: '#6dbf6d', border: 'rgba(109,191,109,0.5)',bg: 'rgba(109,191,109,0.12)', energy: 'büyüyen ve yaratıcı',      gift: 'vizyon ve yenilenme'        },
-    'Ateş':   { icon: '🔥',  color: '#e87050', border: 'rgba(232,112,80,0.5)', bg: 'rgba(232,112,80,0.12)',  energy: 'dönüştürücü ve dinamik',   gift: 'tutku ve eylem gücü'        },
-    'Toprak': { icon: '🏔️', color: '#c4956a', border: 'rgba(196,149,106,0.5)',bg: 'rgba(196,149,106,0.12)', energy: 'dengeleyici ve köklü',     gift: 'istikrar ve sabır'          },
+    'Metal':  { icon: '⚔️',  key: 'metal',  energy: 'keskin ve yapısal',      gift: 'disiplin ve kararlılık'     },
+    'Su':     { icon: '💧',  key: 'su',     energy: 'derin ve akışkan',         gift: 'sezgi ve uyum gücü'         },
+    'Ağaç':   { icon: '🌿',  key: 'agac',   energy: 'büyüyen ve yaratıcı',      gift: 'vizyon ve yenilenme'        },
+    'Ateş':   { icon: '🔥',  key: 'ates',   energy: 'dönüştürücü ve dinamik',   gift: 'tutku ve eylem gücü'        },
+    'Toprak': { icon: '🏔️', key: 'toprak', energy: 'dengeleyici ve köklü',     gift: 'istikrar ve sabır'          },
   };
 
   const ELEM_BY_DIGIT = ['Metal','Metal','Su','Su','Ağaç','Ağaç','Ateş','Ateş','Toprak','Toprak'];
@@ -1216,87 +705,237 @@
   ];
 
   // ── Critical milestone data ──────────────────────────────────────
-  const FEMALE_MILESTONES = [
-    { age: 7,  type: 'biyolojik',  title: 'Fiziksel ve Ruhsal Gelişim',      desc: 'Fiziksel ve ruhsal gelişimin ilk evresi; benliğin ilk filizlenmesi.' },
-    { age: 9,  type: 'norolojik',  title: '1. Beyin Güncellemesi',           desc: 'Ergenliğe nörolojik hazırlık. Beyin yeni bağlantılar kurarak yeniden yapılanıyor.' },
-    { age: 14, type: 'biyolojik',  title: 'Ergenlik',                        desc: 'Fiziksel değişimin hızlandığı dönüşüm eşiği.' },
-    { age: 21, type: 'biyolojik',  title: 'Biyolojik Zirvenin Başlangıcı',  desc: 'Biyolojik ve fiziksel zirvenin başlangıcı; tam yetişkinliğe adım.' },
-    { age: 28, type: 'biyolojik',  title: 'Fiziksel Zirve',                  desc: 'Fiziksel kapasitenin ve doğurganlığın en üst noktası.' },
-    { age: 32, type: 'norolojik',  title: '2. Beyin Güncellemesi',           desc: 'Stabil yetişkin modu. Mantık ve duygu dengesi yeniden kuruluyor.' },
-    { age: 35, type: 'biyolojik',  title: 'Form Değişimi',                   desc: 'Biyolojik enerjinin form değiştirmeye ve hafifçe yavaşlamaya başlaması.' },
-    { age: 42, type: 'biyolojik',  title: 'Ruhsal Derinleşme',              desc: 'Ruhsal derinleşme ve orta yaş farkındalığı; öncelikler yeniden şekilleniyor.' },
-    { age: 49, type: 'biyolojik',  title: 'Bilgelik Çağı',                  desc: 'Bilgelik çağına geçiş; geleneksel olarak menopoz başlangıcı.' },
-    { age: 56, type: 'biyolojik',  title: 'İkinci Bahar',                    desc: 'İkinci bahar; ruhsal yenilenme ve dinginlik dönemi.' },
-    { age: 60, type: 'kozmolojik', title: 'Büyük Devrin Tamamlanması',      desc: 'Doğduğunuz hayvan-element kombinasyonuna yeniden girilen "ikinci doğum" yılı.' },
-    { age: 63, type: 'biyolojik',  title: 'Derin Zihinsel Olgunluk',        desc: 'Derin zihinsel olgunluk ve içsel huzur dönemi.' },
-    { age: 66, type: 'norolojik',  title: '3. Beyin Güncellemesi',          desc: 'Erken yaşlanma; yapısal reorganizasyon.' },
-    { age: 70, type: 'biyolojik',  title: 'Aktarım Dönemi',                 desc: 'Hayatın getirdiklerini kabullenme ve bilgelik aktarımı dönemi.' },
-    { age: 83, type: 'norolojik',  title: '4. Beyin Güncellemesi',          desc: 'Geç yaşlanma; beynin son ve kalıcı yapılanması.' },
-  ];
+  // ── Türkçe ekler (Su'yun, Toprak'ın / Su'yu, Toprak'ı…) ──────────
+  const GENITIVE = {
+    'Metal': "Metal'in", 'Su': "Su'yun", 'Ağaç': "Ağaç'ın", 'Ateş': "Ateş'in", 'Toprak': "Toprak'ın",
+    'Maymun': "Maymun'un", 'Horoz': "Horoz'un", 'Köpek': "Köpek'in", 'Domuz': "Domuz'un",
+    'Sıçan': "Sıçan'ın", 'Öküz': "Öküz'ün", 'Kaplan': "Kaplan'ın", 'Tavşan': "Tavşan'ın",
+    'Ejderha': "Ejderha'nın", 'Yılan': "Yılan'ın", 'At': "At'ın", 'Koyun': "Koyun'un",
+  };
 
-  const MALE_MILESTONES = [
-    { age: 8,  type: 'biyolojik',  title: 'Fiziksel Gelişimin İlk Evresi', desc: 'Fiziksel gelişimin ilk belirgin evresi; güç ve form oluşmaya başlıyor.' },
-    { age: 9,  type: 'norolojik',  title: '1. Beyin Güncellemesi',         desc: 'Beyin yeniden yapılanıyor; ergenliğe nörolojik hazırlık.' },
-    { age: 16, type: 'biyolojik',  title: 'Ergenlik',                      desc: 'Fiziksel gücün tam anlamıyla uyanışı.' },
-    { age: 24, type: 'biyolojik',  title: 'Biyolojik Zirve',               desc: 'Maksimum fiziksel güç ve dayanıklılık.' },
-    { age: 32, type: 'kesisim',    title: '⚡ Büyük Kesişim',              desc: 'Hem 4. biyolojik döngü hem 2. beyin güncellemesi aynı anda. Gençlikten stabil erkekliğe, mantıksal zirveye geçiş.' },
-    { age: 40, type: 'biyolojik',  title: 'Zihinsel / Ruhsal Kayma',      desc: 'Enerjinin fizikselden zihinsel ve ruhsal alana kaymaya başladığı dönüm noktası.' },
-    { age: 48, type: 'biyolojik',  title: 'Orta Yaş Olgunluğu',           desc: 'Stratejik düşünme ve deneyim olgunluğu.' },
-    { age: 56, type: 'biyolojik',  title: 'Bilgelik Çağı',                desc: 'Ruhsal derinleşme ve tecrübe olgunluğu.' },
-    { age: 60, type: 'kozmolojik', title: 'Büyük Devrin Tamamlanması',    desc: '60 yıllık zodyak çarkının sıfırlanması; doğum yılı enerji kombinasyonuna geri dönüş.' },
-    { age: 64, type: 'biyolojik',  title: 'İkinci Bahar',                  desc: 'Enerjinin farklı bir formda yeniden canlanması.' },
-    { age: 66, type: 'norolojik',  title: '3. Beyin Güncellemesi',         desc: 'Erken yaşlanma; yapısal yavaşlama ve yeniden örgütlenme.' },
-    { age: 72, type: 'biyolojik',  title: 'Derin Bilgelik',                desc: 'Derin bilgelik ve tecrübe aktarımı.' },
-    { age: 80, type: 'biyolojik',  title: 'Kabulleniş',                    desc: 'Fiziksel sınırların kabullenişi; ruhu önde tutan varoluş.' },
-    { age: 83, type: 'norolojik',  title: '4. Beyin Güncellemesi',         desc: 'Geç yaşlanma; beynin son ve kalıcı yapılanma formu.' },
-  ];
+  const ACCUSATIVE = {
+    'Metal': "Metal'i", 'Su': "Su'yu", 'Ağaç': "Ağaç'ı", 'Ateş': "Ateş'i", 'Toprak': "Toprak'ı",
+  };
 
-  function generateReading(milestone, animalIdx, year) {
-    const animal = ANIMALS[animalIdx];
-    const ae     = ANIMAL_ENERGIES[animalIdx];
-    const elem   = getElement(year);
-    const ed     = ELEMENT_DATA[elem.name];
-    const combo  = `${elem.name} ${animal.name}`;
-
-    const t = {
-      norolojik:  `Beyninizin yeni bir yapıya kavuştuğu bu kritik dönemde, ${elem.name}'in ${ed.energy} enerjisi zihinsel dönüşümünüze ${ed.gift} katıyor. ${animal.name}'ın ${ae.energy} doğası bu ${combo} yılını fark yaratacak içgörüler için bereketli kılıyor.`,
-      biyolojik:  `${elem.name}'in ${ed.energy} gücü bu dönemin enerjisini besliyor; ${ed.gift} ön plana çıkıyor. ${animal.name}'ın ${ae.energy} karakteri bu ${combo} yılını ${ae.gift} açısından özellikle anlamlı ve güçlü kılıyor.`,
-      kozmolojik: `60 yıllık büyük kozmik döngü kapanıyor. Doğduğunuz ${combo} yılının enerjisine yeniden adım atıyorsunuz. Bu "ikinci doğum" eşiğinde ${ed.gift} ve ${ae.gift} bir araya gelerek hayatınızın yeni ve derin bir bölümünü açıyor.`,
-      kesisim:    `Bu, yaşamınızdaki en güçlü dönüm noktalarından biridir. Biyolojik döngü ve beyin güncellemesi aynı anda zirvede. ${elem.name}'in ${ed.energy} gücü ve ${animal.name}'ın ${ae.energy} enerjisi bu büyük kesişimde birleşiyor — ${ed.gift} ile ${ae.gift} size eşsiz bir kapı aralıyor.`,
-    };
-    return t[milestone.type] || t.biyolojik;
+  function gen(name) {
+    return GENITIVE[name] || `${name}'in`;
   }
 
-  let selectedGender = 'female';
+  // ── Müçel haritası ───────────────────────────────────────────────
+  // Hayvanınız her 12 yılda bir döner: müçel yılı (12, 24, 36… yaş).
+  // 6 yıl sonra karşıt hayvanın yılı gelir: zıt yıl (6, 18, 30… yaş).
+  // Üçlü uyum hayvanlarının yılları destek, gizli dostun yılı sessiz destek getirir.
 
-  function selectGender(g) {
-    selectedGender = g;
-    document.getElementById('genderF').classList.toggle('active', g === 'female');
-    document.getElementById('genderM').classList.toggle('active', g === 'male');
+  // İlişki değerleri — eş uyumu sayfasıyla aynı
+  const REL_VALUE = { trine: 1, secret: 1, same: 0.5, neutral: 0, clash: -1 };
+
+  // Element döngüleri: besleme (Ağaç → Ateş → Toprak → Metal → Su → Ağaç)
+  // ve sınırlama (Ağaç → Toprak → Su → Ateş → Metal → Ağaç)
+  const ELEM_ORDER = ['Ağaç', 'Ateş', 'Toprak', 'Metal', 'Su'];
+  const ELEM_VALUE = { besler: 1, ayni: 0.5, verir: 0, yonetir: 0, sinirlar: -1 };
+
+  function elementRelation(yearElem, selfElem) {
+    const i = ELEM_ORDER.indexOf(yearElem);
+    const j = ELEM_ORDER.indexOf(selfElem);
+    if (i === j) return 'ayni';
+    if ((i + 1) % 5 === j) return 'besler';     // yılın elementi sizi besler
+    if ((j + 1) % 5 === i) return 'verir';      // siz yılın elementini beslersiniz
+    if ((i + 2) % 5 === j) return 'sinirlar';   // yılın elementi sizi sınırlar
+    return 'yonetir';                            // siz yılın elementini sınırlarsınız
   }
 
-  function calcCritical() {
+  const ELEM_TEXT = {
+    besler:   (e, s) => `${e}, ${ACCUSATIVE[s]} besler. Enerji ve destek gelir.`,
+    ayni:     ()     => 'Aynı element: gücünüz artar.',
+    verir:    (e)    => `Siz ${ACCUSATIVE[e]} beslersiniz. Bu yıl emek ve cömertlik ister.`,
+    yonetir:  (e)    => `Siz ${ACCUSATIVE[e]} sınırlarsınız. Çabayla kazanç gelir.`,
+    sinirlar: (e, s) => `${e}, ${ACCUSATIVE[s]} sınırlar. Baskı hissedebilirsiniz; sabırlı olun.`,
+  };
+
+  const TONES = {
+    destek: { label: 'Destek yılı', cls: 'tone-green' },
+    denge:  { label: 'Dengeli yıl', cls: 'tone-neutral' },
+    dikkat: { label: 'Dikkat yılı', cls: 'tone-red' },
+  };
+
+  // Yıl türleri (doğum hayvanına göre)
+  const TYPE_META = {
+    mucel: { label: 'Müçel yılı',   hint: 'hayvanınız döner' },
+    buyuk: { label: 'Büyük müçel',  hint: 'hayvan ve element birlikte döner (60 yaş)' },
+    zit:   { label: 'Zıt yıl',      hint: 'karşıt hayvanın yılı' },
+    uyum:  { label: 'Uyum yılı',    hint: 'üçlü uyum hayvanının yılı' },
+    dost:  { label: 'Dost yılı',    hint: 'gizli dostun yılı' },
+  };
+
+  // 12 yıllık dönemler (her müçelle yeni bir dönem başlar)
+  const CHAPTERS = [
+    { name: 'Çocukluk',     desc: 'Aile, oyun ve büyüme yılları.' },
+    { name: 'Gençlik',      desc: 'Kimlik, okul ve ilk bağımsız adımlar.' },
+    { name: 'Kuruluş',      desc: 'İş, ev ve ortaklıkların kurulduğu yıllar.' },
+    { name: 'Olgunlaşma',   desc: 'Sorumluluk ve derinleşme yılları.' },
+    { name: 'Deneyim',      desc: 'Birikimin meyve verdiği yıllar.' },
+    { name: 'İkinci bahar', desc: 'Büyük müçelden sonra yeni bir başlangıç.' },
+    { name: 'Bilgelik',     desc: 'Bilginin yeni kuşaklara aktarıldığı yıllar.' },
+    { name: 'Aksakallık',   desc: 'Saygı, huzur ve uzun ömür yılları.' },
+  ];
+
+  function chapterOf(age) {
+    return CHAPTERS[Math.min(Math.floor(Math.max(age, 0) / 12), CHAPTERS.length - 1)];
+  }
+
+  function yearType(ixType, age) {
+    if (ixType === 'same')   return age === 0 ? null : age % 60 === 0 ? 'buyuk' : 'mucel';
+    if (ixType === 'clash')  return 'zit';
+    if (ixType === 'trine')  return 'uyum';
+    if (ixType === 'secret') return 'dost';
+    return null;
+  }
+
+  // Bir yılın kişiye etkisi: üç doğum hayvanıyla ilişki + element ilişkisi
+  function readYear(year, ctx) {
+    const idx   = animalIndex(year);
+    const name  = ANIMALS[idx].name;
+    const elem  = getElement(year);
+    const ixY   = getInteraction(name, ctx.yearAnimal);
+    const ixM   = getInteraction(name, ctx.monthAnimal);
+    const ixD   = getInteraction(name, ctx.dayAnimal);
+    const er    = elementRelation(elem.name, ctx.selfElement);
+    const score = REL_VALUE[ixY.type] + REL_VALUE[ixM.type] + REL_VALUE[ixD.type] + ELEM_VALUE[er];
+    const tone  = score >= 1.5 ? 'destek' : score <= -1 ? 'dikkat' : 'denge';
+    const age   = year - ctx.birthYear;
+    return { year, age, idx, animal: ANIMALS[idx], elem, ixY, ixM, ixD, er, score, tone, type: yearType(ixY.type, age) };
+  }
+
+  function relationText(r, ctx) {
+    const A = r.animal.name, B = ctx.yearAnimal;
+    if (r.age === 0) return `Doğduğunuz yıl. ${A} sizin doğum hayvanınızdır.`;
+    switch (r.ixY.type) {
+      case 'same':
+        return `${A} yılı geri döndü: bu sizin müçel yılınız. Yeni bir 12 yıllık dönem başlar. Gelenekte bu yıl dikkatle ve paylaşarak karşılanır.`;
+      case 'clash':
+        return `${A}, doğum hayvanınız ${B} ile karşıttır. Bu yıl gerilim ve değişim getirebilir. Acele kararlardan kaçının.`;
+      case 'trine': {
+        const t = TRINES.find(t => t.names.includes(A) && t.names.includes(B));
+        return `${A} ve ${B} aynı üçlüdedir (${t.label}). Bu yıl destek ve akış getirir.`;
+      }
+      case 'secret':
+        return `${A}, ${gen(B)} gizli dostudur. Bu yıl sessiz bir destek gelir.`;
+      default:
+        return `${A} yılı, ${B} için nötrdür. Sakin ve dengeli bir yıl.`;
+    }
+  }
+
+  function elementText(r, ctx) {
+    return `Yılın elementi ${r.elem.name}, sizinki ${ctx.selfElement}. ` + ELEM_TEXT[r.er](r.elem.name, ctx.selfElement);
+  }
+
+  // Bir yılın dürüst yorumu: ilişki, element, diğer sütunlar ve genel ton
+  function yearReadingHTML(r, ctx) {
+    const row = (label, animal, ix) =>
+      `<li><span class="muted">${label} (${animal}):</span> ${ixChipShort(ix)}</li>`;
+    return `
+      <p>${relationText(r, ctx)}</p>
+      <p>${elementText(r, ctx)}</p>
+      <p class="muted">Diğer sütunlarınızla:</p>
+      <ul class="ix-list">
+        ${row('Ay hayvanınız', ctx.monthAnimal, r.ixM)}
+        ${row('Gün hayvanınız', ctx.dayAnimal, r.ixD)}
+      </ul>
+      <p class="tone-line">Genel: ${toneChip(r.tone)}</p>`;
+  }
+
+  // Zaman çizgisi ve yapay zekâ için önemli yıllar (1–96 yaş)
+  function keyYears(ctx, types) {
+    const list = [];
+    for (let age = 1; age <= 96; age++) {
+      const r = readYear(ctx.birthYear + age, ctx);
+      if (r.type && types.includes(r.type)) list.push(r);
+    }
+    return list;
+  }
+
+  // n. müçel = n. 12 yıllık dönem (0–11 yaş 1. müçel). Müçel yılı bir dönemi kapatır, yenisini açar.
+  function milestoneTitle(r) {
+    const n = Math.round(r.age / 12);
+    if (r.type === 'buyuk') return `Büyük müçel · ${chapterOf(r.age).name} başlar`;
+    if (r.type === 'mucel') return `${n}. müçel tamamlanır · ${chapterOf(r.age).name} başlar`;
+    if (r.type === 'zit')   return `Zıt yıl · ${Math.floor(r.age / 12) + 1}. müçelin ortası`;
+    return r.type ? TYPE_META[r.type].label : 'Yıl';
+  }
+
+  function milestoneDesc(r) {
+    const ch = chapterOf(r.age);
+    if (r.type === 'buyuk') return `Hayvanınız ve elementiniz birlikte geri döner: 60 yıllık büyük döngü tamamlanır. Gelenekte ikinci doğum sayılır. Yeni dönem: ${ch.name}.`;
+    if (r.type === 'mucel') return `${Math.round(r.age / 12)}. müçeliniz tamamlanır. Yeni dönem: ${ch.name}. ${ch.desc}`;
+    if (r.type === 'zit')   return `Dönemin tam ortası: ${ch.name} döneminin dönüm noktası.`;
+    return '';
+  }
+
+  // ── Görünüm yardımcıları ─────────────────────────────────────────
+  const IX_SHORT = {
+    trine:   '✨ Uyum',
+    secret:  '🤝 Gizli dost',
+    clash:   '⚡ Gerilim',
+    same:    '⭕ Aynı hayvan',
+    neutral: '· Nötr',
+  };
+
+  function escapeHTML(s) {
+    return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+  }
+
+  function cap(s) {
+    return s.charAt(0).toLocaleUpperCase('tr') + s.slice(1);
+  }
+
+  function elemChip(name) {
+    const ed = ELEMENT_DATA[name];
+    if (!ed) return `<span class="chip">✦ ${name}</span>`;
+    return `<span class="chip el-${ed.key}">${ed.icon} ${name}</span>`;
+  }
+
+  function typeChip(type) {
+    return type ? `<span class="chip t-${type}">${TYPE_META[type].label}</span>` : '';
+  }
+
+  function toneChip(tone) {
+    return `<span class="chip ${TONES[tone].cls}">${TONES[tone].label}</span>`;
+  }
+
+  function ixChipShort(ix) {
+    return `<span class="chip ix-${ix.type}">${IX_SHORT[ix.type]}</span>`;
+  }
+
+  function setDateError(message) {
+    const error = document.getElementById('dateError');
+    const input = document.getElementById('birthDate');
+    error.textContent = message || '';
+    error.hidden = !message;
+    input.setAttribute('aria-invalid', message ? 'true' : 'false');
+    if (message) input.focus();
+  }
+
+  let _mucel = null;   // son hesaplamanın bağlamı (çark tıklamaları için)
+
+  function calcCritical(event) {
+    if (event) event.preventDefault();
     const val = document.getElementById('birthDate').value;
-    if (!val) return;
+    if (!val) {
+      setDateError('Lütfen doğum tarihinizi seçin.');
+      return;
+    }
     const birthDateObj = parseLocalDate(val);
     const gercekYil    = getSolarYear(birthDateObj);  // Modül 1 uygula
     const birthYear    = birthDateObj.getFullYear();
 
     if (birthYear < 1900 || birthDateObj > new Date()) {
-      document.getElementById('criticalResult').innerHTML =
-        '<div class="critical-empty">Lütfen geçerli bir doğum tarihi girin (1900 – bugün).</div>';
+      setDateError('Lütfen 1900 ile bugün arasında bir tarih seçin.');
       return;
     }
+    setDateError('');
 
-    const milestones  = selectedGender === 'female' ? FEMALE_MILESTONES : MALE_MILESTONES;
     const currentYear = new Date().getFullYear();
-
-    const typeMeta = {
-      biyolojik:  { label: 'Biyolojik',    style: 'background:rgba(109,191,109,0.18);color:#6dbf6d;border:1px solid rgba(109,191,109,0.4)' },
-      norolojik:  { label: 'Nörolojik',    style: 'background:rgba(91,184,232,0.18);color:#5bb8e8;border:1px solid rgba(91,184,232,0.4)' },
-      kozmolojik: { label: 'Kozmolojik',   style: 'background:rgba(232,112,80,0.18);color:#e87050;border:1px solid rgba(232,112,80,0.4)' },
-      kesisim:    { label: 'Büyük Kesişim', style: 'background:rgba(232,195,106,0.2);color:#e8c36a;border:1px solid rgba(232,195,106,0.5)' },
-    };
+    const thisYear    = getSolarYear(new Date());      // şu anki hayvan yılı
 
     // Doğum kartı — Modül 2 ile Gerçek Yıl kullanılır
     const birthAnimalIdx = animalIndex(gercekYil);
@@ -1308,106 +947,106 @@
     const birthMonthAnim = animalByName(birthMonthP.animal);
     const birthDayAnim   = animalByName(birthDayP.animal);
 
+    const currentAge = Math.floor((new Date() - birthDateObj) / (365.25 * 24 * 3600 * 1000));
+    const over60     = currentAge >= 60;
+    const name       = (document.getElementById('nameInput')?.value || '').trim();
+
+    const ctx = {
+      birthYear:   gercekYil,
+      yearAnimal:  birthAnimal.name,
+      monthAnimal: birthMonthP.animal,
+      dayAnimal:   birthDayP.animal,
+      selfElement: birthElem.name,
+      icon:        birthAnimal.icon,
+    };
+
+    // Şu anki müçel dönemi
+    const ageNow        = thisYear - gercekYil;
+    const cycleNo       = Math.floor(ageNow / 12) + 1;
+    const cycleStart    = gercekYil + (cycleNo - 1) * 12;
+    const nextMucelYear = cycleStart + 12;
+    const nextZit       = keyYears(ctx, ['zit']).find(r => r.year > thisYear) || null;
+    const nextMucel     = readYear(nextMucelYear, ctx);
+    _mucel = { ctx, cycleStart, thisYear };
+
+    // ── Özet kartı ────────────────────────────────────────────────
+    const solarNote = gercekYil !== birthYear
+      ? `<p class="note">ℹ️ Bu takvimde yıl 4 Şubat'ta başlar. Siz bu tarihten önce doğdunuz. Bu yüzden hayvanınız ${gercekYil} yılının hayvanıdır.</p>`
+      : '';
+
     let html = `
-      <div class="cy-birth-card">
-        <div class="cy-birth-header">
-          <div class="cy-birth-icon">${birthAnimal.icon}</div>
-          <div class="cy-birth-info">
-            <div class="cy-birth-label">Doğum Tarihi · Gerçek Yıl: ${gercekYil}</div>
-            <div class="cy-birth-year">${formatDateTR(birthDateObj)}</div>
-            <div class="cy-birth-combo">
-              <span class="elem-badge" style="color:${birthElem.color};border-color:${birthElem.border};background:${birthElem.bg}">${birthElem.icon} ${birthElem.name}</span>
-              &nbsp;${birthAnimal.name}
-            </div>
-            <div class="cy-birth-desc">${birthElem.energy} enerji · ${birthAE.energy} karakter · ${birthAE.gift}</div>
+      <div class="card summary-card reveal">
+        <div class="summary-top">
+          <div class="summary-icon" aria-hidden="true">${birthAnimal.icon}</div>
+          <div>
+            <p class="eyebrow">${name ? escapeHTML(name) + ' · ' : ''}Doğum hayvanınız</p>
+            <h3 class="summary-title">${birthElem.name} ${birthAnimal.name}</h3>
+            <p class="muted">${formatDateTR(birthDateObj)}</p>
           </div>
         </div>
-        <div class="pillars-grid">
-          ${pillarHTML('Vitrin', 'Yıl · Sosyal Vitrin', 'Dışa yansıyan yüz; aile mirası ve genel yaşam çerçevesi.', birthElem.name, birthAnimal.name, birthAnimal.icon)}
-          ${pillarHTML('İç Dünya', 'Ay · Duygusal Temel', 'İç dünya, gençlik (0–24 yaş) ve aşk hayatı üzerinde güçlü etki.', birthMonthP.element, birthMonthP.animal, birthMonthAnim.icon)}
-          ${pillarHTML('Öz Kimlik', 'Gün · Gerçek Hayvan', '32 yaş sonrası baskın burç; öz kimlik ve evlilik.', birthDayP.element, birthDayP.animal, birthDayAnim.icon)}
-          ${interactionsHTML(birthAnimal.name, birthMonthP.animal, birthDayP.animal)}
+        <p>${cap(birthElem.energy)} bir enerji, ${birthAE.energy} bir karakter. Güçlü yanınız: <strong>${birthAE.gift}</strong>.</p>
+        ${solarNote}
+        <div class="summary-actions">
+          <button type="button" class="btn btn-secondary" onclick="shareResult()">📤 Sonucu paylaş</button>
+          <button type="button" class="btn btn-secondary" onclick="openAnimal(${birthAnimalIdx})">${birthAnimal.icon} ${birthAnimal.name} hakkında</button>
         </div>
       </div>`;
 
-    // ── Görsel Hayat Çizgisi ──────────────────────────────────────
-    const currentAge = Math.floor((new Date() - birthDateObj) / (365.25 * 24 * 3600 * 1000));
-    const over60     = currentAge >= 60;
-    const isMajor    = (age) => selectedGender === 'female' ? age % 7 === 0 : age % 8 === 0;
+    // ── Müçel çarkı ──────────────────────────────────────────────
+    html += `
+      <section class="result-block reveal" style="--i:1">
+        <h3>Müçel çarkınız</h3>
+        <p class="muted">Hayvanınız her 12 yılda bir döner. Buna müçel denir. Şu an ${cycleNo}. müçel dönemindesiniz: ${chapterOf(ageNow).name} (${cycleStart}–${cycleStart + 11}).</p>
+        ${wheelHTML(ctx, cycleStart, thisYear, cycleNo)}
+        ${wheelLegendHTML()}
+        <div class="card year-detail" id="yearDetail" aria-live="polite">${yearDetailHTML(readYear(thisYear, ctx), ctx, thisYear)}</div>
+      </section>`;
 
-    let todayInserted  = false;
-    let firstFutureIdx = -1;
+    // ── Sıradaki önemli yıllar ───────────────────────────────────
+    const nextCards = [nextCardHTML(nextMucel, 'Sıradaki müçel yılınız', ctx)];
+    if (nextZit) nextCards.push(nextCardHTML(nextZit, 'Sıradaki zıt yıl', ctx));
+    html += `
+      <section class="result-block reveal" style="--i:2">
+        <h3>Sıradaki önemli yıllar</h3>
+        <div class="focus-grid">${nextCards.join('')}</div>
+      </section>`;
 
-    html += '<div class="life-timeline"><div class="lt-line"></div>';
+    // ── Üç sütun ─────────────────────────────────────────────────
+    html += `
+      <section class="result-block reveal" style="--i:3">
+        <h3>Üç sütununuz</h3>
+        <p class="muted">Doğum anınız üç hayvanla okunur: yıl, ay ve gün.</p>
+        <div class="pillars">
+          ${pillarHTML('Vitrin', 'yıl', 'Dışa yansıyan yüzünüz: aile mirası ve toplumdaki yeriniz.', birthElem.name, birthAnimal.name, birthAnimal.icon)}
+          ${pillarHTML('İç Dünya', 'ay', 'Duygusal temeliniz: sevgi, yakın ilişkiler ve iç huzur.', birthMonthP.element, birthMonthP.animal, birthMonthAnim.icon)}
+          ${pillarHTML('Öz Kimlik', 'gün', 'Gerçek hayvanınız: öz benliğiniz ve eş ilişkiniz.', birthDayP.element, birthDayP.animal, birthDayAnim.icon)}
+        </div>
+        <h4 class="ix-title">Sütunlarınızın uyumu</h4>
+        ${interactionsHTML(birthAnimal.name, birthMonthP.animal, birthDayP.animal)}
+        ${legendHTML()}
+      </section>`;
 
-    milestones.forEach((m, idx) => {
-      const critYear  = gercekYil + m.age;
-      const animalIdx = animalIndex(critYear);
-      const elem      = getElement(critYear);
-      const animal    = ANIMALS[animalIdx];
-      const diff      = critYear - currentYear;
-      const isPast    = diff < -1;
-      const isPresent = Math.abs(diff) <= 1;
-      const isFuture  = diff > 1;
-      const status    = isPast ? 'past' : (isPresent ? 'present' : 'future');
-      const major     = isMajor(m.age);
-      const tm        = typeMeta[m.type] || typeMeta.biyolojik;
+    // ── Hayat çizgisi: müçel ve zıt yıllar ──────────────────────
+    const lifeItems = keyYears(ctx, ['mucel', 'buyuk', 'zit']);
+    const nextItem  = lifeItems.find(r => r.year > thisYear) || null;
+    html += `
+      <section class="result-block reveal" style="--i:4">
+        <h3>Hayat çizginiz</h3>
+        <p class="muted">Müçel yılları yeni bir dönem açar. Zıt yıllar dönemin ortasıdır. Bir satıra dokunun ve yorumunu görün.</p>
+        ${typeLegendHTML(['mucel', 'zit', 'buyuk'])}
+        ${timelineHTML(lifeItems, nextItem)}
+      </section>`;
 
-      if (!todayInserted && !isPast) {
-        html += `<div class="lt-today"><div class="lt-today-dot"></div><div class="lt-today-label">✦ BUGÜN · ${currentYear}</div></div>`;
-        todayInserted = true;
-      }
-
-      if (isFuture && firstFutureIdx === -1) firstFutureIdx = idx;
-
-      const ixMain     = getInteraction(animal.name, birthAnimal.name);
-      const deco       = getMilestoneDeco(ixMain.type, elem.name);
-      const dp         = getDominantPillar(m.age);
-      const reading    = generateReading(m, animalIdx, critYear);
-      const showDetail = isPresent || idx === firstFutureIdx;
-
-      if (m.age === 60) {
-        html += `<div class="lt-celebration">
-          <div class="lt-celebration-icon">🌟 🎊 🌟</div>
-          <div class="lt-celebration-title">60 Yıllık Büyük Kozmik Döngü${isPast ? ' Tamamlandı' : ''}</div>
-          <div class="lt-celebration-desc">Takvimin yapıldığı çağda ömür beklentisini aşan bu eşik, kozmik çarkın tam bir turunu simgeler. Doğduğunuz ${birthElem.name} ${birthAnimal.name} enerjisine yeniden adım ${isPast ? 'attınız' : 'atıyorsunuz'} — nadir bir bilgelik evresi.</div>
-        </div>`;
-      }
-
-      html += `
-        <div class="lt-node ${status} ${m.type}${major ? ' major' : ''}">
-          <div class="lt-left">
-            <div class="lt-deco">${deco}</div>
-            <div class="lt-circle ${m.type}">${animal.icon}</div>
-            <div class="lt-age-label">${m.age} yaş</div>
-          </div>
-          <div class="lt-content">
-            <div class="lt-row">
-              <span class="lt-year">${critYear}</span>
-              <span class="lt-anim">${elem.icon} ${elem.name} · ${animal.name}</span>
-              <span class="cy-type-badge" style="${tm.style};font-size:0.58rem;padding:1px 5px">${tm.label}</span>
-              <span class="int-badge ${ixMain.type}" style="font-size:0.58rem;padding:1px 5px">${ixMain.icon}</span>
-            </div>
-            <div class="lt-title">${m.title}</div>
-            ${showDetail ? `
-              <div class="lt-detail">${reading}</div>
-              <div class="lt-pillar-note" style="color:${dp.color}">${dp.icon}</div>
-              ${critInteractionsHTML(animal.name, birthAnimal.name, birthMonthP.animal, birthDayP.animal)}
-            ` : ''}
-          </div>
-        </div>`;
+    // ── Yapay zekâ için veri (alan adları eski sürümle uyumlu) ───
+    const toAI = r => ({
+      age: r.age, title: milestoneTitle(r), type: r.type || 'notr',
+      critYear: r.year, animal: r.animal.name, element: r.elem.name, interaction: r.ixY.type,
+      isPast: r.year < currentYear - 1, isPresent: Math.abs(r.year - currentYear) <= 1,
+      score: r.score, tone: r.tone, elementRelation: r.er,
     });
-
-    if (!todayInserted) {
-      html += `<div class="lt-today"><div class="lt-today-dot"></div><div class="lt-today-label">✦ BUGÜN · ${currentYear}</div></div>`;
-    }
-
-    html += '</div>'; // life-timeline
-
-    // ── Yapay Zeka Özeti ──────────────────────────────────────────
+    const allMilestones = keyYears(ctx, ['mucel', 'buyuk', 'zit', 'uyum', 'dost']).map(toAI);
     window._aiData = {
-      name: (document.getElementById('nameInput')?.value || '').trim(),
-      gender: selectedGender,
+      name,
       birthDate: val,
       birthYear: gercekYil,
       yearPillar:  { animal: birthAnimal.name,   element: birthElem.name      },
@@ -1420,64 +1059,168 @@
       },
       currentAge,
       over60,
-      allMilestones: (() => {
-        const list = milestones.map(m => {
-          const yr  = gercekYil + m.age;
-          const ai2 = animalIndex(yr);
-          const el  = getElement(yr);
-          const ix  = getInteraction(ANIMALS[ai2].name, birthAnimal.name).type;
-          const entry = {
-            age: m.age, title: m.title, type: m.type, critYear: yr,
-            animal: ANIMALS[ai2].name, element: el.name, interaction: ix,
-            isPast: yr < currentYear - 1, isPresent: Math.abs(yr - currentYear) <= 1,
-          };
-          if (m.type === 'norolojik' || m.type === 'kesisim') {
-            entry.brainScore = calcBrainScore(
-              ANIMALS[ai2].name, birthAnimal.name, birthMonthP.animal, birthDayP.animal
-            );
-          }
-          return entry;
-        });
-        // Beyin güncellemesi sonraki döneme etki eder: bir sonraki biyolojik/kozmolojik milestona skoru aktar
-        let lastBrain = null;
-        list.forEach(e => {
-          if (e.brainScore !== undefined) {
-            lastBrain = { score: e.brainScore, title: e.title, year: e.critYear };
-          } else if (lastBrain !== null) {
-            e.precedingBrainScore = lastBrain.score;
-            e.precedingBrainTitle = lastBrain.title;
-            e.precedingBrainYear  = lastBrain.year;
-            lastBrain = null;
-          }
-        });
-        return list;
-      })(),
-      currentMilestone: milestones
-        .filter(m => Math.abs((gercekYil + m.age) - currentYear) <= 1)
-        .map(m => {
-          const yr = gercekYil + m.age, ai2 = animalIndex(yr), el = getElement(yr);
-          return { age: m.age, title: m.title, type: m.type, critYear: yr,
-                   animal: ANIMALS[ai2].name, element: el.name,
-                   interaction: getInteraction(ANIMALS[ai2].name, birthAnimal.name).type };
-        })[0] || null,
-      nextMilestone: milestones
-        .filter(m => (gercekYil + m.age) > currentYear)
-        .map(m => {
-          const yr = gercekYil + m.age, ai2 = animalIndex(yr), el = getElement(yr);
-          return { age: m.age, title: m.title, type: m.type, critYear: yr,
-                   animal: ANIMALS[ai2].name, element: el.name,
-                   interaction: getInteraction(ANIMALS[ai2].name, birthAnimal.name).type };
-        })[0] || null,
+      mucel: { number: cycleNo, chapter: chapterOf(ageNow).name, startYear: cycleStart, endYear: cycleStart + 11, nextMucelYear },
+      thisYear: toAI(readYear(thisYear, ctx)),
+      allMilestones,
+      currentMilestone: allMilestones.find(m => m.isPresent) || null,
+      nextMilestone:    allMilestones.find(m => m.critYear > currentYear) || null,
     };
 
-    html += `<div class="ai-summary-section">
-      <button class="btn-ai" id="btnAI" onclick="requestAISummary()">🔮 Kişiselleştirilmiş Yorum Al</button>
-      <div class="ai-result" id="aiResult"></div>
-    </div>`;
+    // Paylaşım metni (bağlantı her zaman normal sayfaya gider)
+    window._shareText = `${birthAnimal.icon} Doğum hayvanım: ${birthElem.name} ${birthAnimal.name} (12 Hayvanlı Türk Takvimi). `
+      + `Şu an ${cycleNo}. müçelimdeyim. Sıradaki müçel yılım: ${nextMucelYear}. Sen de bak:`;
+
+    html += `
+      <section class="result-block reveal" style="--i:5">
+        <h3>Kişisel yorum</h3>
+        <p class="muted">Yapay zekâ, haritanıza göre kısa bir yorum yazar.</p>
+        <button type="button" class="btn btn-secondary btn-block" id="btnAI" onclick="requestAISummary()">${AI_BTN_TEXT}</button>
+        <div class="ai-result" id="aiResult" aria-live="polite"></div>
+      </section>`;
 
     document.getElementById('criticalResult').innerHTML = html;
-    document.getElementById('criticalResult').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    const section = document.getElementById('resultSection');
+    section.hidden = false;
+    markUserAnimal(birthAnimalIdx);
+    scrollToEl(section);
   }
+
+  // ── Müçel çarkı ──────────────────────────────────────────────────
+  // 12 düğme: dönemin ilk yılı (müçel yılı) en üstte, saat yönünde
+  function wheelHTML(ctx, cycleStart, thisYear, cycleNo) {
+    let buttons = '';
+    for (let i = 0; i < 12; i++) {
+      const r   = readYear(cycleStart + i, ctx);
+      const now = r.year === thisYear;
+      const label = `${r.year}, ${r.animal.name} yılı: ${IX_SHORT[r.ixY.type].replace(/^\S+\s/, '')}, ${TONES[r.tone].label}${now ? ', bu yıl' : ''}`;
+      buttons += `<button type="button" class="wheel-seg ix-${r.ixY.type}${now ? ' is-now' : ''}" style="--a:${i * 30}deg"
+          data-year="${r.year}" aria-pressed="${now}" aria-label="${label}">
+          <span class="ws-icon" aria-hidden="true">${r.animal.icon}</span>
+          <span class="ws-year">${r.year}</span>
+        </button>`;
+    }
+    const age0 = cycleStart - ctx.birthYear;
+    return `<div class="wheel" role="group" aria-label="Müçel çarkı: ${cycleStart}–${cycleStart + 11}" onclick="selectWheelYear(event)">
+      ${buttons}
+      <div class="wheel-center" aria-hidden="true">
+        <span class="wc-icon">${ctx.icon}</span>
+        <span class="wc-title">${cycleNo}. müçel</span>
+        <span class="wc-sub">${age0}–${age0 + 11} yaş</span>
+      </div>
+    </div>`;
+  }
+
+  function wheelLegendHTML() {
+    return `<ul class="type-legend wheel-legend">
+      <li><span class="chip ix-same">⭕ Müçel yılı</span></li>
+      <li><span class="chip ix-trine">✨ Uyum</span></li>
+      <li><span class="chip ix-secret">🤝 Gizli dost</span></li>
+      <li><span class="chip ix-clash">⚡ Zıt yıl</span></li>
+      <li><span class="chip ix-neutral">· Nötr</span></li>
+    </ul>`;
+  }
+
+  function yearDetailHTML(r, ctx, thisYear) {
+    const when = r.year === thisYear ? 'Bu yıl'
+               : r.year < thisYear   ? `${thisYear - r.year} yıl önce`
+                                     : `${r.year - thisYear} yıl sonra`;
+    return `
+      <p class="eyebrow">${r.year} · ${r.age} yaş · ${when}</p>
+      <h4 class="yd-title"><span aria-hidden="true">${r.animal.icon}</span> ${r.elem.name} ${r.animal.name} yılı ${typeChip(r.type)}</h4>
+      ${yearReadingHTML(r, ctx)}`;
+  }
+
+  function selectWheelYear(event) {
+    const btn = event.target.closest('.wheel-seg');
+    if (!btn || !_mucel) return;
+    btn.parentElement.querySelectorAll('.wheel-seg').forEach(b => b.setAttribute('aria-pressed', b === btn));
+    const r = readYear(Number(btn.dataset.year), _mucel.ctx);
+    document.getElementById('yearDetail').innerHTML = yearDetailHTML(r, _mucel.ctx, _mucel.thisYear);
+  }
+
+  function nextCardHTML(r, label, ctx) {
+    const inYears = r.year - _mucel.thisYear;
+    return `<article class="card focus-card t-${r.type}">
+      <p class="eyebrow">${label} · ${inYears} yıl sonra</p>
+      <h4>${r.year} · ${r.age} yaş</h4>
+      <p class="focus-meta"><span>${r.animal.icon} ${r.elem.name} ${r.animal.name}</span> ${typeChip(r.type)} ${toneChip(r.tone)}</p>
+      <p>${milestoneDesc(r)}</p>
+    </article>`;
+  }
+
+  function timelineHTML(list, next) {
+    const thisYear = _mucel.thisYear;
+    const past     = list.filter(r => r.year < thisYear);
+    const coming   = list.filter(r => r.year >= thisYear);
+    let out = '<ol class="tl">';
+    if (past.length) {
+      out += `<li class="tl-past">
+        <details>
+          <summary><span class="tl-marker" aria-hidden="true">🕰️</span> Geçmiş dönemler (${past.length})</summary>
+          <ol class="tl">${past.map((r, n) => timelineItemHTML(r, next, n)).join('')}</ol>
+        </details>
+      </li>`;
+    }
+    out += `<li class="tl-today">Bugün · ${thisYear}</li>`;
+    out += coming.map((r, n) => timelineItemHTML(r, next, n)).join('');
+    return out + '</ol>';
+  }
+
+  function timelineItemHTML(r, next, n) {
+    const ctx      = _mucel.ctx;
+    const thisYear = _mucel.thisYear;
+    const isNow    = r.year === thisYear;
+    const isNext   = r === next;
+    const when     = isNow ? 'bu yıl' : r.year < thisYear ? `${thisYear - r.year} yıl önce` : `${r.year - thisYear} yıl sonra`;
+    const flag     = isNow ? '<span class="tl-flag">Bu yıl</span>' : isNext ? '<span class="tl-flag">Sıradaki</span>' : '';
+    return `<li class="tl-item t-${r.type}${isNow ? ' is-present' : ''}${isNext ? ' is-next' : ''} reveal" style="--i:${Math.min(n, 8)}">
+      <details>
+        <summary>
+          <span class="tl-marker" aria-hidden="true">${r.animal.icon}</span>
+          <span class="tl-age">${r.age}<small>yaş</small></span>
+          <span class="tl-main">
+            <span class="tl-title">${milestoneTitle(r)}</span>
+            <span class="tl-meta">${r.year} · ${r.elem.name} ${r.animal.name} · ${when} ${flag}</span>
+            <span class="tl-meta">${typeChip(r.type)} ${toneChip(r.tone)}</span>
+          </span>
+        </summary>
+        <div class="tl-body">
+          <p>${milestoneDesc(r)}</p>
+          ${yearReadingHTML(r, ctx)}
+        </div>
+      </details>
+    </li>`;
+  }
+
+  function typeLegendHTML(types) {
+    return `<ul class="type-legend">${types.map(t =>
+      `<li>${typeChip(t)} ${TYPE_META[t].hint}</li>`).join('')}</ul>`;
+  }
+
+  function legendHTML() {
+    return `<details class="more">
+      <summary>Bu işaretler ne demek?</summary>
+      <div class="more-body">
+        <ul class="legend-list">
+          <li><span class="chip ix-trine">✨ Üçlü uyum</span> Aynı üçlüden gelen hayvanlar. Doğal destek ve akış.</li>
+          <li><span class="chip ix-secret">🤝 Gizli dost</span> Görünmeyen ama sürekli destek.</li>
+          <li><span class="chip ix-same">⭕ Aynı hayvan</span> Aynı enerji iki kat güçlenir.</li>
+          <li><span class="chip ix-neutral">· Nötr</span> Belirgin bir etki yok.</li>
+          <li><span class="chip ix-clash">⚡ Gerilim</span> Karşıt hayvanlar. Bilinçli denge ister.</li>
+        </ul>
+        <p>Bir yılın genel tonu, o yılın hayvanının üç doğum hayvanınızla ilişkisinden ve yılın elementinden gelir.</p>
+      </div>
+    </details>`;
+  }
+
+  // ── Paylaşım ─────────────────────────────────────────────────────
+  function shareResult() {
+    if (!window._shareText) return;
+    shareText(window._shareText, new URL('./', window.location.href).href);
+  }
+
+  // ── Yapay zekâ yorumu ────────────────────────────────────────────
+  const AI_BTN_TEXT = '🔮 Kişisel yorum al';
 
   async function requestAISummary() {
     const btn    = document.getElementById('btnAI');
@@ -1485,7 +1228,7 @@
     if (!btn || !result || !window._aiData) return;
 
     btn.disabled = true;
-    btn.textContent = '⏳ Yorum hazırlanıyor...';
+    btn.textContent = '⏳ Yorum hazırlanıyor…';
     result.classList.remove('visible');
 
     try {
@@ -1502,40 +1245,20 @@
             const fakeData = await fakeRes.json();
             if (fakeData.success && fakeData.data) {
               const d = fakeData.data;
-              const currentYear = new Date().getFullYear();
-              const birthYear   = window._aiData.birthYear;
-              let h = '';
-              if (d.dh) h += `<div class="ai-block"><div class="ai-block-title">Doğum Haritası</div><div class="ai-block-text">${d.dh}</div></div>`;
-              if (d.md) h += `<div class="ai-block"><div class="ai-block-title">Mevcut Dönem</div><div class="ai-block-text">${d.md}</div></div>`;
-              if (d.nd) h += `<div class="ai-block"><div class="ai-block-title">Sonraki Dönem</div><div class="ai-block-text">${d.nd}</div></div>`;
-              if (Array.isArray(d.oa) && d.oa.length) {
-                const sorted = [...d.oa].sort((a, b) => (a.y || 0) - (b.y || 0));
-                const cards = sorted.map(item => {
-                  const isPast    = item.y < currentYear - 1;
-                  const isPresent = Math.abs(item.y - currentYear) <= 1;
-                  const tipKey    = item.t === 'o' ? 'olumlu' : 'uyari';
-                  const tipLabel  = item.t === 'o' ? 'Olumlu' : 'Dikkat';
-                  const icon      = item.t === 'o' ? (isPast ? '🌟' : '✨') : (isPast ? '⚡' : '⚠️');
-                  const timeChip  = isPresent ? 'şimdi' : isPast ? `${currentYear - item.y} yıl önce` : `${item.y - currentYear} yıl sonra`;
-                  const timeClass = isPast ? 'time-past' : 'time-future';
-                  const yas       = item.a != null ? item.a : (item.y - birthYear);
-                  return `<div class="oa-card ${tipKey}${isPast ? ' past' : ''}">
-                    <div class="oa-icon">${icon}</div>
-                    <div class="oa-body">
-                      <div class="oa-meta">
-                        <span class="oa-year">${item.y}</span>
-                        <span class="oa-chip">${yas} yaş</span>
-                        <span class="oa-chip ${timeClass}">${timeChip}</span>
-                        <span class="oa-tag ${tipKey}">${tipLabel}</span>
-                      </div>
-                      <div class="oa-baslik">${item.b}</div>
-                      <div class="oa-aciklama">${item.ac}</div>
-                    </div>
-                  </div>`;
-                }).join('');
-                h += `<div class="ai-block onemli-anlar-section"><div class="ai-block-title">⭐ Önemli Anlar</div><div class="onemli-anlar-list">${cards}</div></div>`;
-              }
-              result.innerHTML = h;
+              const birthYear = window._aiData.birthYear;
+              // Kısa alanları normal yorum biçimine çevir; görünüm ana sayfayla aynı kalır
+              result.innerHTML = renderAIResult({
+                dogumHaritasi: d.dh,
+                mevcutDonem:   d.md,
+                gelecekDonem:  d.nd,
+                onemliAnlar: Array.isArray(d.oa) ? d.oa.map(item => ({
+                  yil:      item.y,
+                  yas:      item.a != null ? item.a : (item.y - birthYear),
+                  tip:      item.t === 'o' ? 'olumlu' : 'uyari',
+                  baslik:   item.b,
+                  aciklama: item.ac,
+                })) : [],
+              });
               result.classList.add('visible');
               return; // finally bloğu buton durumunu düzeltecek
             }
@@ -1555,77 +1278,60 @@
       const data = await res.json();
       if (!data.success) throw new Error(data.error || 'API hatası');
 
-      let h = '';
-      if (data.dogumHaritasi) h += `<div class="ai-block"><div class="ai-block-title">Doğum Haritası</div><div class="ai-block-text">${data.dogumHaritasi}</div></div>`;
-      if (data.mevcutDonem)   h += `<div class="ai-block"><div class="ai-block-title">Mevcut Dönem</div><div class="ai-block-text">${data.mevcutDonem}</div></div>`;
-      if (data.gelecekDonem)  h += `<div class="ai-block"><div class="ai-block-title">Sonraki Dönem</div><div class="ai-block-text">${data.gelecekDonem}</div></div>`;
-
-      if (Array.isArray(data.onemliAnlar) && data.onemliAnlar.length) {
-        const currentYear = new Date().getFullYear();
-        const sorted = [...data.onemliAnlar].sort((a, b) => (a.yil || 0) - (b.yil || 0));
-        const elementIcon = (e) => ({
-          'Ağaç': '🌳', 'Ateş': '🔥', 'Toprak': '🏔️', 'Metal': '⚔️', 'Su': '💧'
-        })[e] || '✦';
-        const cards = sorted.map(item => {
-          const isPast    = item.yil < currentYear - 1;
-          const isPresent = Math.abs(item.yil - currentYear) <= 1;
-          // Geçmiş için yumuşak ikonlar (yaşandı), gelecek için keskin ikonlar (uyarı/fırsat)
-          const icon = item.tip === 'olumlu'
-            ? (isPast ? '🌟' : '✨')
-            : (isPast ? '⚡' : '⚠️');
-          const tagLabel = item.tip === 'olumlu' ? 'Olumlu' : 'Dikkat';
-          const timeChip = isPresent ? 'şimdi'
-                         : isPast    ? `${currentYear - item.yil} yıl önce`
-                                     : `${item.yil - currentYear} yıl sonra`;
-          const timeClass = isPast ? 'time-past' : 'time-future';
-          const elemChip = item.element
-            ? `<span class="oa-chip elem">${elementIcon(item.element)} ${item.element}${item.hayvan ? ` · ${item.hayvan}` : ''}</span>`
-            : '';
-          return `<div class="oa-card ${item.tip}${isPast ? ' past' : ''}">
-            <div class="oa-icon">${icon}</div>
-            <div class="oa-body">
-              <div class="oa-meta">
-                <span class="oa-year">${item.yil}</span>
-                <span class="oa-chip">${item.yas} yaş</span>
-                <span class="oa-chip ${timeClass}">${timeChip}</span>
-                ${elemChip}
-                <span class="oa-tag ${item.tip}">${tagLabel}</span>
-              </div>
-              <div class="oa-baslik">${item.baslik}</div>
-              <div class="oa-aciklama">${item.aciklama}</div>
-            </div>
-          </div>`;
-        }).join('');
-        h += `<div class="ai-block onemli-anlar-section">
-          <div class="ai-block-title">⭐ Önemli Anlar</div>
-          <div class="onemli-anlar-list">${cards}</div>
-        </div>`;
-      }
-
-      if (data.buyukKutlama)  h += `<div class="ai-block kutlama"><div class="ai-block-title">🎊 60 Yıl Kutlaması</div><div class="ai-block-text">${data.buyukKutlama}</div></div>`;
-      result.innerHTML = h;
+      result.innerHTML = renderAIResult(data);
       result.classList.add('visible');
     } catch (err) {
-      result.innerHTML = `<div class="ai-block"><div class="ai-block-text" style="color:#e87050">Yorum alınamadı: ${err.message}</div></div>`;
+      result.innerHTML = `<div class="ai-block"><p class="ai-error">Yorum alınamadı: ${err.message}</p></div>`;
       result.classList.add('visible');
     } finally {
       btn.disabled = false;
-      btn.textContent = '🔮 Kişiselleştirilmiş Yorum Al';
+      btn.textContent = AI_BTN_TEXT;
     }
   }
 
-  const EDGE_FUNCTION_URL  = 'https://mkmohmyrarqbkpwjpicx.supabase.co/functions/v1/turk-takvim-yorum';
-  const FAKE_READ_URL      = 'https://mkmohmyrarqbkpwjpicx.supabase.co/functions/v1/fake-future-read';
-  const SUPABASE_ANON_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1rbW9obXlyYXJxYmtwd2pwaWN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ2OTQ5MjcsImV4cCI6MjA2MDI3MDkyN30.hkP0Pr3IF-171bFq2oV_kgiph7uwHJAjKrqvsRbVP_o';
+  function renderAIResult(data) {
+    const block = (title, text, cls = '') =>
+      `<div class="ai-block ${cls} reveal"><h4>${title}</h4><div>${text}</div></div>`;
 
-  function getMilestoneDeco(ixType, elemName) {
-    if (ixType === 'clash') return '⚡';
-    const trine  = { 'Ağaç':'🌸🌿', 'Ateş':'🔥✨', 'Metal':'⚔️💫', 'Toprak':'🌾🏔️', 'Su':'💧🌊' };
-    const secret = { 'Ağaç':'🌿',   'Ateş':'🔥',   'Metal':'⚔️',   'Toprak':'🌾',    'Su':'💧'   };
-    if (ixType === 'trine')  return trine[elemName]  || '✨';
-    if (ixType === 'secret') return secret[elemName] || '✦';
-    return '';
+    let h = '';
+    if (data.dogumHaritasi) h += block('Doğum haritası', data.dogumHaritasi);
+    if (data.mevcutDonem)   h += block('Mevcut dönem', data.mevcutDonem);
+    if (data.gelecekDonem)  h += block('Sonraki dönem', data.gelecekDonem);
+
+    if (Array.isArray(data.onemliAnlar) && data.onemliAnlar.length) {
+      const currentYear = new Date().getFullYear();
+      const sorted = [...data.onemliAnlar].sort((a, b) => (a.yil || 0) - (b.yil || 0));
+      const cards = sorted.map(item => {
+        const isPast    = item.yil < currentYear - 1;
+        const isPresent = Math.abs(item.yil - currentYear) <= 1;
+        const olumlu    = item.tip === 'olumlu';
+        // Geçmiş için yumuşak ikonlar (yaşandı), gelecek için keskin ikonlar (uyarı/fırsat)
+        const icon = olumlu ? (isPast ? '🌟' : '✨') : (isPast ? '⚡' : '⚠️');
+        const tag  = olumlu ? '<span class="chip tone-green">Olumlu</span>' : '<span class="chip tone-red">Dikkat</span>';
+        const when = isPresent ? 'şimdi'
+                   : isPast    ? `${currentYear - item.yil} yıl önce`
+                               : `${item.yil - currentYear} yıl sonra`;
+        const age  = item.yas != null ? `${item.yas} yaş · ` : '';
+        const elem = item.element ? ` ${elemChip(item.element)}${item.hayvan ? ` <span>${item.hayvan}</span>` : ''}` : '';
+        return `<li class="oa-card ${olumlu ? 'olumlu' : 'uyari'}">
+          <span class="oa-icon" aria-hidden="true">${icon}</span>
+          <div class="oa-body">
+            <div class="oa-meta"><span class="oa-year">${item.yil}</span> <span class="muted">${age}${when}</span>${elem} ${tag}</div>
+            <p class="oa-baslik">${item.baslik}</p>
+            <p>${item.aciklama}</p>
+          </div>
+        </li>`;
+      }).join('');
+      h += `<div class="ai-block reveal"><h4>⭐ Önemli anlar</h4><ul class="oa-list">${cards}</ul></div>`;
+    }
+
+    if (data.buyukKutlama) h += block('🎊 60 yıl kutlaması', data.buyukKutlama, 'kutlama');
+    return h;
   }
+
+  const EDGE_FUNCTION_URL  = 'https://mkmohmyrarqbkpwjpicx.supabase.co/functions/v1/turk-takvim-yorum';
+  const SUPABASE_ANON_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1rbW9obXlyYXJxYmtwd2pwaWN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ2OTQ5MjcsImV4cCI6MjA2MDI3MDkyN30.hkP0Pr3IF-171bFq2oV_kgiph7uwHJAjKrqvsRbVP_o';
+  const FAKE_READ_URL      = 'https://mkmohmyrarqbkpwjpicx.supabase.co/functions/v1/fake-future-read';
 
   // ── Modül 1: Güneş Takvimi Senkronizasyonu ──────────────────────
   // Ocak veya Şubat 4'ten önce → astronomik yıl bir önceki yıl
@@ -1674,18 +1380,19 @@
 
   function getMonthPillar(date, solarYear) {
     const pos       = getMonthPosition(date);          // 0 = Kaplan ayı
-    const yearStem  = ((solarYear % 10) + 10) % 10;
-    // Kaplan ayı kök yıla göre başlangıç gövdesi:
-    // Yıl gövdesi 0-1(Ağaç): pos0 kökü=8(Su); 2-3(Ateş): 0(Ağaç); 4-5(Toprak): 2(Ateş)
-    // 6-7(Metal): 4(Toprak); 8-9(Su): 6(Metal)
-    const tigerStem = ((Math.floor(yearStem / 2) + 4) % 5) * 2;
+    const yearStem  = (((solarYear - 4) % 10) + 10) % 10;   // 0 = Ağaç (Jia) yılı, ör. 2024
+    // Kaplan ayının gövdesi yıl gövdesine bağlıdır ("beş kaplan" kuralı):
+    // Jia/Ji → Ateş (2), Yi/Geng → Toprak (4), Bing/Xin → Metal (6),
+    // Ding/Ren → Su (8), Wu/Gui → Ağaç (0). Ör. Eylül 2026 = Ateş Horoz.
+    const tigerStem = ((yearStem % 5) * 2 + 2) % 10;
     const monthStem = (tigerStem + pos) % 10;
     const elemNames = ['Ağaç','Ağaç','Ateş','Ateş','Toprak','Toprak','Metal','Metal','Su','Su'];
     return { animal: MONTH_ANIMALS[pos], element: elemNames[monthStem] };
   }
 
   // ── Modül 4: Gün Sütunu (60 günlük Jiazi döngüsü) ───────────────
-  // Referans: 1 Ocak 1900 = Ağaç Sıçan (döngünün 0. günü)
+  // Referans: 1 Ocak 1900 = Ağaç Köpek (döngünün 10. günü).
+  // Doğrulama: 1 Ekim 1949 = Ağaç Sıçan, 1 Ocak 2000 = Toprak At.
   const DAY_ANIMALS  = ['Sıçan','Öküz','Kaplan','Tavşan','Ejderha','Yılan',
                          'At','Koyun','Maymun','Horoz','Köpek','Domuz'];
   const DAY_ELEMENTS = ['Ağaç','Ağaç','Ateş','Ateş','Toprak','Toprak',
@@ -1693,8 +1400,8 @@
 
   function getDayPillar(date) {
     const jd      = dateToJD(date);
-    const epochJD = dateToJD(new Date(1900, 0, 1)); // 1 Oca 1900 = Ağaç Sıçan
-    const pos     = ((jd - epochJD) % 60 + 60) % 60;
+    const epochJD = dateToJD(new Date(1900, 0, 1)); // 1 Oca 1900 = Ağaç Köpek
+    const pos     = ((jd - epochJD + 10) % 60 + 60) % 60;
     return { animal: DAY_ANIMALS[pos % 12], element: DAY_ELEMENTS[pos % 10] };
   }
 
@@ -1750,13 +1457,17 @@
   const JD_REF_NEW_MOON = 2451550.26;
   const SYNODIC_MONTH   = 29.53058867;
 
+  // Ay yılının başı: 21 Ocak'tan sonraki ilk yeni ay (geleneksel ay-güneş yılbaşı)
+  function lunarYearStart(year) {
+    const jan21 = dateToJD(new Date(year, 0, 21));
+    return JD_REF_NEW_MOON + Math.ceil((jan21 - JD_REF_NEW_MOON) / SYNODIC_MONTH) * SYNODIC_MONTH;
+  }
+
   function turkicLunarDate(date) {
     const jd = dateToJD(date);
 
-    // New moon that started on or before January 1 of this year
-    const jan1JD = dateToJD(new Date(date.getFullYear(), 0, 1));
-    const completedAtJan1 = Math.floor((jan1JD - JD_REF_NEW_MOON) / SYNODIC_MONTH);
-    const yearStartJD = JD_REF_NEW_MOON + completedAtJan1 * SYNODIC_MONTH;
+    let yearStartJD = lunarYearStart(date.getFullYear());
+    if (jd < yearStartJD) yearStartJD = lunarYearStart(date.getFullYear() - 1);
 
     const daysSinceYearStart = jd - yearStartJD;
     const monthIdx  = Math.floor(daysSinceYearStart / SYNODIC_MONTH);   // 0-based
@@ -1780,27 +1491,18 @@
     return new Date(y, m - 1, d);
   }
 
-  function pillarHTML(label, subtitle, desc, elem, animalName, animalIcon) {
-    const ed = ELEMENT_DATA[elem] || {};
+  function pillarHTML(label, key, desc, elem, animalName, animalIcon) {
     const aIdx = ANIMALS.findIndex(a => a.name === animalName);
-    const ae = aIdx >= 0 ? ANIMAL_ENERGIES[aIdx] : null;
-    const strengths = ae ? `<div class="pillar-strengths">✦ ${ae.gift}</div>` : '';
-    return `<div class="pillar-card">
-      <div class="pillar-label">${label}</div>
-      <div class="pillar-subtitle">${subtitle}</div>
-      <div class="pillar-icon">${animalIcon}</div>
-      <div class="pillar-elem" style="color:${ed.color||'#e8c36a'}">${ed.icon||''} ${elem}</div>
-      <div class="pillar-animal">${animalName}</div>
-      ${strengths}
-      <div class="pillar-desc">${desc}</div>
+    const ae   = aIdx >= 0 ? ANIMAL_ENERGIES[aIdx] : null;
+    return `<div class="pillar">
+      <div class="pillar-icon" aria-hidden="true">${animalIcon}</div>
+      <div class="pillar-text">
+        <p class="pillar-name">${label} <span class="muted">(${key})</span></p>
+        <p class="pillar-animal">${elemChip(elem)} ${animalName}</p>
+        ${ae ? `<p class="pillar-gift">Güçlü yanı: ${ae.gift}</p>` : ''}
+        <p class="pillar-desc">${desc}</p>
+      </div>
     </div>`;
-  }
-
-  function getDominantPillar(age) {
-    if (age < 25) return { icon: '🌙', color: '#5bb8e8' };
-    if (age < 32)  return { icon: '🌗', color: '#c9a96e' };
-    if (age === 32) return { icon: '☀️', color: '#6dbf6d' };
-    return { icon: '☀️', color: '#6dbf6d' };
   }
 
   // ── Etkileşim Matrisi (Interaction Matrix) ──────────────────────
@@ -1840,46 +1542,22 @@
     return { type: 'neutral', label: 'Nötr', icon: '·' };
   }
 
-  function scoreIx(ixType) {
-    if (ixType === 'trine')  return 1;
-    if (ixType === 'secret') return 1.5;
-    if (ixType === 'clash')  return -1;
-    return 0;
-  }
-
-  // Beyin güncellemesi skoru: kritik yıl hayvanı × 3 doğum sütunu uyumu
-  // trine=+1, gizli dostluk=+1.5, clash=-1, nötr/aynı=0 → toplam: -3 .. +4.5
-  function calcBrainScore(critAnim, bY, bM, bD) {
-    return scoreIx(getInteraction(critAnim, bY).type)
-         + scoreIx(getInteraction(critAnim, bM).type)
-         + scoreIx(getInteraction(critAnim, bD).type);
-  }
-
-  function ixBadge(a, b, labelA, labelB) {
-    const ix = getInteraction(a, b);
-    return `<span class="int-item"><span class="int-pair">${labelA} × ${labelB}</span>`
-      + `<span class="int-badge ${ix.type}">${ix.icon} ${ix.label}</span></span>`;
-  }
-
   function interactionsHTML(yAnim, mAnim, dAnim) {
-    return `<div class="interactions-row">`
-      + ixBadge(yAnim, mAnim, 'Yıl', 'Ay')
-      + ixBadge(yAnim, dAnim, 'Yıl', 'Gün')
-      + ixBadge(mAnim, dAnim, 'Ay',  'Gün')
-      + `</div>`;
+    const row = (a, b, labelA, labelB) => {
+      const ix = getInteraction(a, b);
+      return `<li><span class="muted">${labelA} × ${labelB}:</span> <span class="chip ix-${ix.type}">${ix.icon} ${ix.label}</span></li>`;
+    };
+    return `<ul class="ix-list">`
+      + row(yAnim, mAnim, 'Yıl', 'Ay')
+      + row(yAnim, dAnim, 'Yıl', 'Gün')
+      + row(mAnim, dAnim, 'Ay',  'Gün')
+      + `</ul>`;
   }
 
-  function critInteractionsHTML(critAnim, bY, bM, bD) {
-    const ixY = getInteraction(critAnim, bY);
-    const ixM = getInteraction(critAnim, bM);
-    const ixD = getInteraction(critAnim, bD);
-    return `<div class="cy-interactions"><span class="cy-int-label">Doğum haritanızla:</span>`
-      + `<span class="int-badge ${ixY.type}">${ixY.icon} Yıl ${bY}</span>`
-      + `<span class="int-badge ${ixM.type}">${ixM.icon} Ay ${bM}</span>`
-      + `<span class="int-badge ${ixD.type}">${ixD.icon} Gün ${bD}</span></div>`;
-  }
+  // ── Bu yıl kartı ─────────────────────────────────────────────────
+  let currentAnimalIdx = null;
+  let userAnimalIdx    = null;
 
-  // Build today banner
   function buildToday() {
     const today     = new Date();
     const solarYear = getSolarYear(today);
@@ -1890,40 +1568,106 @@
     const dayP      = getDayPillar(today);
     const lunar     = turkicLunarDate(today);
 
-    document.getElementById('todayIcon').textContent = animal.icon;
-    document.getElementById('todayDate').textContent = formatDateTR(today);
-    document.getElementById('todayAnimal').innerHTML =
-      `<span class="elem-badge" style="color:${elem.color};border-color:${elem.border};background:${elem.bg}">${elem.icon} ${elem.name}</span> ${animal.name} Yılı`;
-    document.getElementById('todayDetail').textContent =
-      `Ay: ${monthP.element} ${monthP.animal} · Gün: ${dayP.element} ${dayP.animal}`;
-    document.getElementById('todayTurkic').textContent =
-      `${lunar.monthName} · ${lunar.day}. gün`;
+    currentAnimalIdx = idx;
+    document.getElementById('todayIcon').textContent   = animal.icon;
+    document.getElementById('todayAnimal').textContent = `${elem.name} ${animal.name} Yılı`;
+    document.getElementById('todayElem').innerHTML     = `${elemChip(elem.name)} <span class="muted">${solarYear}</span>`;
+    document.getElementById('todayDate').textContent   = formatDateTR(today);
+    document.getElementById('todayMonth').textContent  = `${monthP.element} ${monthP.animal}`;
+    document.getElementById('todayDay').textContent    = `${dayP.element} ${dayP.animal}`;
+    document.getElementById('todayTurkic').textContent = `${lunar.monthName}, ${lunar.day}. gün`;
+
+    const more = document.getElementById('todayMore');
+    more.textContent = `${animal.name} yılı hakkında daha fazla →`;
+    more.addEventListener('click', () => openAnimal(idx));
   }
 
-  // Build grid
+  // ── On iki hayvan (geleneksel sıra: 1 = Sıçan) ────────────────────
   function buildGrid() {
     const grid = document.getElementById('animalsGrid');
-    const today = new Date();
-    const currentYear = today.getFullYear();
+    grid.innerHTML = '';
 
-    ANIMALS.forEach((animal, i) => {
+    for (let pos = 0; pos < 12; pos++) {
+      const i      = (pos + 4) % 12;
+      const animal = ANIMALS[i];
       const { past, future } = splitYears(i);
-      const lastPast   = past.slice(-2).join(', ');
-      const nextFuture = future.slice(0, 3).join(', ');
-      const recentStr  = [lastPast, nextFuture].filter(Boolean).join(', ');
+      const years  = [past[past.length - 1], future[0]].filter(Boolean).join(' · ');
 
-      const card = document.createElement('div');
-      card.className = 'animal-card';
+      let tags = '';
+      if (i === currentAnimalIdx) tags += '<span class="card-tag now">Bu yıl</span>';
+      if (i === userAnimalIdx)    tags += '<span class="card-tag mine">Sizin hayvanınız</span>';
+
+      const card = document.createElement('button');
+      card.type = 'button';
+      card.className = 'animal-card' + (i === userAnimalIdx ? ' is-mine' : '');
       card.innerHTML = `
-        <span class="card-order">${i + 1}</span>
-        <div class="card-icon">${animal.icon}</div>
-        <div class="card-name">${animal.name}</div>
-        <div class="card-altname">${animal.altName}</div>
-        <div class="card-years">${recentStr}…</div>
-      `;
+        <span class="card-order">${pos + 1}</span>
+        <span class="card-icon" aria-hidden="true">${animal.icon}</span>
+        <span class="card-name">${animal.name}</span>
+        <span class="card-years">${years}</span>
+        ${tags}`;
+      card.addEventListener('click', () => openAnimal(i));
       grid.appendChild(card);
-    });
+    }
   }
+
+  function markUserAnimal(idx) {
+    userAnimalIdx = idx;
+    buildGrid();
+  }
+
+  // ── Hayvan ayrıntı penceresi ─────────────────────────────────────
+  function openAnimal(i) {
+    const animal      = ANIMALS[i];
+    const ae          = ANIMAL_ENERGIES[i];
+    const order       = (i + 8) % 12 + 1;               // geleneksel sıra (1 = Sıçan)
+    const currentYear = new Date().getFullYear();
+    const { past, future } = splitYears(i);
+    const years = [...past.slice(-4), ...future.slice(0, 3)];
+
+    const yearItems = years.map(y => {
+      const cls = y === currentYear ? 'now' : y > currentYear ? 'future' : '';
+      return `<li class="${cls}">${y}${y === currentYear ? ' · bu yıl' : ''}</li>`;
+    }).join('');
+
+    const withIcon = n => `${animalByName(n).icon} ${n}`;
+    const trine    = TRINES.find(t => t.names.includes(animal.name));
+    const trineAll = trine ? trine.names.filter(n => n !== animal.name).map(withIcon).join(', ') : '';
+
+    document.getElementById('adBody').innerHTML = `
+      <div class="sheet-head">
+        <span class="sheet-icon" aria-hidden="true">${animal.icon}</span>
+        <div>
+          <p class="eyebrow">${order}. hayvan</p>
+          <h2 id="adTitle">${animal.name}</h2>
+        </div>
+      </div>
+      <h3>Karakteri</h3>
+      <p>${cap(ae.energy)}. Güçlü yanı: <strong>${ae.gift}</strong>.</p>
+      <h3>Eski inanışa göre bu yıl</h3>
+      <p>${animal.prophecy}</p>
+      <h3>Yılları</h3>
+      <ul class="year-list">${yearItems}</ul>
+      <h3>İlişkileri</h3>
+      <ul class="rel-list">
+        <li><span class="chip ix-trine">✨ Üçlü uyum</span> ${trineAll}${trine ? ` <span class="muted">(${trine.label})</span>` : ''}</li>
+        <li><span class="chip ix-secret">🤝 Gizli dost</span> ${withIcon(SECRET_FRIENDS[animal.name])}</li>
+        <li><span class="chip ix-clash">⚡ Zıt</span> ${withIcon(CLASHES[animal.name])}</li>
+      </ul>
+      <h3>Diğer adları</h3>
+      <p>${animal.altName}</p>`;
+
+    document.getElementById('animalDialog').showModal();
+  }
+
+  function closeAnimal() {
+    document.getElementById('animalDialog').close();
+  }
+
+  // Pencerenin dışına tıklayınca kapat
+  document.getElementById('animalDialog').addEventListener('click', e => {
+    if (e.target.id === 'animalDialog') closeAnimal();
+  });
 
   // Init
   buildToday();

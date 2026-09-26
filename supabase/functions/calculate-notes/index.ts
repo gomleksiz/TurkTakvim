@@ -13,17 +13,22 @@ const cors = {
 
 interface Pillar { animal: string; element: string; }
 interface MilestoneEntry {
-  age: number; title: string; type: string;
-  critYear: number; animal: string; element: string; interaction: string;
+  age: number; title: string;
+  type: string;                 // "mucel" | "buyuk" | "zit" | "uyum" | "dost"
+  critYear: number; animal: string; element: string;
+  interaction: string;          // yılın hayvanı × doğum yılı hayvanı
   isPast: boolean; isPresent: boolean;
-  brainScore?: number;
-  precedingBrainScore?: number;
-  precedingBrainTitle?: string;
-  precedingBrainYear?: number;
+  score?: number;               // −4 … +4: üç sütun + element
+  tone?: string;                // "destek" | "denge" | "dikkat"
+  elementRelation?: string;     // "besler" | "ayni" | "verir" | "yonetir" | "sinirlar"
+}
+interface MucelInfo {
+  number: number; chapter: string;
+  startYear: number; endYear: number; nextMucelYear: number;
 }
 interface RequestBody {
   name?: string;
-  gender: "female" | "male";
+  gender?: "female" | "male";   // eski sürüm gönderir; müçel mantığı kullanmaz
   birthDate: string;
   birthYear: number;
   yearPillar: Pillar;
@@ -32,6 +37,8 @@ interface RequestBody {
   interactions: { yearMonth: string; yearDay: string; monthDay: string };
   currentAge: number;
   over60: boolean;
+  mucel?: MucelInfo;
+  thisYear?: MilestoneEntry;
   allMilestones: MilestoneEntry[];
   currentMilestone?: MilestoneEntry;
   nextMilestone?: MilestoneEntry;
@@ -85,74 +92,83 @@ serve(async (req) => {
       name, gender, birthDate, birthYear,
       yearPillar, monthPillar, dayPillar,
       interactions, currentAge, over60,
+      mucel, thisYear,
       allMilestones = [],
     } = body;
 
-    const genderTR   = gender === "female" ? "Kadın" : "Erkek";
-    const cycleYears = gender === "female" ? "7" : "8";
+    const typeLabel: Record<string, string> = {
+      mucel: "Müçel yılı (doğum hayvanı döner)",
+      buyuk: "Büyük müçel (hayvan ve element birlikte döner)",
+      zit:   "Zıt yıl (karşıt hayvanın yılı)",
+      uyum:  "Uyum yılı (üçlü uyum hayvanı)",
+      dost:  "Dost yılı (gizli dost)",
+      notr:  "Nötr yıl (özel ilişki yok)",
+    };
+    const toneLabel: Record<string, string> = {
+      destek: "Destek yılı", denge: "Dengeli yıl", dikkat: "Dikkat yılı",
+    };
+    const elemLabel: Record<string, string> = {
+      besler:   "yılın elementi kişiyi besler",
+      ayni:     "aynı element",
+      verir:    "kişi yılın elementini besler (emek ister)",
+      yonetir:  "kişi yılın elementini sınırlar (çabayla kazanç)",
+      sinirlar: "yılın elementi kişiyi sınırlar (baskı)",
+    };
 
-    const pastMilestones    = allMilestones.filter(m => m.isPast);
-    const presentMilestone  = allMilestones.find(m => m.isPresent);
-    const futureMilestones  = allMilestones.filter(m => !m.isPast && !m.isPresent);
+    const pastMilestones   = allMilestones.filter(m => m.isPast);
+    const futureMilestones = allMilestones.filter(m => !m.isPast);
 
     const formatMilestone = (m: MilestoneEntry) => {
-      let line = `  • ${m.critYear} yılı (${m.age} yaş) — ${m.element} ${m.animal} · ${m.title} · Doğum hayvanıyla: ${ixLabel[m.interaction] ?? m.interaction}${m.interaction === 'clash' ? ' ⚠️' : ''}`;
-      if (m.brainScore !== undefined) {
-        const s = m.brainScore > 0 ? `+${m.brainScore}` : `${m.brainScore}`;
-        line += ` [Beyin Skoru: ${s}/3]`;
-      }
-      if (m.precedingBrainScore !== undefined) {
-        const s = m.precedingBrainScore > 0 ? `+${m.precedingBrainScore}` : `${m.precedingBrainScore}`;
-        line += ` [Önceki: ${m.precedingBrainTitle} (${m.precedingBrainYear}) → Skor ${s}]`;
-      }
+      let line = `  • ${m.critYear} yılı (${m.age} yaş) — ${m.element} ${m.animal} · ${typeLabel[m.type] ?? m.title} · Doğum hayvanıyla: ${ixLabel[m.interaction] ?? m.interaction}`;
+      if (m.elementRelation) line += ` · Element: ${elemLabel[m.elementRelation] ?? m.elementRelation}`;
+      if (m.tone) line += ` · Genel ton: ${toneLabel[m.tone] ?? m.tone} (puan ${m.score})`;
       return line;
     };
 
-    const prompt = `Sen 12 Hayvanlı Türk Takvimi (BaZi) astrolojisinde uzman, derin tarihsel bilgiye sahip bir yorumcusun.
-Yorumların Türkçe, sıcak, içgörülü ve mistik ama gerçekçi olsun. Her alan 4-5 cümle olsun.
+    const prompt = `Sen 12 Hayvanlı Türk Takvimi ve müçel geleneği konusunda uzman, derin tarihsel bilgiye sahip bir yorumcusun.
+Yorumların Türkçe, sıcak, içgörülü ve mistik ama gerçekçi olsun. Kısa ve net cümleler kur. Her alan 4-5 cümle olsun.
+
+━━ MÜÇEL SİSTEMİ ━━
+- Doğum hayvanı her 12 yılda bir döner: müçel yılı (12, 24, 36… yaş; geleneksel sayımla 13, 25, 37…). Bir dönem kapanır, yenisi açılır. Gelenekte bu yıl dikkatle ve paylaşarak karşılanır.
+- 60 yaş büyük müçeldir: hayvan ve element birlikte döner, ikinci doğum sayılır.
+- Müçelin ortasında (6, 18, 30… yaş) karşıt hayvanın yılı gelir: zıt yıl. Gerilim ve değişim getirebilir.
+- Üçlü uyum hayvanlarının yılları destek, gizli dostun yılı sessiz destek getirir.
+- Her yılın genel tonu iki şeyden gelir: yılın hayvanının üç doğum hayvanıyla (yıl, ay, gün) ilişkisi ve yılın elementinin kişinin elementiyle ilişkisi. Ton: Destek, Dengeli veya Dikkat.
+- 12 yıllık dönemler: 0–11 Çocukluk, 12–23 Gençlik, 24–35 Kuruluş, 36–47 Olgunlaşma, 48–59 Deneyim, 60–71 İkinci bahar, 72–83 Bilgelik, 84+ Aksakallık.
 
 ━━ KİŞİ BİLGİLERİ ━━
-- ${name ? `İsim: ${name}` : "İsimsiz"}
-- Cinsiyet: ${genderTR} (${cycleYears} yıllık biyolojik döngü)
-- Yaş: ${currentAge} · Doğum Yılı: ${birthYear}
-- Yıl Sütunu (Sosyal Vitrin): ${yearPillar.element} ${yearPillar.animal}
-- Ay Sütunu (Duygusal Temel): ${monthPillar.element} ${monthPillar.animal}
+- ${name ? `İsim: ${name}` : "İsimsiz"}${gender ? ` · Cinsiyet: ${gender === "female" ? "Kadın" : "Erkek"}` : ""}
+- Yaş: ${currentAge} · Takvim doğum yılı: ${birthYear}
+- Yıl Sütunu (Vitrin): ${yearPillar.element} ${yearPillar.animal} — kişinin elementi: ${yearPillar.element}
+- Ay Sütunu (İç Dünya): ${monthPillar.element} ${monthPillar.animal}
 - Gün Sütunu (Öz Kimlik): ${dayPillar.element} ${dayPillar.animal}
 - Sütun etkileşimleri: Yıl×Ay ${ixLabel[interactions.yearMonth]}, Yıl×Gün ${ixLabel[interactions.yearDay]}, Ay×Gün ${ixLabel[interactions.monthDay]}
+${mucel ? `- Şu an ${mucel.number}. müçel dönemi: ${mucel.chapter} (${mucel.startYear}–${mucel.endYear}). Sıradaki müçel yılı: ${mucel.nextMucelYear}.` : ""}
+${thisYear ? `- Bu yıl:\n${formatMilestone(thisYear)}` : ""}
 
-━━ GEÇMİŞ KRİTİK DÖNEMLER ━━
+━━ GEÇMİŞ ÖNEMLİ YILLAR ━━
 ${pastMilestones.length ? pastMilestones.map(formatMilestone).join('\n') : '  (yok)'}
 
-━━ MEVCUT DÖNEM ━━
-${presentMilestone ? formatMilestone(presentMilestone) : '  (kritik eşikte değil)'}
-
-━━ GELECEK KRİTİK DÖNEMLER ━━
+━━ GELECEK ÖNEMLİ YILLAR ━━
 ${futureMilestones.length ? futureMilestones.map(formatMilestone).join('\n') : '  (yok)'}
-${over60 ? '\n- Bu kişi 60 yıllık büyük kozmik döngüyü tamamlamıştır.' : ''}
+${over60 ? '\n- Bu kişi 60 yaşındaki büyük müçeli geçmiştir.' : ''}
 
 ━━ YORUM KURALLARI ━━
-1. dogumHaritasi: Üç sütunun yarattığı kişilik enerjisini açıkla. Yıl hayvanının element uyumunu ve genel yaşam temalarını belirt.
-2. mevcutDonem: Mevcut dönemi ve yakın geçmişteki 1-2 kritik yılı ele al. O yıllarda dünyada veya Türkiye'de yaşanan önemli olayları (krizler, dönüşümler, fırsatlar) o yılın hayvanı ile doğum hayvanının uyumu çerçevesinde yorumla. Kötü etkileşim (clash) varsa "dikkat" uyarısı ver.
-3. gelecekDonem: Önümüzdeki 2-3 kritik yılı spesifik yıllarıyla belirt (örn: "2031 yılında Metal Köpek enerjisiyle..."). Clash yıllarında açıkça uyar: "Bu yıl dikkat gerektiren bir dönemdir". Üçlü uyum veya gizli dostluk varsa güçlü destek dönemlerini vurgula.
-4. buyukKutlama: ${over60 ? '60 yıllık kozmik döngüyü tamamlamanın derin anlamını ve nadir bilgelik evresini kutla.' : 'Bu kişi henüz 60 yıllık döngüyü tamamlamadı, bu alanı boş bırak.'}
-5. onemliAnlar: Tüm dönemlerden (geçmiş + gelecek) sadece TRINE, SECRET ve CLASH etkileşimli olanları seç.
-   KESİNLİKLE NOROLOJİK TİPİNDEKİLERİ DAHIL ETME (type === "norolojik" veya "kesisim" olanlar listeye girmesin).
-   Maksimum 10 madde, KRONOLOJİK SIRA ile (eski yıldan yeni yıla). Her madde için:
+1. dogumHaritasi: Üç sütunun yarattığı kişilik enerjisini açıkla. Kişinin elementini ve içinde bulunduğu müçel dönemini belirt.
+2. mevcutDonem: Bu yılı ve içinde bulunulan müçel dönemini yorumla. Bu yılın genel tonuna sadık kal: Dikkat yılında nazikçe uyar, Destek yılında fırsatları vurgula, Dengeli yılda sakin bir ton kullan. Yılın hayvanı ile doğum hayvanının ilişkisini ve element ilişkisini açıkla.
+3. gelecekDonem: Sıradaki müçel yılını, sıradaki zıt yılı ve önümüzdeki 2-3 önemli yılı spesifik yıllarıyla belirt (örn: "2031 yılında Metal Domuz enerjisiyle..."). Zıt yıllarda açıkça uyar: "Bu yıl dikkat gerektiren bir dönemdir". Uyum ve dost yıllarında destekleyici dönemleri vurgula.
+4. buyukKutlama: ${over60 ? '60 yaşındaki büyük müçelin (60 yıllık döngünün tamamlanmasının) derin anlamını ve nadir bilgelik evresini kutla.' : 'Bu kişi henüz 60 yaşındaki büyük müçele ulaşmadı, bu alanı boş bırak.'}
+5. onemliAnlar: Tüm yıllardan (geçmiş + gelecek) seç. Maksimum 10 madde, KRONOLOJİK SIRA ile (eski yıldan yeni yıla). Geçmiş ve gelecekten dengeli seç.
+   - tip: Uyum ve dost yıllarından genel tonu "Destek yılı" olanlar → "olumlu". Zıt yıllar ve genel tonu "Dikkat yılı" olanlar → "uyari". Müçel yılları genel tonuna göre.
    - yil, yas: tablodakinin aynısı
-   - hayvan, element: o kritik yılın hayvanı ve elementi
-   - tip: "olumlu" (TRINE/SECRET) veya "uyari" (CLASH)
+   - hayvan, element: o yılın hayvanı ve elementi
    - baslik: 2-4 kelime, ŞİİRSEL ve İÇGÖRÜLÜ (düz "Kariyer Atılımı" yerine "Yıldızının Parladığı Yıl", "Köprüden Geçiş", "Sabır Dönemi", "Yeniden Doğuş", "Kalbinin Sınavı", "Bereket Yılı", "İçsel Yolculuk" gibi)
    - aciklama: 2-3 cümle. Şu yapıda yaz:
      • Yıl geçmişse: "Yaşamış olabilirsiniz", "Hatırlarsanız o dönemde", "Belki o yıllarda…" tonu (sertçe varsayma)
      • Yıl gelecekse: "Bu yıl … için elverişli olabilir" / "Bu dönemde dikkatli olmak faydalıdır" tonu (kesin tahmin değil, hazırlık)
      • Mutlaka o yılın hayvanı ile doğum hayvanının ilişkisine değin (örn: "At, doğum hayvanınız Köpek ile aksiyon-liderlik üçlüsünde yer alır")
+     • Müçel yılıysa yeni dönemin başladığını, zıt yılsa dönemin ortasındaki sınavı belirt.
      • Yaş grubuna uygun YAŞAM OLAYI öner (aşağıdaki rehbere göre)
-     • Eğer madde "[Önceki: X Beyin Güncellemesi → Skor Y]" bilgisi taşıyorsa, aciklamanın SON cümlesinde bu etkiyi dahil et:
-       - Skor > 0 VE tip="olumlu"  → "Üstelik [X] çok uyumlu geçtiğinden bu dönemin fırsatları katlanarak büyüyebilir."
-       - Skor < 0 VE tip="uyari"   → "Buna ek olarak [X] uyumsuz geçtiğinden bu dönem ekstra zorlayıcı olabilir — özellikle dikkatli olunması önerilir."
-       - Skor > 0 VE tip="uyari"   → "[X] uyumlu geçtiğinden bu zorlu dönemde içsel dayanıklılık kaynaklarınız güçlü olacaktır."
-       - Skor < 0 VE tip="olumlu"  → "[X] uyumsuz geçtiğinden bu dönemin güzel fırsatlarını değerlendirmek biraz ek çaba gerektirebilir."
-       - Skor = 0: beyin güncellemesini ayrıca belirtme.
 
    ━ YAŞAM EVRELERİNDE TİPİK OLAYLAR ━
 
@@ -227,7 +243,7 @@ ${over60 ? '\n- Bu kişi 60 yıllık büyük kozmik döngüyü tamamlamıştır.
       const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
       await supabase.from("ai_requests").insert({
         name:           name || null,
-        gender,
+        gender:         gender ?? null,
         birth_date:     birthDate,
         birth_year:     birthYear,
         current_age:    currentAge,
